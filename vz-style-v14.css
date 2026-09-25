@@ -1362,3 +1362,51 @@ body{background:#020711;color:#eef7ff;background-image:radial-gradient(ellipse a
  #battleView .territory-token .sector-guard{transform:translateX(-50%) scale(.73)!important}
  #battleView .territory-token.selected .sector-guard{transform:translateX(-50%) scale(.81)!important}
 }
+
+
+/* V40 — térképi egységek: tiszta sprite + külön létszámcímke. */
+#battleView .territory-token .sector-guard{
+  overflow:visible!important;
+  background:transparent!important;background-image:none!important;
+  border:0!important;outline:0!important;box-shadow:none!important;
+  padding:0!important;
+}
+#battleView .territory-token .sector-guard::before,
+#battleView .territory-token .sector-guard::after{
+  display:none!important;content:none!important;background:none!important;border:0!important;box-shadow:none!important;
+}
+#battleView .territory-token .sector-guard img{
+  display:block!important;position:relative!important;z-index:2!important;
+  background:transparent!important;background-image:none!important;
+  border:0!important;outline:0!important;box-shadow:none!important;
+}
+/* A létszám mindig az egység ALATT van, nem a sprite-on. */
+#battleView .territory-token .sector-guard b,
+#battleView .territory-token:not(.neutral) .sector-guard b{
+  position:absolute!important;
+  left:50%!important;right:auto!important;
+  top:calc(100% + 5px)!important;bottom:auto!important;
+  transform:translateX(-50%)!important;
+  z-index:8!important;
+  min-width:38px!important;
+  padding:3px 7px!important;
+  margin:0!important;
+  white-space:nowrap!important;
+  line-height:1!important;
+  font-size:8px!important;
+  border-radius:999px!important;
+  pointer-events:none!important;
+}
+/* A kijelölés csak külön állapotjelzés legyen; a sprite körül ne legyen négyszög. */
+#battleView .territory-token.selected .sector-guard,
+#battleView .territory-token.selected .sector-guard img{
+  background:transparent!important;background-image:none!important;border:0!important;outline:0!important;box-shadow:none!important;
+}
+/* A képernyőképen látható mérethez finomhangolt egységek. */
+#battleView .territory-token .sector-guard{transform:translateX(-50%) scale(.80)!important;transform-origin:center center!important}
+#battleView .territory-token.selected .sector-guard{transform:translateX(-50%) scale(.87)!important}
+@media(max-width:1100px){
+ #battleView .territory-token .sector-guard{transform:translateX(-50%) scale(.74)!important}
+ #battleView .territory-token.selected .sector-guard{transform:translateX(-50%) scale(.81)!important}
+ #battleView .territory-token .sector-guard b{top:calc(100% + 4px)!important}
+}
