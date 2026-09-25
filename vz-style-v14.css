@@ -1604,3 +1604,8 @@ body{background:#020711;color:#eef7ff;background-image:radial-gradient(ellipse a
 #battleView .unit-side-ember .unit-art,#battleView .unit-side-xenon .unit-art{width:126px!important;height:108px!important;transform:translateX(-50%)!important;z-index:80!important}
 #battleView .unit-side-ember,#battleView .unit-side-xenon{width:126px!important;height:108px!important;overflow:visible!important}
 #battleView .unit-side-ember>b,#battleView .unit-side-xenon>b{top:112px!important;z-index:81!important}
+
+/* V67 — közepes, nem zavaró stratégiai egységikon. */
+#battleView .sector-guard.unit-side-ember .unit-art,#battleView .sector-guard.unit-side-xenon .unit-art{width:78px!important;height:67px!important;min-width:78px!important;min-height:67px!important;max-width:78px!important;max-height:67px!important;transform:translateX(-50%)!important}
+#battleView .sector-guard.unit-side-ember,#battleView .sector-guard.unit-side-xenon{width:78px!important;height:67px!important;min-width:0!important;min-height:0!important;overflow:visible!important}
+#battleView .sector-guard.unit-side-ember>b,#battleView .sector-guard.unit-side-xenon>b{top:71px!important;display:block!important;visibility:visible!important;opacity:1!important}
