@@ -1264,3 +1264,56 @@ body{background:#020711;color:#eef7ff;background-image:radial-gradient(ellipse a
   padding:18px!important;
   box-shadow:0 18px 55px rgba(0,0,0,.52)!important;
 }
+
+
+/* V38 — a felhasználói képernyőképek alapján: tiszta főmenü + keret nélküli, nagyobb egységek. */
+/* A sérült/átlátszó képpontokat egy 3px-rel eltolt második példány tölti ki, így a fekete lyukak eltűnnek. */
+#menuView .menu-hero{
+  background-image:url('assets/main-menu-ember-xenon.png'),url('assets/main-menu-ember-xenon.png')!important;
+  background-size:cover,cover!important;
+  background-position:center,calc(50% + 3px) center!important;
+  background-repeat:no-repeat,no-repeat!important;
+}
+/* Az alapképre égetett régi menü teljes takarása; a valódi három gomb e fölött marad. */
+#menuView .menu-hero::before{
+  display:block!important;content:""!important;position:absolute!important;z-index:18!important;
+  left:50%!important;top:58%!important;transform:translate(-50%,-50%)!important;
+  width:min(405px,86vw)!important;height:575px!important;
+  background:linear-gradient(180deg,rgba(5,19,30,.985),rgba(3,15,24,.985))!important;
+  border:1px solid rgba(61,194,245,.42)!important;border-radius:12px!important;
+  box-shadow:0 20px 58px rgba(0,0,0,.62),inset 0 0 34px rgba(33,137,181,.08)!important;
+  pointer-events:none!important;
+}
+#menuView .menu-hero::after{display:none!important;content:none!important}
+#menuView .menu-grid{
+  z-index:20!important;top:58%!important;width:min(365px,80vw)!important;
+  padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important;
+  backdrop-filter:none!important;gap:12px!important;
+}
+/* A térképi egység körül sem a token, sem az egységkonténer nem rajzol négyzetes kártyát. */
+#battleView .territory-token:not(.selected),
+#battleView .territory-token:not(.selected):hover,
+#battleView .territory-token:not(.selected):focus{
+  background:transparent!important;border:0!important;outline:0!important;box-shadow:none!important;
+}
+#battleView .territory-token:not(.selected)::before,
+#battleView .territory-token:not(.selected)::after{display:none!important;content:none!important}
+#battleView .territory-token .sector-guard,
+#battleView .territory-token:not(.selected) .sector-guard{
+  background:transparent!important;background-color:transparent!important;
+  border:0!important;outline:0!important;box-shadow:none!important;padding:0!important;
+  transform:translateX(-50%) scale(.76)!important;transform-origin:center center!important;
+}
+#battleView .territory-token.selected .sector-guard{transform:translateX(-50%) scale(.84)!important}
+#battleView .territory-token .sector-guard::before,
+#battleView .territory-token .sector-guard::after{background:transparent!important;border:0!important;box-shadow:none!important}
+#battleView .territory-token .sector-guard img{
+  background:transparent!important;border:0!important;outline:0!important;box-shadow:none!important;
+  image-rendering:auto!important;object-fit:contain!important;
+  filter:drop-shadow(0 3px 3px rgba(0,0,0,.88)) contrast(1.24) saturate(1.12) brightness(1.035)!important;
+  backface-visibility:hidden!important;
+}
+@media(max-width:1100px){
+ #battleView .territory-token .sector-guard,#battleView .territory-token:not(.selected) .sector-guard{transform:translateX(-50%) scale(.70)!important}
+ #battleView .territory-token.selected .sector-guard{transform:translateX(-50%) scale(.78)!important}
+}
