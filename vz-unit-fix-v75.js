@@ -1,4 +1,4 @@
-/* V75 — egységes, tiszta térképi egységikonok. */
+/* V76 — visibly smaller map unit icons for every side. */
 (function(){
   const style=document.createElement('style');
   style.textContent=`
@@ -8,7 +8,7 @@
     #battleView .territory-token .sector-guard{display:none!important}
     #battleView .territory-token.neutral.selected .sector-label{display:none!important}
     #battleView .map-unit-marker>span{
-      filter:drop-shadow(0 1px 1px rgba(0,0,0,.95)) drop-shadow(0 0 2px rgba(255,255,255,.24))!important;
+      filter:drop-shadow(0 1px 1px rgba(0,0,0,.95))!important;
       image-rendering:auto!important;
     }
     #battleView .map-unit-marker>b{
@@ -32,13 +32,13 @@
       marker.style.setProperty('display',visible?'block':'none','important');
       marker.style.setProperty('position','absolute','important');
       marker.style.setProperty('left','50%','important');
-      marker.style.setProperty('top','-17px','important');
-      marker.style.setProperty('width','30px','important');
-      marker.style.setProperty('height','26px','important');
-      marker.style.setProperty('min-width','30px','important');
-      marker.style.setProperty('min-height','26px','important');
-      marker.style.setProperty('max-width','30px','important');
-      marker.style.setProperty('max-height','26px','important');
+      marker.style.setProperty('top','-10px','important');
+      marker.style.setProperty('width','20px','important');
+      marker.style.setProperty('height','17px','important');
+      marker.style.setProperty('min-width','20px','important');
+      marker.style.setProperty('min-height','17px','important');
+      marker.style.setProperty('max-width','20px','important');
+      marker.style.setProperty('max-height','17px','important');
       marker.style.setProperty('transform','translateX(-50%)','important');
       marker.style.setProperty('overflow','visible','important');
       marker.style.setProperty('background','transparent','important');
@@ -52,12 +52,12 @@
         art.style.setProperty('position','absolute','important');
         art.style.setProperty('left','50%','important');
         art.style.setProperty('top','0','important');
-        art.style.setProperty('width','30px','important');
-        art.style.setProperty('height','26px','important');
-        art.style.setProperty('min-width','30px','important');
-        art.style.setProperty('min-height','26px','important');
-        art.style.setProperty('max-width','30px','important');
-        art.style.setProperty('max-height','26px','important');
+        art.style.setProperty('width','20px','important');
+        art.style.setProperty('height','17px','important');
+        art.style.setProperty('min-width','20px','important');
+        art.style.setProperty('min-height','17px','important');
+        art.style.setProperty('max-width','20px','important');
+        art.style.setProperty('max-height','17px','important');
         art.style.setProperty('transform','translateX(-50%)','important');
         art.style.setProperty('background-size','contain','important');
         art.style.setProperty('background-repeat','no-repeat','important');
@@ -75,15 +75,15 @@
         count.style.setProperty('display','block','important');
         count.style.setProperty('position','absolute','important');
         count.style.setProperty('left','50%','important');
-        count.style.setProperty('top','29px','important');
+        count.style.setProperty('top','19px','important');
         count.style.setProperty('transform','translateX(-50%)','important');
         count.style.setProperty('min-width','0','important');
-        count.style.setProperty('padding','2px 5px','important');
+        count.style.setProperty('padding','1px 4px','important');
         count.style.setProperty('border-radius','999px','important');
         count.style.setProperty('border','1px solid rgba(214,235,242,.35)','important');
         count.style.setProperty('background','rgba(3,10,15,.94)','important');
         count.style.setProperty('color','#fff','important');
-        count.style.setProperty('font-size','7px','important');
+        count.style.setProperty('font-size','6px','important');
         count.style.setProperty('line-height','1','important');
         count.style.setProperty('z-index','122','important');
       }
