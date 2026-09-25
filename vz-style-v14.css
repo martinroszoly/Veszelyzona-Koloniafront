@@ -1410,3 +1410,37 @@ body{background:#020711;color:#eef7ff;background-image:radial-gradient(ellipse a
  #battleView .territory-token.selected .sector-guard{transform:translateX(-50%) scale(.81)!important}
  #battleView .territory-token .sector-guard b{top:calc(100% + 4px)!important}
 }
+
+
+/* V41 — éles stratégiai egységikonok: nincs tört skálázás. */
+/* A korábbi scale(.80/.87) a raszteres sprite-okat újramintavételezte és elmosta. */
+#battleView .territory-token .sector-guard{
+  width:66px!important;height:55px!important;
+  transform:translateX(-50%)!important;
+  transform-origin:center center!important;
+}
+#battleView .territory-token .sector-guard img{
+  width:72px!important;height:60px!important;
+  max-width:none!important;max-height:none!important;
+  transform:translate(-3px,-3px)!important;
+  image-rendering:auto!important;
+  object-fit:contain!important;
+  filter:drop-shadow(0 3px 3px rgba(0,0,0,.82))!important;
+}
+#battleView .territory-token.selected .sector-guard{
+  width:72px!important;height:60px!important;
+  transform:translateX(-50%)!important;
+}
+#battleView .territory-token.selected .sector-guard img{
+  width:78px!important;height:65px!important;
+}
+#battleView .territory-token .sector-guard b,
+#battleView .territory-token:not(.neutral) .sector-guard b{
+  top:calc(100% + 6px)!important;
+}
+@media(max-width:1100px){
+ #battleView .territory-token .sector-guard{width:62px!important;height:52px!important;transform:translateX(-50%)!important}
+ #battleView .territory-token .sector-guard img{width:68px!important;height:57px!important}
+ #battleView .territory-token.selected .sector-guard{width:68px!important;height:57px!important;transform:translateX(-50%)!important}
+ #battleView .territory-token.selected .sector-guard img{width:74px!important;height:62px!important}
+}
