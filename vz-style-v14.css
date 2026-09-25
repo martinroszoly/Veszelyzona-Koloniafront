@@ -1614,3 +1614,8 @@ body{background:#020711;color:#eef7ff;background-image:radial-gradient(ellipse a
 #battleView .sector-guard.unit-side-ember .unit-art,#battleView .sector-guard.unit-side-xenon .unit-art{width:39px!important;height:34px!important;min-width:39px!important;min-height:34px!important;max-width:39px!important;max-height:34px!important}
 #battleView .sector-guard.unit-side-ember,#battleView .sector-guard.unit-side-xenon{width:39px!important;height:34px!important;min-width:0!important;min-height:0!important;overflow:visible!important}
 #battleView .sector-guard.unit-side-ember>b,#battleView .sector-guard.unit-side-xenon>b{top:38px!important;display:block!important;visibility:visible!important;opacity:1!important}
+
+/* V69 — V68 és annak fele közötti méret: 30x26. */
+#battleView .sector-guard.unit-side-ember .unit-art,#battleView .sector-guard.unit-side-xenon .unit-art{width:30px!important;height:26px!important;min-width:30px!important;min-height:26px!important;max-width:30px!important;max-height:26px!important}
+#battleView .sector-guard.unit-side-ember,#battleView .sector-guard.unit-side-xenon{width:30px!important;height:26px!important;min-width:0!important;min-height:0!important;overflow:visible!important}
+#battleView .sector-guard.unit-side-ember>b,#battleView .sector-guard.unit-side-xenon>b{top:30px!important}
