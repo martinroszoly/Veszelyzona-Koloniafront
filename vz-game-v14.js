@@ -1117,7 +1117,7 @@ function renderBattle(){
     });
   }
   const markers=state.grid.map(sector=>{
-    const active=state.selected===sector.id,showUnit=Boolean(sector.unit)&&(sector.unit.side!=='neutral'||active),showLabel=active||sector.isBase||sector.owner!=='neutral';
+    const active=state.selected===sector.id,showUnit=Boolean(sector.unit)&&(sector.unit.side!=='neutral'||(active&&sector.owner==='neutral')),showLabel=active||sector.isBase||sector.owner!=='neutral';
     if(!showUnit&&!showLabel&&!sector.productive)return '';
     const guard=showUnit?`<span class="sector-guard ${sector.unit.side} type-${sector.unit.type} ${hasMoved(sector.unit)?'spent':''}" title="${sector.unit.side==='neutral'?'Zsoldos őrség':typeName(sector.unit)} · ${sector.unit.count.toLocaleString('hu-HU')}"><img src="${artFor(sector.unit)}" alt=""/><b>${sector.unit.count.toLocaleString('hu-HU')}</b>${hasMoved(sector.unit)?'<em>✓</em>':''}</span>`:'';
     const installations=`${sector.bunker?'<span class="sector-install bunker" title="Bunker">▣</span>':''}${sector.watchtower?'<span class="sector-install tower" title="Őrtorony">⌂</span>':''}`;
