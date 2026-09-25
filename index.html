@@ -9,7 +9,18 @@
   <link rel="stylesheet" href="vz-mobile-controls-v15.css?v=3" />
   <link rel="stylesheet" href="vz-phone-modal-v16.css?v=1" />
   <link rel="stylesheet" href="vz-modes-v16.css?v=7" />
-<style>#battleView .unit-side-ember .unit-art,#battleView .unit-side-xenon .unit-art{width:30px!important;height:26px!important;min-width:30px!important;min-height:26px!important;max-width:30px!important;max-height:26px!important}#battleView .unit-side-ember,#battleView .unit-side-xenon{width:30px!important;height:26px!important}</style></head>
+<style>
+#battleView .unit-side-ember .unit-art,#battleView .unit-side-xenon .unit-art{width:30px!important;height:26px!important;min-width:30px!important;min-height:26px!important;max-width:30px!important;max-height:26px!important}
+#battleView .unit-side-ember,#battleView .unit-side-xenon{width:30px!important;height:26px!important}
+/* V74: a V73-as színes takarók teljes eltávolítása. */
+#battleView .territory-token.base-sector::before{display:none!important;content:none!important}
+/* A grandfront képbe égetett két nagy seregrajzot ugyanennek a térképnek közeli, tiszta részlete fedi; nincs színes/blur kör. */
+#battleView .planet-scene{position:relative!important;isolation:isolate!important}
+#battleView .planet-scene::before,#battleView .planet-scene::after{content:""!important;position:absolute!important;inset:0!important;pointer-events:none!important;background-image:var(--map-image)!important;background-size:100% 100%!important;background-repeat:no-repeat!important;z-index:1!important}
+#battleView .planet-scene::before{background-position:-90px 8px!important;-webkit-mask-image:radial-gradient(ellipse 3.8% 6.2% at 7.3% 87.7%,#000 0 62%,rgba(0,0,0,.96) 72%,transparent 100%)!important;mask-image:radial-gradient(ellipse 3.8% 6.2% at 7.3% 87.7%,#000 0 62%,rgba(0,0,0,.96) 72%,transparent 100%)!important}
+#battleView .planet-scene::after{background-position:90px -8px!important;-webkit-mask-image:radial-gradient(ellipse 3.8% 6.2% at 95.3% 8.7%,#000 0 62%,rgba(0,0,0,.96) 72%,transparent 100%)!important;mask-image:radial-gradient(ellipse 3.8% 6.2% at 95.3% 8.7%,#000 0 62%,rgba(0,0,0,.96) 72%,transparent 100%)!important}
+#battleView .planet-map{position:absolute!important;z-index:2!important}
+</style></head>
 <body>
   <main id="app">
     <section id="menuView" class="screen active">
