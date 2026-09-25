@@ -1573,3 +1573,9 @@ body{background:#020711;color:#eef7ff;background-image:radial-gradient(ellipse a
 #battleView .territory-token:not(.neutral)>.sector-guard>img{min-width:118px!important;min-height:98px!important}
 #battleView .territory-token.neutral.selected>.sector-guard{display:block!important;visibility:visible!important;opacity:1!important;z-index:40!important}
 #battleView .territory-token.neutral.selected>.sector-guard>img{display:block!important;visibility:visible!important;opacity:1!important}
+
+
+/* V50 — aktív renderer sprite-jai minden régi méretszabály fölött. */
+#battleView .territory-token>.sector-guard{z-index:30!important;overflow:visible!important}
+#battleView .territory-token>.sector-guard>img{z-index:31!important;visibility:visible!important;opacity:1!important}
+#battleView .territory-token>.sector-guard>b{z-index:32!important}
