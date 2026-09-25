@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Semleges bolygóőr">
+ <defs><linearGradient id="s" x2="1" y2="1"><stop stop-color="#9daeb4"/><stop offset="1" stop-color="#405967"/></linearGradient><linearGradient id="v" x2="1"><stop stop-color="#ade4c7"/><stop offset="1" stop-color="#4f9ca7"/></linearGradient></defs>
+ <path d="M27 120 31 79 43 67 85 67 97 79 101 120Z" fill="#1c333b" stroke="#c2d8d4" stroke-width="3"/>
+ <path d="M39 78 51 69 77 69 89 78 84 119 44 119Z" fill="url(#s)" stroke="#779797" stroke-width="2"/>
+ <path d="M47 25Q64 8 81 25L89 45 82 66 46 66 39 45Z" fill="#586d73" stroke="#c4dad3" stroke-width="3"/>
+ <path d="M43 41Q64 34 85 41L80 54Q64 60 48 54Z" fill="url(#v)" stroke="#d1fff0" stroke-width="2"/>
+ <path d="M54 67 64 77 74 67M53 84l11 7 11-7M64 94v25" fill="none" stroke="#bdd8b7" stroke-width="3"/>
+ <path d="M31 81 20 94 24 117H41L43 91M97 81l11 13-4 23H87L85 91" fill="#3e5c62" stroke="#a6c1b6" stroke-width="3"/>
+ <circle cx="64" cy="109" r="5" fill="#aee8c0"/>
+</svg>

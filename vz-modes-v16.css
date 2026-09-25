@@ -1,0 +1,49 @@
+.team-setup{margin:24px 0 12px}.team-mode-choices{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.team-mode-choices button{min-height:74px;border:1px solid #25577a;background:#071b2d;color:#b9d9e8;font:700 16px/1.1 inherit;cursor:pointer}.team-mode-choices button small{display:block;margin-top:7px;color:#78a1b8;font-size:11px}.team-mode-choices button.selected{border-color:#ffc957;background:#17324a;color:#fff0bd;box-shadow:0 0 18px #d79a3538}.team-mode-choices.locked button:not(.selected){opacity:.42}.ally-difficulties{display:flex;gap:10px;margin-top:12px}.ally-difficulty{flex:1;border:1px solid #1e5578;background:#071829;padding:10px;color:#a9c9de;font-size:11px}.ally-difficulty span{display:block;margin-bottom:5px}.ally-difficulty select{width:100%;padding:7px;background:#0d2d45;border:1px solid #3a8fc0;color:#fff;font:700 13px inherit}.surrender-flag{position:absolute;z-index:14;transform:translate(-50%,-95%);font-size:34px;color:#fff;text-shadow:0 1px 5px #020814;pointer-events:none;animation:surrender-fade 2.5s ease forwards}@keyframes surrender-fade{0%,30%{opacity:1;transform:translate(-50%,-95%) scale(1)}100%{opacity:0;transform:translate(-50%,-155%) scale(.72)}}.sector-guard.humanAlly{filter:hue-rotate(90deg) saturate(1.25)}.sector-guard.alienAlly{filter:hue-rotate(315deg) saturate(1.4)}.planet-scene.grandfront{aspect-ratio:3494/900!important}.planet-scene.grandfront .planet-legend{display:none}@media(max-width:900px){.team-mode-choices{grid-template-columns:repeat(2,1fr)}.ally-difficulties{flex-direction:column}.planet-scene.grandfront{aspect-ratio:3494/900!important}}
+.planet-scene.grandfront{aspect-ratio:3584/1800!important;background-image:url(continent-new-world-v4.webp)!important;background-size:100% 100%!important}
+.planet-scene.grandfront:before{background:none!important;opacity:0!important}
+.planet-scene.grandfront .territory-token.neutral:not(.selected) .sector-guard{width:8px!important;height:8px!important;top:-4px!important;opacity:.48!important}
+.planet-scene.grandfront .territory-token.neutral:not(.selected) .sector-guard img{width:8px!important;height:8px!important}
+@media(max-width:900px){.planet-scene.grandfront{aspect-ratio:3584/1800!important}}
+.planet-scene.grandfront .territory-token.neutral:not(.selected) .sector-guard{display:none!important}
+.planet-scene.grandfront .territory-token.neutral.selected .sector-guard{display:block!important}
+.planet-scene.grandfront{
+  background-image:url(continent-new-world-left.webp),url(continent-new-world-right.webp)!important;
+  background-position:left center,right center!important;
+  background-size:50% 100%,50% 100%!important;
+  background-repeat:no-repeat!important;
+}
+.planet-scene.grandfront .territory-hit-layer{image-rendering:auto!important}
+.planet-scene.grandfront .territory-token.neutral:not(.selected) .resource-pin{opacity:.72;box-shadow:0 1px 3px #020b0d}
+.planet-scene.grandfront .territory-token.base-sector:not(.selected) .sector-label{display:none!important}
+.planet-scene.grandfront .territory-token.base-sector:not(.selected):after{
+  content:'★';position:absolute;left:18px;top:7px;z-index:11;
+  display:grid;place-items:center;width:25px;height:25px;
+  border:1px solid #ffe6a5;border-radius:50%;background:rgba(5,20,31,.9);
+  color:#ffdc75;font-size:15px;line-height:1;box-shadow:0 1px 7px rgba(0,0,0,.75);
+}
+.surrender-flag{animation:none!important;opacity:1!important;font-size:24px!important;text-shadow:0 1px 4px #00121a!important}
+.planet-scene.grandfront{background-image:none!important;background-color:#172622!important}
+.planet-scene.grandfront:before{
+  inset:0!important;opacity:1!important;
+  background-image:url(continent-new-world-left.webp),url(continent-new-world-right.webp)!important;
+  background-position:left center,right center!important;
+  background-size:50% 100%,50% 100%!important;
+  background-repeat:no-repeat!important;
+  filter:brightness(.9) saturate(.88) contrast(1.04);
+  pointer-events:none!important;
+}
+.planet-scene.grandfront .territory-token.base-sector:not(.selected):after{content:none!important}
+.planet-scene.grandfront .territory-token .base-star{
+  position:absolute;left:18px;top:7px;z-index:11;display:grid;place-items:center;
+  width:25px;height:25px;border:1px solid #ffdfa1;border-radius:50%;
+  background:rgba(4,20,30,.91);color:#ffcf65;font-size:15px;line-height:1;
+  box-shadow:0 2px 7px rgba(0,0,0,.68);pointer-events:none;
+}
+.planet-scene.grandfront .territory-token.neutral.carrier-present:not(.selected) .sector-guard{
+  display:block!important;width:25px!important;height:19px!important;top:-13px!important;
+  opacity:.92!important;border-radius:4px!important;box-shadow:0 1px 5px rgba(0,0,0,.8)!important;
+}
+.planet-scene.grandfront .territory-token.neutral.carrier-present:not(.selected) .sector-guard img{
+  width:26px!important;height:20px!important;object-fit:contain!important;
+}
+.planet-scene.grandfront .territory-token.neutral.carrier-present:not(.selected) .sector-guard b{display:none!important}

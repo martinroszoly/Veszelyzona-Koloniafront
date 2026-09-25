@@ -1,0 +1,50 @@
+/* Phone command sheets: nothing from the map or top bar covers an open command. */
+@media (max-width:1100px) and (pointer:coarse), (max-height:650px) and (orientation:landscape){
+  .modal-layer,.choice-layer{
+    z-index:10000!important;inset:0!important;padding:0!important;
+    align-items:stretch!important;justify-content:stretch!important;
+    background:rgba(1,7,14,.88)!important;backdrop-filter:blur(13px)!important;
+  }
+  .modal-layer.open,.choice-layer.open{display:block!important}
+  .command-modal,.choice-card{
+    width:100vw!important;max-width:none!important;min-width:0!important;
+    height:100svh!important;min-height:100svh!important;max-height:100svh!important;
+    margin:0!important;border:0!important;border-radius:0!important;clip-path:none!important;
+    overflow-y:auto!important;overflow-x:hidden!important;
+    background:linear-gradient(155deg,#0c3450 0,#06172a 46%,#040b17 100%)!important;
+    box-shadow:none!important;
+  }
+  .modal-header{
+    position:sticky!important;top:0!important;z-index:5!important;
+    padding:18px 18px 15px!important;background:linear-gradient(100deg,#103f5d,#071829)!important;
+    border-bottom:1px solid #56c9ee!important;
+  }
+  .modal-header small{font-size:10px!important;letter-spacing:.16em!important}
+  .modal-header h2{font-size:clamp(22px,5.5vw,30px)!important;line-height:1.1!important}
+  .modal-close{width:44px!important;height:44px!important;font-size:31px!important}
+  .modal-tabs{
+    position:sticky!important;top:77px!important;z-index:4!important;
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:7px!important;padding:12px!important;background:#081b2e!important;
+  }
+  .modal-tabs button{min-width:0!important;min-height:46px!important;padding:8px!important;font-size:10px!important}
+  .modal-content{padding:15px 14px calc(24px + env(safe-area-inset-bottom))!important;gap:10px!important}
+  .modal-intro,.empty-state{font-size:14px!important;line-height:1.5!important}
+  .build-card{grid-template-columns:52px minmax(0,1fr)!important;gap:10px!important;min-height:0!important;padding:12px!important}
+  .build-card>span,.build-card>img{width:48px!important;height:48px!important}
+  .build-card b{font-size:15px!important}.build-card p{font-size:12px!important}.build-card small{font-size:10px!important}
+  .build-card button{grid-column:1/-1!important;width:100%!important;min-height:44px!important;font-size:11px!important}
+  .deployment-select{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;font-size:13px!important}
+  .deployment-select select{max-width:none!important;width:100%!important;min-height:44px!important;font-size:15px!important}
+  .choice-card{display:flex!important;flex-direction:column!important;justify-content:center!important;padding:28px 20px calc(32px + env(safe-area-inset-bottom))!important;text-align:center!important}
+  .choice-icon{width:64px!important;height:64px!important;font-size:33px!important;margin:0 auto 20px!important}
+  .choice-card h2{font-size:clamp(25px,6vw,34px)!important;line-height:1.15!important}
+  .choice-card p{max-width:680px!important;margin:18px auto!important;font-size:clamp(16px,3.4vw,20px)!important;line-height:1.5!important}
+  .choice-card>div,.move-share-options{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;width:min(640px,100%)!important;margin:16px auto 0!important}
+  .choice-card button,.move-share-options button,.move-cancel{min-width:0!important;min-height:58px!important;padding:12px!important;font-size:17px!important}
+  .move-cancel{width:min(640px,100%)!important;margin:12px auto 0!important}
+  /* Neutral markers are deliberately hidden in the overview; open a neutral field to see its new full icon. */
+  #sectorMap .territory-token.neutral:not(.selected) .sector-guard{display:none!important}
+  #sectorMap .territory-token.neutral.selected .sector-guard{width:26px!important;height:26px!important;top:-14px!important;opacity:1!important}
+  #sectorMap .territory-token.neutral.selected .sector-guard img{width:26px!important;height:26px!important;opacity:1!important}
+}

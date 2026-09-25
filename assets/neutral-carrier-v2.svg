@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 112" role="img" aria-label="Semleges gyarmati szállító">
+ <defs>
+  <linearGradient id="shell" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#e1ddc8"/><stop offset=".48" stop-color="#718589"/><stop offset="1" stop-color="#1c323b"/></linearGradient>
+  <linearGradient id="glass" x2=".4" y2="1"><stop stop-color="#b9f8e2"/><stop offset="1" stop-color="#276779"/></linearGradient>
+ </defs>
+ <path d="M13 67 24 51 48 45 61 28 112 23 143 41 159 56 167 69 158 83 25 86Z" fill="url(#shell)" stroke="#d6e5db" stroke-width="3"/>
+ <path d="M65 33 109 29 137 44 139 56 50 57Z" fill="url(#glass)" stroke="#d6ffea" stroke-width="2"/>
+ <path d="M87 30 83 56M113 30l15 26" stroke="#d8eee2" stroke-width="2"/>
+ <path d="M24 63 156 63M32 72h118M53 58l-2 23M137 59l3 21" fill="none" stroke="#c1d0bd" stroke-width="2"/>
+ <path d="M41 77h32l7 12-8 14H35l-8-13ZM122 77h32l9 13-8 13h-37l-8-14Z" fill="#263d45" stroke="#d5e2d3" stroke-width="3"/>
+ <circle cx="54" cy="90" r="8" fill="#64928e" stroke="#d5eee0" stroke-width="2"/><circle cx="138" cy="90" r="8" fill="#64928e" stroke="#d5eee0" stroke-width="2"/>
+ <path d="M82 67h25l4 8-4 8H82l-4-8Z" fill="#21434a" stroke="#a1f4cf" stroke-width="2"/>
+ <path d="M92 69v12m-6-6h12" stroke="#d6ffcf" stroke-width="3"/>
+ <path d="M22 56h16M154 55h10" stroke="#e5cf90" stroke-width="4"/>
+</svg>

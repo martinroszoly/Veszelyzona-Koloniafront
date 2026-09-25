@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Veszélyzóna: Kolóniafront</title>
+  <link rel="stylesheet" href="vz-style-v14.css?v=32" />
+  <link rel="stylesheet" href="vz-landscape-v1.css" />
+  <link rel="stylesheet" href="vz-mobile-controls-v15.css?v=3" />
+  <link rel="stylesheet" href="vz-phone-modal-v16.css?v=1" />
+  <link rel="stylesheet" href="vz-modes-v16.css?v=7" />
+</head>
+<body>
+  <main id="app">
+    <section id="menuView" class="screen active">
+      <div class="menu-hero">
+        <div class="brand-mark"><span>◈</span><div><small>STRATÉGIAI KOLÓNIAJÁTÉK</small><strong>VESZÉLYZÓNA:</strong><b>KOLÓNIAFRONT</b></div></div>
+        <p class="hero-copy">Terjeszkedj, fejlessz és tartsd meg a szektorokat a két frakció összecsapásában.</p>
+        <div class="menu-grid">
+          <button class="menu-button primary" id="battleButton"><span>⚔</span><b>CSATA</b><small>Pálya és oldal választása</small></button>
+          <button class="menu-button" id="settingsButton"><span>⚙</span><b>BEÁLLÍTÁSOK</b><small>Hangok</small></button><button class="menu-button" id="lexiconButton"><span>▤</span><b>EGYSÉGLEXIKON</b><small>EMBER / XENON</small></button>
+        </div>
+        <div class="faction-strip"><span class="human-chip">EMBERI KOLÓNIA</span><span>VS</span><span class="alien-chip">IDEGEN SZÖVETSÉG</span></div>
+        <div class="menu-intel intel-left"><small>A BOLYGÓ // TERRA-PRIME</small><b>EGY KÖZÖS OTTHON</b><span>Felderítsd a szektorokat, építsd fel az előretolt állásokat és tartsd egyben az utánpótlást.</span></div>
+        <div class="menu-intel intel-right"><small>ELLENSÉGES JEL // XENO</small><b>A FRONT ÉL</b><span>Két frakció. Két kontinensfront. A döntéseid rajzolják át a kolónia határait.</span></div>
+        <div class="hero-faction-art hero-human"><img src="assets/ember-infantry.png" alt="Emberi parancsnok" /></div>
+        <div class="hero-faction-art hero-alien"><img src="assets/xenon-infantry.png" alt="Idegen harcos" /></div>
+      </div>
+    </section>
+
+    <section id="setupView" class="screen">
+      <header class="topbar"><button class="back-button" data-back="menuView">← Menü</button><div><small>VESZÉLYZÓNA</small><strong>CSATA BEÁLLÍTÁSA</strong></div><span class="build-pill">HÁROM VÁLASZTHATÓ PÁLYA</span></header>
+      <div class="setup-layout">
+        <div class="setup-main">
+          <div class="section-heading"><small>PÁLYA</small><h1>Válassz hadszínteret</h1></div>
+          <div id="mapChoices" class="map-choices"></div>
+          <div class="section-heading"><small>FRAKCIÓ</small><h2>Ki vezesse a kolóniát?</h2></div>
+          <div class="faction-choices">
+            <button class="faction-choice selected human" data-faction="human"><span>♜</span><div><b>EMBERI KOLÓNIA</b><small>Rugalmas egységek és erős logisztika</small></div></button>
+            <button class="faction-choice alien" data-faction="alien"><span>◉</span><div><b>IDEGEN SZÖVETSÉG</b><small>Lebegő járművek és ellenálló rajok</small></div></button>
+          </div>
+          <div class="section-heading"><small>ELLENFÉL</small><h2>AI nehézség</h2></div>
+          <div id="difficultyChoices" class="difficulty-choices"></div>
+          <section id="teamSetup" class="team-setup" aria-label="Csapatmód beállítása"></section>
+          <button id="startBattle" class="start-button">CSATA INDÍTÁSA <span>→</span></button>
+        </div>
+        <aside class="setup-preview"><div id="setupPreviewArt" class="preview-art"></div><h2 id="setupPreviewTitle"></h2><p id="setupPreviewText"></p><div id="setupPreviewStats" class="preview-stats"></div></aside>
+      </div>
+    </section>
+
+    <section id="battleView" class="screen">
+      <header class="battle-topbar"><div class="battle-brand"><span>◈</span><div><strong>VESZÉLYZÓNA</strong><small>KOLÓNIAFRONT</small></div></div><div id="resourceBar" class="resources"></div><div class="turn-box"><div class="audio-controls"><button id="musicToggle" class="sound-toggle" type="button">♫ ZENE: BE</button><button id="fxToggle" class="sound-toggle" type="button">◖ HANGOK: BE</button></div><div class="turn-indicator"><small>KÖR</small><b id="turnValue">1</b></div><button id="endTurn" type="button"><span class="turn-button-icon">✦</span><span><strong>KÖVETKEZŐ KÖR</strong><small>TERMELÉS · MORÁL · ELLENFÉL</small></span><span class="turn-button-arrow">→</span></button></div></header>
+      <div class="battle-layout">
+        <aside class="battle-sidebar left-panel"><div class="panel-title">SAJÁT MEZŐK</div><div id="ownedList" class="owned-list"></div><div class="panel-title command-title">KIJELÖLT CSAPAT · FEJLESZTÉS</div><div id="selectedUnit" class="selected-unit"><span class="unit-symbol">◈</span><b>Szektor kiválasztása</b><small>Válassz egy saját őrséget a bolygótérképen.</small></div><div class="command-list"><button data-command="move">➜ Mozgási irányok</button><button data-command="upgrade-squad">✦ Csapat fejlesztése</button><button data-command="produce">▦ Gyártás és telepítés</button></div></aside>
+        <div class="map-wrap"><div class="map-title"><span id="battleMapName"></span><small id="fogStatus"></small></div><div class="planet-scene"><div class="planet-legend human-world">TERRA-PRIME<small>ÚJ OTTHON. TOVÁBB.</small></div><div class="planet-legend alien-world">XENO-DOMÍNIUM<small>EGY TEST. SOK VILÁG.</small></div><div id="sectorMap" class="planet-map" role="grid" aria-label="Terra-Prime stratégiai térképe"></div></div><div class="world-nav"><button class="active" data-nav="overview">◉ TÉRKÉP</button><button data-nav="squad">♟ CSAPAT</button><button data-nav="upgrades">✦ FEJLESZTÉS</button><button data-command="produce">▦ GYÁRTÁS</button><button data-nav="log">▤ NAPLÓ</button></div><div class="map-help">Kék: emberi mező. Lila: idegen mező. Koppints egy körzetre, majd válassz a megjelenő irányjelzők közül. A csapat részletei és fejlesztései bal oldalt találhatók.</div></div>
+        <aside class="battle-sidebar right-panel"><div class="panel-title">FRONTJELENTÉS</div><div id="battleStatus" class="status-card"></div><div class="panel-title squad-title">ALAKULAT RÉSZLETEI</div><div id="squadDetails" class="squad-details"><small>Jelölj ki egy saját egységet.</small></div><div class="resource-production"><div><span>FÉM</span><b>+40 / kör</b></div><div><span>OLAJ</span><b>+15 / kör</b></div><div><span>ENERGIA</span><b>+22 / kör</b></div></div><div class="legend"><span><i class="dot blue"></i> Emberi terület</span><span><i class="dot red"></i> Idegen terület</span><span><i class="dot gray"></i> Semleges</span><span><i class="dot fog"></i> Felderítetlen</span></div><div id="eventLog" class="event-log"></div></aside>
+      </div>
+    </section>
+    <div id="modalLayer" class="modal-layer" aria-hidden="true">
+      <section class="command-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <header class="modal-header"><div><small id="modalKicker">KOLÓNIA KÖZPONT</small><h2 id="modalTitle">Terra-Prime</h2></div><button class="modal-close" data-close-modal aria-label="Bezárás">×</button></header>
+        <nav id="modalTabs" class="modal-tabs"></nav>
+        <div id="modalContent" class="modal-content"></div>
+      </section>
+    </div>
+    <div id="choiceLayer" class="choice-layer" aria-hidden="true"><section class="choice-card" role="dialog" aria-modal="true"><span class="choice-icon">⇄</span><h2>Alakulat összevonása?</h2><p id="choiceText">A két saját őrség egy közös alakulattá válik.</p><div><button data-merge-choice="no">NEM</button><button class="confirm" data-merge-choice="yes">IGEN, VOND ÖSSZE</button></div></section></div>
+    <div id="victoryLayer" class="victory-layer" aria-hidden="true"><section><small>BOLYGÓ BIZTOSÍTVA</small><h2>VICTORY</h2><p>Az ellenség feladta Terra-Prime-ot.</p></section></div>
+    <div id="toast" class="toast" aria-live="polite"></div>
+  </main>
+  <script src="vz-game-v14.js?v=31"></script>
+  <script src="vz-ai-v15.js?v=31"></script>
+  <script src="vz-modes-v16.js?v=28"></script>
+  <script src="vz-v18-patch.js?v=25"></script>
+</body>
+</html>

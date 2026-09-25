@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 112" role="img" aria-label="Semleges civil szállító">
+ <defs><linearGradient id="h" x2="0" y2="1"><stop stop-color="#a9bfbd"/><stop offset="1" stop-color="#526c6d"/></linearGradient></defs>
+ <path d="M20 54 32 40 79 32 122 39 141 57 138 78 23 80Z" fill="url(#h)" stroke="#d9e7d6" stroke-width="3"/>
+ <path d="M40 45 78 38 107 42 115 55 37 57Z" fill="#214c56" stroke="#93dece" stroke-width="2"/>
+ <path d="M28 68h106M43 58v14m66-16v16" stroke="#b6d5c0" stroke-width="3"/>
+ <path d="M42 77h24l5 10-5 10H39l-6-10ZM101 77h24l6 10-6 10H97l-5-10Z" fill="#2b3b42" stroke="#b3cbbf" stroke-width="3"/>
+ <circle cx="52" cy="87" r="6" fill="#6d9e9c"/><circle cx="112" cy="87" r="6" fill="#6d9e9c"/>
+ <path d="M69 64h25" stroke="#d4f4c0" stroke-width="4"/>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 108" role="img" aria-label="Semleges kolónia szállító">
+  <defs>
+    <linearGradient id="body" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e0c77d"/><stop offset=".42" stop-color="#63757a"/><stop offset="1" stop-color="#192b34"/></linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#b8f0e0"/><stop offset="1" stop-color="#226176"/></linearGradient>
+  </defs>
+  <path d="M12 66 25 50 52 44 67 27 112 24 143 39 163 58 169 73 157 85 25 85Z" fill="url(#body)" stroke="#eadb9f" stroke-width="3"/>
+  <path d="M66 33 109 29 137 43 142 56 49 56Z" fill="url(#glass)" stroke="#dbfff0" stroke-width="2"/>
+  <path d="M84 30 81 56M108 30l13 26" stroke="#edf4d5" stroke-width="2"/>
+  <path d="M27 63h132M35 73h116M53 57v25M136 57v25" fill="none" stroke="#cbd9bf" stroke-width="2"/>
+  <path d="M37 78h33l8 12-9 13H31l-8-13ZM121 78h33l9 12-9 13h-38l-7-13Z" fill="#1a2d36" stroke="#d3ddc1" stroke-width="3"/>
+  <circle cx="50" cy="90" r="8" fill="#5b8f8c" stroke="#ddedcf" stroke-width="2"/><circle cx="139" cy="90" r="8" fill="#5b8f8c" stroke="#ddedcf" stroke-width="2"/>
+  <path d="M81 66h25l5 9-5 9H81l-5-9Z" fill="#123946" stroke="#93efd5" stroke-width="2"/>
+  <path d="M91 69v12m-6-6h12" stroke="#e1ffca" stroke-width="3"/>
+  <path d="M18 58h14M155 58h10" stroke="#f1c85c" stroke-width="4"/>
+</svg>
