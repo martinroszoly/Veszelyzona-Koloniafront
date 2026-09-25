@@ -1444,3 +1444,47 @@ body{background:#020711;color:#eef7ff;background-image:radial-gradient(ellipse a
  #battleView .territory-token.selected .sector-guard{width:68px!important;height:57px!important;transform:translateX(-50%)!important}
  #battleView .territory-token.selected .sector-guard img{width:74px!important;height:62px!important}
 }
+
+
+/* V42 — létszám fixen a látható sprite ALATT + maximálisan tiszta böngészős render. */
+#battleView .territory-token .sector-guard{
+  width:72px!important;height:60px!important;
+  transform:translateX(-50%)!important;
+  overflow:visible!important;
+}
+#battleView .territory-token .sector-guard img{
+  position:absolute!important;left:50%!important;top:0!important;
+  width:72px!important;height:60px!important;
+  transform:translateX(-50%)!important;
+  object-fit:contain!important;
+  image-rendering:auto!important;
+  filter:drop-shadow(0 2px 2px rgba(0,0,0,.72))!important;
+}
+/* FONTOS: nem a guard régi koordinátájához, hanem a 60px magas sprite aljához igazítjuk. */
+#battleView .territory-token .sector-guard b,
+#battleView .territory-token:not(.neutral) .sector-guard b{
+  position:absolute!important;
+  left:50%!important;right:auto!important;
+  top:64px!important;bottom:auto!important;
+  transform:translateX(-50%)!important;
+  z-index:20!important;
+  min-width:40px!important;height:auto!important;
+  padding:3px 7px!important;margin:0!important;
+  text-align:center!important;white-space:nowrap!important;
+  font-size:8px!important;line-height:10px!important;
+  background:rgba(2,10,16,.94)!important;
+  border:1px solid currentColor!important;border-radius:999px!important;
+  box-shadow:0 2px 5px rgba(0,0,0,.7)!important;
+  pointer-events:none!important;
+}
+#battleView .territory-token.selected .sector-guard{width:78px!important;height:65px!important;transform:translateX(-50%)!important}
+#battleView .territory-token.selected .sector-guard img{width:78px!important;height:65px!important}
+#battleView .territory-token.selected .sector-guard b{top:69px!important}
+@media(max-width:1100px){
+ #battleView .territory-token .sector-guard{width:68px!important;height:57px!important;transform:translateX(-50%)!important}
+ #battleView .territory-token .sector-guard img{width:68px!important;height:57px!important}
+ #battleView .territory-token .sector-guard b{top:61px!important}
+ #battleView .territory-token.selected .sector-guard{width:74px!important;height:62px!important;transform:translateX(-50%)!important}
+ #battleView .territory-token.selected .sector-guard img{width:74px!important;height:62px!important}
+ #battleView .territory-token.selected .sector-guard b{top:66px!important}
+}
