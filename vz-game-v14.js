@@ -1105,6 +1105,17 @@ function renderBattle(){
   const incomeNames={metal:'FÉM',energy:'ENERGIA',food:'ELLÁTMÁNY',oil:'OLAJ',tech:'TECHNOLÓGIA'};
   const incomePanel=document.querySelector('.resource-production');
   if(incomePanel)incomePanel.innerHTML=Object.keys(state.resources).map(key=>`<div><span>${incomeNames[key]}</span><b>${netIncome(key)>=0?'+':''}${netIncome(key)} / kör${key==='food'?` (fenntartás: −${upkeepFor(state.faction)})`:''}</b></div>`).join('');
+  /* V46: a zsoldosok továbbra sem kapnak nagy sprite-ot, de a körzetük halványszürke területfestést kap. */
+  if(state.territoryOverlayCtx&&state.territoryModel){
+    const ctx=state.territoryOverlayCtx,model=state.territoryModel;
+    ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
+    state.grid.forEach(sector=>{
+      if(sector.owner==='neutral'&&sector.unit?.side==='neutral'){
+        const region=model.regions?.find?.(r=>r.id===sector.regionId);
+        if(region?.pixels){ctx.fillStyle='rgba(185,192,198,.20)';for(const p of region.pixels)ctx.fillRect(p.x,p.y,1,1);}
+      }
+    });
+  }
   const markers=state.grid.map(sector=>{
     const active=state.selected===sector.id,showUnit=Boolean(sector.unit)&&sector.unit.side!=='neutral',showLabel=active||sector.isBase||sector.owner!=='neutral';
     if(!showUnit&&!showLabel&&!sector.productive)return '';
