@@ -1317,3 +1317,48 @@ body{background:#020711;color:#eef7ff;background-image:radial-gradient(ellipse a
  #battleView .territory-token .sector-guard,#battleView .territory-token:not(.selected) .sector-guard{transform:translateX(-50%) scale(.70)!important}
  #battleView .territory-token.selected .sector-guard{transform:translateX(-50%) scale(.78)!important}
 }
+
+
+/* V39 — projektoldali javítás: nincs duplázott háttér, nincs kockakeret. */
+/* A V38 duplázott háttérképe okozta fekete/eltolt effektfoltok megszüntetése. */
+#menuView .menu-hero{
+  background-image:url('assets/main-menu-ember-xenon.png')!important;
+  background-size:cover!important;
+  background-position:center!important;
+  background-repeat:no-repeat!important;
+}
+/* A képbe égetett régi menüt egyetlen, egységes HUD-panel fedi, nem foltonként. */
+#menuView .menu-hero::before{
+  display:block!important;content:""!important;position:absolute!important;z-index:18!important;
+  left:50%!important;top:58%!important;transform:translate(-50%,-50%)!important;
+  width:min(410px,87vw)!important;height:590px!important;
+  background:#06141f!important;border:1px solid rgba(72,197,241,.46)!important;
+  border-radius:12px!important;box-shadow:0 18px 55px rgba(0,0,0,.55)!important;
+  pointer-events:none!important;
+}
+#menuView .menu-grid{z-index:20!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}
+/* Nem kijelölt token: minden kártya/keret/árnyék teljes tiltása. */
+#battleView .territory-token:not(.selected),
+#battleView .territory-token:not(.selected):hover,
+#battleView .territory-token:not(.selected):focus-visible,
+#battleView .territory-token:not(.selected) .sector-guard,
+#battleView .territory-token:not(.selected) .sector-guard:hover{
+  background:transparent!important;background-image:none!important;border:0!important;
+  outline:0!important;box-shadow:none!important;clip-path:none!important;
+}
+#battleView .territory-token:not(.selected)::before,
+#battleView .territory-token:not(.selected)::after,
+#battleView .territory-token:not(.selected) .sector-guard::before,
+#battleView .territory-token:not(.selected) .sector-guard::after{display:none!important;content:none!important}
+/* Finoman nagyobb egységek. */
+#battleView .territory-token .sector-guard{transform:translateX(-50%) scale(.79)!important;transform-origin:center center!important}
+#battleView .territory-token.selected .sector-guard{transform:translateX(-50%) scale(.87)!important}
+#battleView .territory-token .sector-guard img{
+ background:transparent!important;border:0!important;outline:0!important;box-shadow:none!important;
+ image-rendering:auto!important;object-fit:contain!important;
+ filter:drop-shadow(0 3px 3px rgba(0,0,0,.82)) contrast(1.18) saturate(1.08)!important;
+}
+@media(max-width:1100px){
+ #battleView .territory-token .sector-guard{transform:translateX(-50%) scale(.73)!important}
+ #battleView .territory-token.selected .sector-guard{transform:translateX(-50%) scale(.81)!important}
+}
