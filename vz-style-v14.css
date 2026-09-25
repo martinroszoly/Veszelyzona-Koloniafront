@@ -1590,3 +1590,20 @@ body{background:#020711;color:#eef7ff;background-image:radial-gradient(ellipse a
   max-width:21px!important;max-height:18px!important;
 }
 #battleView .territory-token:not(.neutral)>.sector-guard>b{top:23px!important}
+
+
+/* V57 — a sprite vizuális méretét skálázzuk, a számlálót külön megtartjuk. */
+#battleView .territory-token:not(.neutral)>.sector-guard{
+  width:42px!important;height:36px!important;min-width:0!important;min-height:0!important;
+  overflow:visible!important;
+}
+#battleView .territory-token:not(.neutral)>.sector-guard>img{
+  width:42px!important;height:36px!important;min-width:0!important;min-height:0!important;
+  max-width:42px!important;max-height:36px!important;
+  object-fit:contain!important;
+}
+#battleView .territory-token:not(.neutral)>.sector-guard>b{
+  display:block!important;visibility:visible!important;opacity:1!important;
+  top:40px!important;left:50%!important;transform:translateX(-50%)!important;
+  min-width:34px!important;font-size:8px!important;line-height:1!important;
+}
