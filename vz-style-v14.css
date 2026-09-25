@@ -1566,3 +1566,10 @@ body{background:#020711;color:#eef7ff;background-image:radial-gradient(ellipse a
 #battleView .territory-token.neutral.selected .sector-guard{display:block!important;width:66px!important;height:56px!important;transform:translateX(-50%)!important}
 #battleView .territory-token.neutral.selected .sector-guard img{width:66px!important;height:56px!important;left:50%!important;top:0!important;transform:translateX(-50%)!important}
 #battleView .territory-token.neutral.selected .sector-guard b{top:60px!important}
+
+
+/* V49 — végső elsőbbség a tényleges térképi markerekhez. */
+#battleView .territory-token:not(.neutral)>.sector-guard{min-width:118px!important;min-height:98px!important}
+#battleView .territory-token:not(.neutral)>.sector-guard>img{min-width:118px!important;min-height:98px!important}
+#battleView .territory-token.neutral.selected>.sector-guard{display:block!important;visibility:visible!important;opacity:1!important;z-index:40!important}
+#battleView .territory-token.neutral.selected>.sector-guard>img{display:block!important;visibility:visible!important;opacity:1!important}
