@@ -1143,3 +1143,20 @@ body{background:#020711;color:#eef7ff;background-image:radial-gradient(ellipse a
   #battleView .territory-token .sector-guard{transform:translateX(-50%) scale(.52)!important}
   #battleView .territory-token.selected .sector-guard{transform:translateX(-50%) scale(.60)!important}
 }
+
+
+/* V34 — a gyártás/kolóniaközpont ablak bezáró gombja mindig látható és kattintható. */
+#modalLayer .command-modal{position:relative!important;overflow:auto!important}
+#modalLayer .modal-header{
+  position:sticky!important;top:0!important;z-index:200!important;
+}
+#modalLayer .modal-close{
+  position:sticky!important;top:0!important;right:0!important;z-index:220!important;
+  display:grid!important;place-items:center!important;flex:0 0 40px!important;
+  width:40px!important;height:40px!important;min-width:40px!important;
+  cursor:pointer!important;pointer-events:auto!important;
+  border:1px solid rgba(116,215,255,.78)!important;
+  background:#071a2b!important;color:#e9fbff!important;
+  font-size:29px!important;line-height:1!important;
+}
+#modalLayer .modal-close:hover{background:#12344c!important;border-color:#69e7ff!important}
