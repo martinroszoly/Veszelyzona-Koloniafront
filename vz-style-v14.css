@@ -1232,3 +1232,35 @@ body{background:#020711;color:#eef7ff;background-image:radial-gradient(ellipse a
  #battleView .territory-token .sector-guard{transform:translateX(-50%) scale(.63)!important}
  #battleView .territory-token.selected .sector-guard{transform:translateX(-50%) scale(.71)!important}
 }
+
+
+/* V37 — térképi egységek finomhangolása + főmenü tisztítás. */
+#battleView .territory-token:not(.selected){
+  background:transparent!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+  outline:0!important;
+}
+#battleView .territory-token:not(.selected)::before,
+#battleView .territory-token:not(.selected)::after{display:none!important;content:none!important}
+#battleView .territory-token .sector-guard{
+  transform:translateX(-50%) scale(.73)!important;
+  transform-origin:center center!important;
+}
+#battleView .territory-token.selected .sector-guard{transform:translateX(-50%) scale(.81)!important}
+@media(max-width:1100px){
+ #battleView .territory-token .sector-guard{transform:translateX(-50%) scale(.67)!important}
+ #battleView .territory-token.selected .sector-guard{transform:translateX(-50%) scale(.75)!important}
+}
+/* A menüháttérből eltávolítjuk a korábbi fekete takarófoltot; csak a valódi menükártyák maradnak. */
+#menuView .menu-hero::before,#menuView .menu-hero::after{
+  display:none!important;content:none!important;background:none!important;box-shadow:none!important;
+}
+#menuView .menu-grid{
+  z-index:20!important;
+  background:rgba(3,14,23,.92)!important;
+  border:1px solid rgba(67,194,255,.46)!important;
+  border-radius:10px!important;
+  padding:18px!important;
+  box-shadow:0 18px 55px rgba(0,0,0,.52)!important;
+}
