@@ -1569,21 +1569,32 @@ body{background:#020711;color:#eef7ff;background-image:radial-gradient(ellipse a
 
 
 
-/* V61 — egyetlen végleges térképi egységméret-szabály. */
-#battleView .territory-token>.sector-guard{
- width:var(--unit-w)!important;height:var(--unit-h)!important;min-width:0!important;min-height:0!important;
- transform:translateX(-50%)!important;overflow:visible!important;z-index:30!important;
+
+/* V62 — egységoldal alapján méretezünk, nem a terület tulajdonosa alapján. */
+#battleView .sector-guard.unit-side-ember,
+#battleView .sector-guard.unit-side-xenon{
+ width:96px!important;height:82px!important;min-width:0!important;min-height:0!important;
+ transform:translateX(-50%)!important;overflow:visible!important;z-index:50!important;
 }
-#battleView .territory-token>.sector-guard>img{
+#battleView .sector-guard.unit-side-ember>img,
+#battleView .sector-guard.unit-side-xenon>img{
  display:block!important;visibility:visible!important;opacity:1!important;
- width:var(--unit-w)!important;height:var(--unit-h)!important;min-width:0!important;min-height:0!important;
- max-width:var(--unit-w)!important;max-height:var(--unit-h)!important;object-fit:contain!important;
- position:absolute!important;left:50%!important;top:0!important;transform:translateX(-50%)!important;z-index:31!important;
+ width:96px!important;height:82px!important;min-width:0!important;min-height:0!important;
+ max-width:96px!important;max-height:82px!important;object-fit:contain!important;
+ position:absolute!important;left:50%!important;top:0!important;transform:translateX(-50%)!important;z-index:51!important;
 }
-#battleView .territory-token>.sector-guard>b{
+#battleView .sector-guard.unit-side-ember>b,
+#battleView .sector-guard.unit-side-xenon>b{
  display:block!important;visibility:visible!important;opacity:1!important;position:absolute!important;
- top:var(--count-y)!important;left:50%!important;right:auto!important;bottom:auto!important;transform:translateX(-50%)!important;
- min-width:34px!important;padding:3px 6px!important;font-size:8px!important;line-height:1!important;white-space:nowrap!important;z-index:32!important;
+ top:86px!important;left:50%!important;right:auto!important;bottom:auto!important;transform:translateX(-50%)!important;
+ min-width:36px!important;padding:3px 6px!important;font-size:8px!important;line-height:1!important;white-space:nowrap!important;z-index:52!important;
 }
-#battleView .territory-token.neutral:not(.selected)>.sector-guard{display:none!important}
-#battleView .territory-token.neutral.selected>.sector-guard{display:block!important}
+#battleView .territory-token .sector-guard.unit-side-neutral{display:none!important}
+#battleView .territory-token.selected .sector-guard.unit-side-neutral{
+ display:block!important;width:68px!important;height:58px!important;min-width:0!important;min-height:0!important;overflow:visible!important;z-index:50!important;
+}
+#battleView .territory-token.selected .sector-guard.unit-side-neutral>img{
+ display:block!important;visibility:visible!important;opacity:1!important;width:68px!important;height:58px!important;max-width:68px!important;max-height:58px!important;
+ position:absolute!important;left:50%!important;top:0!important;transform:translateX(-50%)!important;object-fit:contain!important;
+}
+#battleView .territory-token.selected .sector-guard.unit-side-neutral>b{display:block!important;visibility:visible!important;top:63px!important}
