@@ -1619,3 +1619,14 @@ body{background:#020711;color:#eef7ff;background-image:radial-gradient(ellipse a
 #battleView .sector-guard.unit-side-ember .unit-art,#battleView .sector-guard.unit-side-xenon .unit-art{width:30px!important;height:26px!important;min-width:30px!important;min-height:26px!important;max-width:30px!important;max-height:26px!important}
 #battleView .sector-guard.unit-side-ember,#battleView .sector-guard.unit-side-xenon{width:30px!important;height:26px!important;min-width:0!important;min-height:0!important;overflow:visible!important}
 #battleView .sector-guard.unit-side-ember>b,#battleView .sector-guard.unit-side-xenon>b{top:30px!important}
+
+/* V73 — a grandfront háttérképbe égetett óriás egységrajzok vizuális takarása; a valódi 30x26 marker marad fölöttük. */
+#battleView .territory-token.base-sector::before{
+ content:""!important;display:block!important;position:absolute!important;left:50%!important;top:50%!important;
+ width:92px!important;height:76px!important;transform:translate(-50%,-50%)!important;border-radius:48%!important;
+ backdrop-filter:blur(12px) saturate(.75)!important;-webkit-backdrop-filter:blur(12px) saturate(.75)!important;
+ background:rgba(12,28,34,.42)!important;border:0!important;box-shadow:none!important;z-index:70!important;pointer-events:none!important;
+}
+#battleView .territory-token.base-sector.human::before{background:rgba(19,91,145,.34)!important}
+#battleView .territory-token.base-sector.alien::before{background:rgba(106,31,73,.34)!important}
+#battleView .territory-token.base-sector .map-unit-marker{z-index:999!important}
