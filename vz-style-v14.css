@@ -1579,3 +1579,14 @@ body{background:#020711;color:#eef7ff;background-image:radial-gradient(ellipse a
 #battleView .territory-token>.sector-guard{z-index:30!important;overflow:visible!important}
 #battleView .territory-token>.sector-guard>img{z-index:31!important;visibility:visible!important;opacity:1!important}
 #battleView .territory-token>.sector-guard>b{z-index:32!important}
+
+
+/* V56 — felülírjuk a V49-ből bent maradt 118px MINIMUMOT. */
+#battleView .territory-token:not(.neutral)>.sector-guard{
+  width:21px!important;height:18px!important;min-width:0!important;min-height:0!important;
+}
+#battleView .territory-token:not(.neutral)>.sector-guard>img{
+  width:21px!important;height:18px!important;min-width:0!important;min-height:0!important;
+  max-width:21px!important;max-height:18px!important;
+}
+#battleView .territory-token:not(.neutral)>.sector-guard>b{top:23px!important}
