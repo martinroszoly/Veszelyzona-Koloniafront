@@ -1547,3 +1547,22 @@ body{background:#020711;color:#eef7ff;background-image:radial-gradient(ellipse a
 #battleView .territory-token.neutral .sector-guard{width:62px!important;height:52px!important}
 #battleView .territory-token.neutral .sector-guard img{width:62px!important;height:52px!important}
 #battleView .territory-token.neutral .sector-guard b{top:56px!important}
+
+
+/* V48 — a két kért javítás: nagyobb frakcióikonok + zsoldos csak kijelölt mezőn. */
+#battleView .territory-token:not(.neutral) .sector-guard{
+ width:102px!important;height:86px!important;transform:translateX(-50%)!important;
+}
+#battleView .territory-token:not(.neutral) .sector-guard img{
+ width:102px!important;height:86px!important;max-width:none!important;max-height:none!important;
+ transform:translateX(-50%)!important;left:50%!important;top:0!important;
+}
+#battleView .territory-token:not(.neutral).selected .sector-guard{width:110px!important;height:92px!important}
+#battleView .territory-token:not(.neutral).selected .sector-guard img{width:110px!important;height:92px!important}
+#battleView .territory-token:not(.neutral) .sector-guard b{top:90px!important}
+#battleView .territory-token:not(.neutral).selected .sector-guard b{top:96px!important}
+/* Zsoldos: kizárólag a kijelölt semleges mezőn jelenik meg. */
+#battleView .territory-token.neutral:not(.selected) .sector-guard{display:none!important}
+#battleView .territory-token.neutral.selected .sector-guard{display:block!important;width:66px!important;height:56px!important;transform:translateX(-50%)!important}
+#battleView .territory-token.neutral.selected .sector-guard img{width:66px!important;height:56px!important;left:50%!important;top:0!important;transform:translateX(-50%)!important}
+#battleView .territory-token.neutral.selected .sector-guard b{top:60px!important}
