@@ -1598,3 +1598,9 @@ body{background:#020711;color:#eef7ff;background-image:radial-gradient(ellipse a
  position:absolute!important;left:50%!important;top:0!important;transform:translateX(-50%)!important;object-fit:contain!important;
 }
 #battleView .territory-token.selected .sector-guard.unit-side-neutral>b{display:block!important;visibility:visible!important;top:63px!important}
+
+/* V65 */
+#battleView .unit-art{display:block!important;position:absolute!important;left:50%!important;top:0!important;background-size:contain!important;background-repeat:no-repeat!important;background-position:center!important;visibility:visible!important;opacity:1!important;pointer-events:none!important}
+#battleView .unit-side-ember .unit-art,#battleView .unit-side-xenon .unit-art{width:126px!important;height:108px!important;transform:translateX(-50%)!important;z-index:80!important}
+#battleView .unit-side-ember,#battleView .unit-side-xenon{width:126px!important;height:108px!important;overflow:visible!important}
+#battleView .unit-side-ember>b,#battleView .unit-side-xenon>b{top:112px!important;z-index:81!important}
