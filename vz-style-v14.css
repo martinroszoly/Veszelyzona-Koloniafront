@@ -1534,3 +1534,16 @@ body{background:#020711;color:#eef7ff;background-image:radial-gradient(ellipse a
 #battleView .territory-token.selected .sector-guard img{width:82px!important;height:69px!important}
 #battleView .territory-token .sector-guard b{top:68px!important}
 #battleView .territory-token.selected .sector-guard b{top:73px!important}
+
+
+/* V47 — látható méretnövelés: frakcióegységek kb. +18%, zsoldos csak kijelöléskor. */
+#battleView .territory-token .sector-guard{width:90px!important;height:76px!important}
+#battleView .territory-token .sector-guard img{width:90px!important;height:76px!important}
+#battleView .territory-token.selected .sector-guard{width:98px!important;height:82px!important}
+#battleView .territory-token.selected .sector-guard img{width:98px!important;height:82px!important}
+#battleView .territory-token .sector-guard b{top:80px!important}
+#battleView .territory-token.selected .sector-guard b{top:86px!important}
+/* A semleges egység kijelölve kisebb marad, hogy ne takarja el a mezőt. */
+#battleView .territory-token.neutral .sector-guard{width:62px!important;height:52px!important}
+#battleView .territory-token.neutral .sector-guard img{width:62px!important;height:52px!important}
+#battleView .territory-token.neutral .sector-guard b{top:56px!important}
