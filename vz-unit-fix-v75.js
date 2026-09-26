@@ -431,3 +431,41 @@
   requestAnimationFrame(anchorUnitsToTerritoriesV90);
   window.addEventListener('resize',()=>requestAnimationFrame(anchorUnitsToTerritoriesV90),{passive:true});
 })();
+
+
+/* V91 — visual foot anchor correction.
+   The territory token is already centered on its field; place the miniature's FEET on that center.
+   Do not translate the zero-size root vertically, which previously shifted the whole model off-field. */
+(function(){
+  const style=document.createElement('style');
+  style.textContent=\`
+    #battleView #sectorMap>.field-unit-v88{
+      transform:translateX(-50%)!important;
+    }
+    #battleView #sectorMap>.field-unit-v88 .field-unit-art-v88{
+      left:0!important;bottom:0!important;
+      transform:translateX(-50%)!important;
+    }
+    #battleView #sectorMap>.field-unit-v88 .field-unit-count-v88{
+      left:0!important;top:3px!important;transform:translateX(-50%)!important;
+    }
+  \`;
+  document.head.appendChild(style);
+
+  function snapV91(){
+    const map=document.querySelector('#sectorMap');
+    if(!map)return;
+    const mr=map.getBoundingClientRect();
+    map.querySelectorAll(':scope>.field-unit-v88[data-sector]').forEach(unit=>{
+      const token=map.querySelector('.territory-token[data-sector="'+CSS.escape(unit.dataset.sector)+'"]');
+      if(!token)return;
+      const tr=token.getBoundingClientRect();
+      unit.style.setProperty('left',(tr.left+tr.width/2-mr.left)+'px','important');
+      unit.style.setProperty('top',(tr.top+tr.height/2-mr.top)+'px','important');
+      unit.style.setProperty('transform','translateX(-50%)','important');
+    });
+  }
+  const beforeV91=renderBattle;
+  renderBattle=function(){beforeV91();requestAnimationFrame(()=>requestAnimationFrame(snapV91));};
+  requestAnimationFrame(()=>requestAnimationFrame(snapV91));
+})();
