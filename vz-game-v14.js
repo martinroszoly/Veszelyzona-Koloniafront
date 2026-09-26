@@ -3,7 +3,7 @@ const maps=[
   {id:'snow',name:'Terra-Prime // Jégfront',image:'assets/battlemap-snow-v31.png',text:'Nagyfelbontású hideg hadszíntér, azonos stratégiai rendszerrel.',stats:['3584×1800 HQ','HIDEG FRONT','KÉT FŐVÁROS']},
   {id:'grandfront',name:'Terra-Prime // Teljes kontinensfront',image:'assets/battlemap-grandfront-v28.png',text:'A legnagyobb hadszíntér, teljes 2v2 támogatással és négy frakciós fronttal.',stats:['3584×1800 HQ','TELJES KONTINENS','1v1 · 2v1 · 1v2 · 2v2']}
 ];
-const difficulties={practice:{name:'Gyakorló',text:'Termel és védi a fővárost, ritkán kezdeményez.',tempo:0,army:.5},easy:{name:'Easy',text:'Egy lassú frontot épít, kis csapatokkal támad.',tempo:1,army:.64},medium:{name:'Medium',text:'Több irányban terjeszkedik és a nyersanyagmezőkre tör.',tempo:2,army:.82},hard:{name:'Hard',text:'Összehangolt frontvonal, járművek és több támadási irány.',tempo:3,army:1}};
+const difficulties={practice:{name:'Gyakorló',text:'Termel és védi a fővárost, ritkán kezdeményez.',tempo:0,army:.5},easy:{name:'Easy',text:'Egy lassú frontot épít, kis csapatokkal támad.',tempo:1,army:.64},medium:{name:'Medium',text:'Több irányban terjeszkedik és a nyersanyagmezőkre tör.',tempo:2,army:.82},hard:{name:'Hard',text:'Agresszív front, erős csapásmérők, koncentrált támadások és gyors területfoglalás.',tempo:6,army:1.35}};
 const worldBlueprint=[
  ['Terra-Prime főváros',4,47,'energy','human'],['Kikötői öv',11,17,'food'],['Smaragd-gerinc',20,10,'tech'],['Északi fennsík',31,12,'energy'],['Jégperem',42,10,'food'],['Fagyott gerinc',54,11,'tech'],['Korona-hágó',65,10,'metal'],['Északi kapu',77,13,'energy'],['Xeno főváros',96,47,'tech','alien'],
  ['Nyugati őrtorony',10,31,'metal'],['Mirázs-gúnéc',20,28,'metal'],['Aster-síkság',31,28,'oil'],['Kobalt-öböl',42,27,'oil'],['Peremvidék',53,28,'food'],['Kőhát',64,28,'energy'],['Üresség-mező',75,28,'energy'],['Keleti erőd',87,31,'metal'],
@@ -116,7 +116,7 @@ function applyCasualties(unit,loss){
   unit.composition=composition;unit.count=Object.values(composition).reduce((sum,count)=>sum+count,0);
   return removed;
 }
-const unitWeights={infantry:1,alien:1,mercenary:1,mercenaryCarrier:45,apc:85,hover:85,tank:155,alienTank:155,heli:115,alienAir:115,strike:140,alienStrike:140};
+const unitWeights={infantry:1,alien:1,mercenary:1,mercenaryCarrier:45,apc:85,hover:85,tank:155,alienTank:155,heli:115,alienAir:115,strike:320,alienStrike:320};
 function unitWeight(type){return unitWeights[type]||1}
 function unitStrength(unit){return Object.entries(unit?.composition||{[unit?.type]:unit?.count||0}).reduce((sum,[type,count])=>sum+count*unitWeight(type),0)}
 function resolveConflict(from,target){
