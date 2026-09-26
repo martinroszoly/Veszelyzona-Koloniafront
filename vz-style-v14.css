@@ -1684,3 +1684,44 @@ body{background:#020711;color:#eef7ff;background-image:radial-gradient(ellipse a
     margin:-21px 0 0 -21px!important;
   }
 }
+
+
+/* V83 — landscape phone modal scrolling + consistent selected field presentation */
+@media(max-width:900px){
+  html:has(#modalLayer.open),body:has(#modalLayer.open){overflow:auto!important}
+  #modalLayer.modal-layer.open{
+    display:block!important;position:fixed!important;inset:0!important;padding:0!important;
+    overflow-x:hidden!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;
+    overscroll-behavior:contain!important;touch-action:pan-y!important;
+  }
+  #modalLayer .command-modal{
+    display:block!important;position:relative!important;width:100%!important;height:auto!important;
+    min-height:100dvh!important;max-height:none!important;overflow:visible!important;margin:0!important;
+  }
+  #modalLayer .modal-header{position:sticky!important;top:0!important;z-index:100002!important}
+  #modalLayer .modal-content{
+    display:grid!important;height:auto!important;min-height:240px!important;max-height:none!important;
+    overflow:visible!important;padding-bottom:48px!important;touch-action:pan-y!important;
+  }
+}
+@media(max-width:900px) and (orientation:landscape){
+  #modalLayer .modal-header{min-height:54px!important;padding:8px 64px 8px 14px!important}
+  #modalLayer .modal-header small{font-size:8px!important}
+  #modalLayer .modal-header h2{font-size:20px!important;line-height:1.05!important;margin:2px 0 0!important}
+  #modalLayer .modal-close{top:7px!important;right:10px!important;width:40px!important;height:40px!important;min-width:40px!important;font-size:27px!important}
+  #modalLayer .modal-tabs{position:relative!important;display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:4px!important;padding:6px 8px!important}
+  #modalLayer .modal-tabs button{padding:8px 4px!important;font-size:9px!important}
+  #modalLayer .modal-content{padding:8px 10px 42px!important}
+}
+/* Selected map fields: keep the field itself readable and stop labels/units from covering neighboring fields. */
+#battleView .territory-token.selected{z-index:30!important}
+#battleView .territory-token.selected .sector-label{
+  max-width:112px!important;font-size:9px!important;line-height:1.05!important;
+}
+@media(max-width:900px){
+  #battleView .territory-token.selected .sector-label{
+    max-width:82px!important;padding:2px 4px!important;
+  }
+  #battleView .territory-token.selected .sector-label strong{font-size:7px!important}
+  #battleView .territory-token.selected .sector-label small{font-size:5px!important}
+}
