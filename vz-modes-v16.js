@@ -401,7 +401,7 @@
 /* V101 — 3v3 Szigetfront prototype: single selectable map, six spawn colours,
    race/position independent, capital-only ownership at start, mouse-centred zoom. */
 (function(){
-  const id='archipelago3v3';
+  const id='grandfront';
   const oldGrand=maps.find(x=>x.id==='grandfront');
   const islandMap={
     id,name:'Terra-Prime // Hat Sziget 3v3',
@@ -462,14 +462,11 @@
 
   const oldCreate=createGrid;
   createGrid=function(){state._v101configured=false;oldCreate()};
-  const oldInstall=installTerritoryHitLayer;
-  installTerritoryHitLayer=function(){
-    /* The new map deliberately uses the same dense grandfront field mesh for now. */
-    if(state.map===id){
-      const saved=state.map;state.map='grandfront';const out=oldInstall();state.map=saved;
-      setTimeout(()=>{configure3v3();renderBattle()},0);return out;
-    }
-    return oldInstall();
+  /* Configure as soon as the image-derived field mesh exists. */
+  const v101Render=renderBattle;
+  renderBattle=function(){
+    if(state.map===id&&state.visualTerritoryGridReady&&!state._v101configured)configure3v3();
+    v101Render();
   };
 
   const oldStart=startBattle;
