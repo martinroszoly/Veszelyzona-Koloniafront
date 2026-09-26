@@ -396,3 +396,97 @@
     }
   };
 })();
+
+
+/* V101 — 3v3 Szigetfront prototype: single selectable map, six spawn colours,
+   race/position independent, capital-only ownership at start, mouse-centred zoom. */
+(function(){
+  const id='archipelago3v3';
+  const oldGrand=maps.find(x=>x.id==='grandfront');
+  const islandMap={
+    id,name:'Terra-Prime // Hat Sziget 3v3',
+    image:oldGrand?.image||'assets/battlemap-grandfront-v28.png',
+    text:'Hat kezdőzóna, három-három oldal, nagy semleges központi front. A pozíció színe és a faj külön választható.',
+    stats:['3v3','6 KEZDŐVÁROS','NAGY KÖZPONTI FRONT']
+  };
+  maps.splice(0,maps.length,islandMap);
+  state.map=id;
+  state.battleMode='3v3';
+  state.spawnColor=state.spawnColor||'blue';
+
+  const positions=[
+    ['blue','KÉK','human',7,18],['green','ZÖLD','human',7,50],['yellow','SÁRGA','human',7,82],
+    ['purple','LILA','alien',93,18],['red','PIROS','alien',93,50],['pink','RÓZSASZÍN','alien',93,82]
+  ];
+  const colorHex={blue:'#32bfff',green:'#45d17a',yellow:'#ffd34f',purple:'#a56cff',red:'#ff4f58',pink:'#ff68c9'};
+
+  function renderPositions(){
+    const box=document.querySelector('#positionChoices');if(!box)return;
+    box.innerHTML=positions.map(([key,label])=>'<button type="button" class="position-choice '+(state.spawnColor===key?'selected':'')+'" data-spawn-color="'+key+'" style="--spawn:'+colorHex[key]+'"><i></i><b>'+label+'</b></button>').join('');
+  }
+  const oldMaps=renderMaps;
+  renderMaps=function(){oldMaps();renderPositions()};
+  document.addEventListener('click',e=>{
+    const b=e.target.closest('[data-spawn-color]');if(!b)return;
+    state.spawnColor=b.dataset.spawnColor;renderPositions();
+  });
+
+  /* Grandfront renderer/model is reused for the playable field mesh in this first
+     integrated version; six starts are placed on that mesh. */
+  function closest(x,y,used){
+    return state.grid.filter(g=>!used.has(g.id)).sort((a,b)=>Math.hypot(a.x-x,a.y-y)-Math.hypot(b.x-x,b.y-y))[0];
+  }
+  function configure3v3(){
+    if(state.map!==id||!state.grid?.length||state._v101configured)return;
+    state._v101configured=true;
+    const used=new Set();
+    state.grid.forEach(g=>{g.owner='neutral';g.controlSide=null;g.isBase=false;
+      /* Villages get rebels; mines/oil/power get a stronger mixed rebel guard. */
+      if(g.resource==='metal'||g.resource==='oil'||g.resource==='energy'){
+        const u=unitFor('neutral',Math.floor(g.x+g.y),'mercenary');
+        u.count=260;u.composition={mercenary:260,mercenaryCarrier:3};g.unit=u;
+      }else{
+        const u=unitFor('neutral',Math.floor(g.x+g.y),'mercenary');u.count=g.resource==='food'?150:110;g.unit=u;
+      }
+    });
+    positions.forEach(([key,label,defaultRace,x,y],i)=>{
+      const g=closest(x,y,used);if(!g)return;used.add(g.id);
+      const race=key===state.spawnColor?state.faction:defaultRace;
+      const player=key===state.spawnColor;
+      g.owner=race;g.controlSide=key;g.isBase=true;g.name=label+' főváros';
+      g.unit=unitFor(race,200+i,race==='human'?'infantry':'alien');g.unit.side=player?state.faction:key;
+      g.unit.count=1000;g.unit.composition={[g.unit.type]:1000};
+      g.spawnColor=key;
+    });
+  }
+
+  const oldCreate=createGrid;
+  createGrid=function(){state._v101configured=false;oldCreate()};
+  const oldInstall=installTerritoryHitLayer;
+  installTerritoryHitLayer=function(){
+    /* The new map deliberately uses the same dense grandfront field mesh for now. */
+    if(state.map===id){
+      const saved=state.map;state.map='grandfront';const out=oldInstall();state.map=saved;
+      setTimeout(()=>{configure3v3();renderBattle()},0);return out;
+    }
+    return oldInstall();
+  };
+
+  const oldStart=startBattle;
+  startBattle=function(){state.map=id;state.battleMode='3v3';oldStart()};
+
+  /* Cursor-centred wheel zoom. It zooms toward the exact point under the mouse. */
+  let zoom=1,ox=0,oy=0;
+  function applyZoom(){
+    const map=document.querySelector('#sectorMap');if(!map)return;
+    map.style.transformOrigin='0 0';map.style.transform='translate('+ox+'px,'+oy+'px) scale('+zoom+')';
+  }
+  document.addEventListener('wheel',e=>{
+    const map=e.target.closest?.('#sectorMap');if(!map||state.view!=='battleView')return;
+    e.preventDefault();
+    const r=map.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top;
+    const old=zoom,next=Math.max(1,Math.min(3.2,zoom*(e.deltaY<0?1.14:.88)));
+    if(next===old)return;
+    const ratio=next/old;ox=px-(px-ox)*ratio;oy=py-(py-oy)*ratio;zoom=next;applyZoom();
+  },{passive:false});
+})();
