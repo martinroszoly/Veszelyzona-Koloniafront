@@ -366,3 +366,62 @@
   renderBattle=function(){prev();anchorUnitsV86();};
   anchorUnitsV86();
 })();
+
+
+/* V87 — keep resource icons unchanged; anchor 3D/unit artwork by map coordinates,
+   not by the tiny territory button's layout box. */
+(function(){
+  const style=document.createElement('style');
+  style.textContent=\`
+    #battleView .territory-token[data-sector]>.map-unit-marker{
+      display:none!important;
+    }
+    #battleView #sectorMap>.v87-map-unit{
+      position:absolute!important;transform:translate(-50%,-82%)!important;
+      width:66px!important;height:60px!important;z-index:260!important;
+      pointer-events:none!important;overflow:visible!important;
+    }
+    #battleView #sectorMap>.v87-map-unit>span{
+      display:block!important;width:66px!important;height:60px!important;
+      background-position:center bottom!important;background-repeat:no-repeat!important;
+      background-size:contain!important;filter:drop-shadow(0 4px 3px rgba(0,0,0,.72))!important;
+    }
+    #battleView #sectorMap>.v87-map-unit>b{
+      position:absolute!important;left:50%!important;top:57px!important;transform:translateX(-50%)!important;
+      min-width:0!important;padding:2px 5px!important;border-radius:999px!important;
+      border:1px solid rgba(220,238,246,.45)!important;background:rgba(3,10,15,.94)!important;
+      color:#fff!important;font:900 7px/1 Inter,system-ui,sans-serif!important;white-space:nowrap!important;
+    }
+    @media(max-width:700px){
+      #battleView #sectorMap>.v87-map-unit{width:56px!important;height:51px!important}
+      #battleView #sectorMap>.v87-map-unit>span{width:56px!important;height:51px!important}
+      #battleView #sectorMap>.v87-map-unit>b{top:49px!important;font-size:6px!important}
+    }
+  \`;
+  document.head.appendChild(style);
+
+  function drawUnitsV87(){
+    const map=document.querySelector('#sectorMap');
+    if(!map||typeof state==='undefined')return;
+    map.querySelectorAll(':scope>.v87-map-unit').forEach(n=>n.remove());
+    state.grid.forEach(sector=>{
+      const unit=sector.unit;
+      if(!unit)return;
+      if(unit.side==='neutral'&&String(state.selected)!==String(sector.id))return;
+      const el=document.createElement('span');
+      el.className='v87-map-unit side-'+unit.side;
+      el.dataset.sector=sector.id;
+      el.style.left=sector.x+'%';
+      el.style.top=sector.y+'%';
+      const art=document.createElement('span');
+      art.style.backgroundImage="url('"+artFor(unit)+"')";
+      const count=document.createElement('b');
+      count.textContent=Number(unit.count||0).toLocaleString('hu-HU');
+      el.append(art,count);
+      map.appendChild(el);
+    });
+  }
+  const prev=renderBattle;
+  renderBattle=function(){prev();drawUnitsV87();};
+  drawUnitsV87();
+})();
