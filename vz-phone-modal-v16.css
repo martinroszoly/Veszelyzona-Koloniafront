@@ -214,3 +214,64 @@
     margin:7px 0 0!important;padding:6px!important;font-size:12px!important;
   }
 }
+
+
+/* V98 — compact landscape UI for actual phone screenshots */
+@media (orientation:landscape) and (max-height:900px){
+  /* Command sheet: reserve a fixed, scrollable content viewport below header/tabs. */
+  #modalLayer.modal-layer.open .command-modal{
+    grid-template-rows:56px 48px minmax(0,1fr)!important;
+  }
+  #modalLayer.modal-layer.open .modal-header{height:56px!important;min-height:56px!important}
+  #modalLayer.modal-layer.open .modal-tabs{
+    height:48px!important;padding:4px 8px!important;overflow:visible!important;
+  }
+  #modalLayer.modal-layer.open .modal-tabs button{height:40px!important;min-height:40px!important}
+  #modalLayer.modal-layer.open .modal-content{
+    position:relative!important;
+    height:calc(100dvh - 104px)!important;
+    max-height:calc(100dvh - 104px)!important;
+    min-height:0!important;
+    overflow-y:scroll!important;overflow-x:hidden!important;
+    touch-action:pan-y!important;
+    overscroll-behavior-y:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+    padding:8px 10px 60px!important;
+  }
+  #modalLayer.modal-layer.open .build-card{
+    min-height:50px!important;padding:5px 8px!important;margin:0 0 6px!important;
+  }
+
+  /* Troop split: intentionally small dialog, not a near-full-screen card. */
+  #moveShareLayer.choice-layer.open{
+    display:flex!important;align-items:center!important;justify-content:center!important;
+    padding:10px!important;
+  }
+  #moveShareLayer.choice-layer.open .choice-card{
+    width:min(680px,76vw)!important;
+    min-width:0!important;height:auto!important;min-height:0!important;
+    max-height:70dvh!important;
+    padding:9px 12px!important;margin:auto!important;
+    overflow:auto!important;
+  }
+  #moveShareLayer .choice-icon{
+    width:28px!important;height:28px!important;font-size:16px!important;margin:0 auto 2px!important;
+  }
+  #moveShareLayer .choice-card h2{
+    font-size:18px!important;line-height:1!important;margin:2px 0 4px!important;
+  }
+  #moveShareLayer .choice-card p{
+    font-size:11px!important;line-height:1.2!important;margin:2px auto 7px!important;
+    white-space:normal!important;
+  }
+  #moveShareLayer .move-share-options{
+    gap:5px!important;margin:4px 0!important;
+  }
+  #moveShareLayer .move-share-options button{
+    height:38px!important;min-height:38px!important;padding:3px!important;font-size:13px!important;
+  }
+  #moveShareLayer .move-cancel{
+    height:32px!important;min-height:32px!important;margin:5px 0 0!important;
+    padding:3px!important;font-size:10px!important;
+  }
+}
