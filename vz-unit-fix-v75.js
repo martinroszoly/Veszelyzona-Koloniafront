@@ -392,3 +392,42 @@
   renderBattle=function(){beforeV89();killLegacyUnitMarkersV89();};
   killLegacyUnitMarkersV89();
 })();
+
+
+/* V90 — anchor every visible unit to the actual clickable territory token.
+   This avoids using sector centroid coordinates, which can sit outside irregular fields. */
+(function(){
+  const style=document.createElement('style');
+  style.textContent=\`
+    #battleView #sectorMap>.field-unit-v88{
+      transform:translate(-50%,-50%)!important;
+    }
+    #battleView #sectorMap>.field-unit-v88 .field-unit-art-v88{
+      bottom:5px!important;
+    }
+    #battleView #sectorMap>.field-unit-v88 .field-unit-count-v88{
+      top:1px!important;
+    }
+  \`;
+  document.head.appendChild(style);
+
+  function anchorUnitsToTerritoriesV90(){
+    const map=document.querySelector('#sectorMap');
+    if(!map)return;
+    const mapRect=map.getBoundingClientRect();
+    map.querySelectorAll(':scope>.field-unit-v88[data-sector]').forEach(unit=>{
+      const id=unit.dataset.sector;
+      const token=Array.from(map.querySelectorAll('.territory-token[data-sector]')).find(el=>String(el.dataset.sector)===String(id));
+      if(!token)return;
+      const r=token.getBoundingClientRect();
+      const x=r.left+r.width/2-mapRect.left;
+      const y=r.top+r.height/2-mapRect.top;
+      unit.style.setProperty('left',x+'px','important');
+      unit.style.setProperty('top',y+'px','important');
+    });
+  }
+  const beforeV90=renderBattle;
+  renderBattle=function(){beforeV90();requestAnimationFrame(anchorUnitsToTerritoriesV90);};
+  requestAnimationFrame(anchorUnitsToTerritoriesV90);
+  window.addEventListener('resize',()=>requestAnimationFrame(anchorUnitsToTerritoriesV90),{passive:true});
+})();
