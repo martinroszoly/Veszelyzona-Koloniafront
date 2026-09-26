@@ -79,3 +79,65 @@
   }
   .modal-layer.open .build-card{margin-bottom:8px!important}
 }
+
+
+/* V96 — final phone overlay rules.
+   The whole sheet scrolls, so content cannot be trapped below the tab bar.
+   Both command and movement dialogs follow the visual viewport. */
+@media (max-width:1100px) and (pointer:coarse), (max-height:650px) and (orientation:landscape){
+  #modalLayer.modal-layer.open,
+  #choiceLayer.choice-layer.open{
+    position:fixed!important;
+    inset:auto!important;
+    left:var(--vvx,0px)!important;top:var(--vvy,0px)!important;
+    width:var(--vvw,100vw)!important;height:var(--vvh,100dvh)!important;
+    transform:none!important;margin:0!important;padding:0!important;
+    overflow:auto!important;-webkit-overflow-scrolling:touch!important;
+    align-items:flex-start!important;justify-content:flex-start!important;
+    box-sizing:border-box!important;
+  }
+  #modalLayer.modal-layer.open .command-modal{
+    position:relative!important;
+    display:block!important;
+    width:100%!important;height:auto!important;min-height:100%!important;
+    max-width:none!important;max-height:none!important;
+    margin:0!important;overflow:visible!important;
+  }
+  #modalLayer.modal-layer.open .modal-header{
+    position:relative!important;top:auto!important;min-height:64px!important;
+    padding:12px 70px 10px 16px!important;
+  }
+  #modalLayer.modal-layer.open .modal-header h2{font-size:22px!important}
+  #modalLayer.modal-layer.open .modal-close{top:9px!important;right:12px!important;width:44px!important;height:44px!important}
+  #modalLayer.modal-layer.open .modal-tabs{
+    position:relative!important;top:auto!important;
+    display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    gap:5px!important;padding:7px 10px!important;
+  }
+  #modalLayer.modal-layer.open .modal-tabs button{
+    min-width:0!important;min-height:38px!important;padding:5px 2px!important;font-size:8px!important;
+  }
+  #modalLayer.modal-layer.open .modal-content{
+    display:grid!important;height:auto!important;min-height:0!important;max-height:none!important;
+    overflow:visible!important;padding:10px 12px 28px!important;
+  }
+
+  #choiceLayer.choice-layer.open .choice-card{
+    position:relative!important;display:flex!important;flex-direction:column!important;
+    justify-content:flex-start!important;
+    width:100%!important;height:auto!important;min-height:100%!important;max-height:none!important;
+    margin:0!important;padding:16px 18px 26px!important;overflow:visible!important;box-sizing:border-box!important;
+  }
+  #choiceLayer.choice-layer.open .choice-icon{width:42px!important;height:42px!important;font-size:24px!important;margin:0 auto 6px!important}
+  #choiceLayer.choice-layer.open .choice-card h2{font-size:24px!important;line-height:1.1!important;margin:0 auto 6px!important}
+  #choiceLayer.choice-layer.open .choice-card p{font-size:14px!important;line-height:1.35!important;margin:4px auto 10px!important}
+  #choiceLayer.choice-layer.open .choice-card>div,
+  #choiceLayer.choice-layer.open .move-share-options{
+    display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    width:100%!important;max-width:none!important;gap:7px!important;margin:6px 0!important;
+  }
+  #choiceLayer.choice-layer.open .choice-card button,
+  #choiceLayer.choice-layer.open .move-share-options button{
+    min-width:0!important;min-height:48px!important;padding:8px 4px!important;font-size:15px!important;
+  }
+}
