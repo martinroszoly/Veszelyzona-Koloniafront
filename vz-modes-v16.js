@@ -329,3 +329,65 @@
   const economy=aiEconomy;
   aiEconomy=function(){economy();const base=state.aiBase,side=enemyOf(state.faction);if(!base?.buildings?.vehicleFactory)return;const vehicle=side==='human'?'apc':'hover',heavy=side==='human'?'tank':'alienTank';if(state.turn>5&&base.queue.length<3){const type=state.turn%3===0?heavy:vehicle;if(base.buildings[unitSpecs[type].building]&&aiCanAfford(unitSpecs[type].cost))aiQueue(type)}};
 })();
+
+
+/* V99 — field-centered orders, aggressive team AI, stronger Hard. */
+(function(){
+  /* Put move/attack buttons on the destination field itself. */
+  const v99Render=renderBattle;
+  renderBattle=function(){
+    v99Render();
+    const map=document.querySelector('#sectorMap');
+    if(!map)return;
+    map.querySelectorAll('.move-arrow[data-move-target]').forEach(btn=>{
+      const target=state.grid.find(x=>String(x.id)===String(btn.dataset.moveTarget));
+      if(!target)return;
+      btn.style.setProperty('left',target.x+'%','important');
+      btn.style.setProperty('top',target.y+'%','important');
+      btn.style.setProperty('--rot','0deg');
+      btn.title=(target.unit&&target.unit.side!==state.faction?'Támadás: ':'Mozgás: ')+target.name;
+    });
+  };
+
+  /* Team AI: enemy destruction is the first priority, then connected expansion. */
+  const oldAllyTurn=allyTurn;
+  allyTurn=async function(side,owner,level){
+    if(!modeHas(side))return oldAllyTurn(side,owner,level);
+    const stock=allyState(side),base=state.grid.find(x=>x.controlSide===side&&x.isBase)||state.grid.find(x=>x.unit?.side===side&&x.isBase);
+    if(!base)return;
+    const profile={practice:{tempo:0,builds:1,share:.72,mult:1},easy:{tempo:2,builds:1,share:.78,mult:1},medium:{tempo:4,builds:2,share:.86,mult:1.04},hard:{tempo:7,builds:4,share:.96,mult:1.24}}[level]||{tempo:3,builds:2,share:.84,mult:1};
+    const productive=state.grid.filter(x=>x.owner===owner&&x.productive).length;
+    Object.keys(stock).forEach(k=>stock[k]+=18+Math.floor(productive/3)+(level==='hard'?10:0));
+    const types=owner==='human'?['tank','strike','infantry','apc','heli']:['alienTank','alienStrike','alien','hover','alienAir'];
+    for(let build=0;build<profile.builds;build++){
+      const type=types.find(t=>Object.entries(unitSpecs[t].cost).every(([k,v])=>stock[k]>=v));
+      if(!type)break;
+      Object.entries(unitSpecs[type].cost).forEach(([k,v])=>stock[k]-=v);
+      const fresh=unitFor(owner,state.turn+build,type);fresh.side=side;mergeDetachment(base,fresh);
+    }
+    const enemyOwner=owner==='human'?'alien':'human';
+    for(let step=0;step<profile.tempo;step++){
+      const choices=[];
+      for(const from of state.grid.filter(x=>x.unit?.side===side&&!hasMoved(x.unit)&&x.unit.count>1)){
+        for(const target of neighbors(from).filter(x=>x.owner!==owner))choices.push({from,target,route:[from.id,target.id]});
+        for(const [id,route] of friendlyTransit(from,owner)){const target=state.grid.find(x=>x.id===id);if(target)choices.push({from,target,route})}
+      }
+      const score=c=>{
+        const t=c.target, hostile=t.unit&&t.unit.side!==side&&t.unit.side!==owner;
+        const enemyUnit=hostile&&(t.owner===enemyOwner||t.unit.side===enemyOwner||t.unit.side===enemyOwner+'Ally');
+        const enemyBase=enemyUnit&&t.isBase;
+        const connected=neighbors(t).filter(n=>n.owner===owner).length;
+        const resource={metal:10,oil:11,energy:8,tech:12,food:7,terrain:2}[t.resource]||2;
+        const defense=(t.unit?.count||0)/180;
+        return (enemyBase?180:enemyUnit?115:hostile?65:t.owner!==owner?34:0)+connected*9+resource-defense-(c.route.length-1)*3;
+      };
+      choices.sort((a,b)=>score(b)-score(a));
+      const action=choices[0];if(!action)break;
+      const {from,target,route}=action;
+      for(let hop=1;hop<route.length-1;hop++){const prev=state.grid.find(x=>x.id===route[hop-1]),next=state.grid.find(x=>x.id===route[hop]);flashMove(prev,next,side,'advance');renderBattle();await pause(140)}
+      const part=takeDetachment(from.unit,profile.share);if(!from.unit.count)from.unit=null;
+      if(target.unit)await resolveDetachedConflict(from,target,part,profile.mult);
+      else{target.owner=owner;target.controlSide=side;target.unit=part;flashMove(from,target,side,'advance');await pause(160)}
+    }
+  };
+})();
