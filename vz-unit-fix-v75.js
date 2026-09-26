@@ -469,3 +469,62 @@
   renderBattle=function(){beforeV91();requestAnimationFrame(()=>requestAnimationFrame(snapV91));};
   requestAnimationFrame(()=>requestAnimationFrame(snapV91));
 })();
+
+
+/* V92 — hard-bind the visible miniature to its territory button itself.
+   Removes the detached map-level V88 layer entirely. */
+(function(){
+  const style=document.createElement('style');
+  style.textContent=\`
+    #battleView #sectorMap>.field-unit-v88{display:none!important;visibility:hidden!important}
+    #battleView .territory-token[data-sector]>.map-unit-marker{
+      left:50%!important;top:50%!important;
+      transform:translate(-50%,-100%)!important;
+      margin:0!important;
+      z-index:500!important;
+      pointer-events:none!important;
+    }
+    #battleView .territory-token[data-sector]>.map-unit-marker .v79-field-unit{
+      left:50%!important;bottom:0!important;
+      transform:translateX(-50%)!important;
+    }
+    #battleView .territory-token[data-sector]>.map-unit-marker>b{
+      left:50%!important;top:auto!important;bottom:-12px!important;
+      transform:translateX(-50%)!important;
+    }
+  \`;
+  document.head.appendChild(style);
+
+  function bindV92(){
+    const map=document.querySelector('#sectorMap');
+    if(!map||typeof state==='undefined')return;
+    map.querySelectorAll(':scope>.field-unit-v88').forEach(el=>el.remove());
+    map.querySelectorAll('.territory-token[data-sector]').forEach(token=>{
+      const sector=state.grid.find(x=>String(x.id)===String(token.dataset.sector));
+      const marker=token.querySelector(':scope>.map-unit-marker');
+      if(!marker)return;
+      if(!sector?.unit){
+        marker.style.setProperty('display','none','important');
+        return;
+      }
+      const visible=sector.unit.side!=='neutral'||String(state.selected)===String(sector.id);
+      marker.style.setProperty('display',visible?'block':'none','important');
+      marker.style.setProperty('visibility',visible?'visible':'hidden','important');
+      marker.style.setProperty('position','absolute','important');
+      marker.style.setProperty('left','50%','important');
+      marker.style.setProperty('top','50%','important');
+      marker.style.setProperty('transform','translate(-50%,-100%)','important');
+      const art=marker.querySelector('span');
+      if(art){
+        art.className='v79-field-unit';
+        art.innerHTML='';
+        art.style.setProperty('background-image',"url('"+artFor(sector.unit)+"')",'important');
+      }
+      const count=marker.querySelector('b');
+      if(count)count.textContent=Number(sector.unit.count||0).toLocaleString('hu-HU');
+    });
+  }
+  const beforeV92=renderBattle;
+  renderBattle=function(){beforeV92();bindV92();};
+  bindV92();
+})();
