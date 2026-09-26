@@ -1686,39 +1686,3 @@ body{background:#020711;color:#eef7ff;background-image:radial-gradient(ellipse a
 }
 
 
-/* V85 — resource points visually belong to the terrain object they represent.
-   Compact symbols replace the oversized generic circles; selected fields stay compact. */
-#battleView .resource-pin{
-  display:grid!important;place-items:center!important;
-  width:26px!important;height:26px!important;min-width:26px!important;min-height:26px!important;
-  border:1px solid rgba(255,222,120,.9)!important;border-radius:7px!important;
-  background:rgba(7,20,24,.78)!important;color:#ffe083!important;
-  font-size:14px!important;line-height:1!important;
-  box-shadow:0 2px 7px rgba(0,0,0,.55)!important;
-  transform:translate(-50%,-50%)!important;
-}
-#battleView .territory-token.selected .sector-label{
-  width:auto!important;min-width:0!important;max-width:118px!important;
-  padding:4px 7px!important;border-radius:7px!important;
-  transform:translate(-50%,12px)!important;
-  background:rgba(4,17,24,.90)!important;border:1px solid rgba(255,220,115,.78)!important;
-  box-shadow:0 3px 10px rgba(0,0,0,.62)!important;
-  white-space:normal!important;text-align:center!important;
-}
-#battleView .territory-token.selected .sector-label strong{
-  display:block!important;font-size:9px!important;line-height:1.05!important;
-}
-#battleView .territory-token.selected .sector-label small{
-  display:block!important;margin-top:2px!important;font-size:6px!important;line-height:1!important;
-}
-@media(max-width:900px){
-  #battleView .resource-pin{
-    width:20px!important;height:20px!important;min-width:20px!important;min-height:20px!important;
-    border-radius:5px!important;font-size:11px!important;
-  }
-  #battleView .territory-token.selected .sector-label{
-    max-width:88px!important;padding:3px 5px!important;transform:translate(-50%,9px)!important;
-  }
-  #battleView .territory-token.selected .sector-label strong{font-size:7px!important}
-  #battleView .territory-token.selected .sector-label small{font-size:5px!important}
-}
