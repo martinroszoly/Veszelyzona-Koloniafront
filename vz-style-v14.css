@@ -1686,3 +1686,18 @@ body{background:#020711;color:#eef7ff;background-image:radial-gradient(ellipse a
 }
 
 
+
+
+/* V93 — mobile territory centering.
+   Tokens already use transform:translate(-50%,-50%); the old negative margins applied
+   a second half-size offset and pulled units/icons away from their real sector. */
+#battleView .territory-token,
+#battleView .territory-token.base-sector{
+  margin:0!important;
+}
+@media(max-width:720px){
+  #battleView .territory-token,
+  #battleView .territory-token.base-sector{
+    margin:0!important;
+  }
+}
