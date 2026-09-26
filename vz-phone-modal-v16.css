@@ -48,3 +48,34 @@
   #sectorMap .territory-token.neutral.selected .sector-guard{width:26px!important;height:26px!important;top:-14px!important;opacity:1!important}
   #sectorMap .territory-token.neutral.selected .sector-guard img{width:26px!important;height:26px!important;opacity:1!important}
 }
+
+
+/* V95 — phone command modal: real scroll area + visual viewport-safe sizing */
+@media (max-width:1100px) and (pointer:coarse), (max-height:650px) and (orientation:landscape){
+  html,body{overscroll-behavior:none}
+  .modal-layer.open{
+    position:fixed!important;
+    left:0!important;top:0!important;right:auto!important;bottom:auto!important;
+    width:var(--vvw,100vw)!important;height:var(--vvh,100dvh)!important;
+    transform:translate(var(--vvx,0px),var(--vvy,0px))!important;
+    overflow:hidden!important;padding:0!important;
+  }
+  .modal-layer.open .command-modal{
+    width:100%!important;height:100%!important;min-height:0!important;max-height:none!important;
+    display:grid!important;grid-template-rows:auto auto minmax(0,1fr)!important;
+    overflow:hidden!important;
+  }
+  .modal-layer.open .modal-header{position:relative!important;top:auto!important}
+  .modal-layer.open .modal-tabs{
+    position:relative!important;top:auto!important;
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    padding:7px 10px!important;gap:5px!important;
+  }
+  .modal-layer.open .modal-tabs button{min-height:40px!important;padding:6px 3px!important;font-size:9px!important}
+  .modal-layer.open .modal-content{
+    min-height:0!important;height:auto!important;overflow-y:auto!important;overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;overscroll-behavior:contain!important;
+    padding:12px 12px calc(26px + env(safe-area-inset-bottom))!important;
+  }
+  .modal-layer.open .build-card{margin-bottom:8px!important}
+}
