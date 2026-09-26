@@ -313,3 +313,56 @@
   \`;
   document.head.appendChild(style);
 })();
+
+
+/* V86 — anchor every unit to the exact center of its own territory token.
+   Previous negative top offsets moved units into neighbouring fields on scaled/mobile maps. */
+(function(){
+  const style=document.createElement('style');
+  style.textContent=\`
+    #battleView .territory-token[data-sector]{overflow:visible!important}
+    #battleView .territory-token[data-sector]>.map-unit-marker{
+      position:absolute!important;left:50%!important;top:50%!important;
+      width:0!important;height:0!important;min-width:0!important;min-height:0!important;
+      max-width:none!important;max-height:none!important;margin:0!important;
+      transform:translate(-50%,-50%)!important;overflow:visible!important;
+      pointer-events:none!important;z-index:250!important;
+    }
+    #battleView .territory-token[data-sector]>.map-unit-marker>.v79-field-unit{
+      position:absolute!important;left:50%!important;top:auto!important;bottom:-8px!important;
+      transform:translateX(-50%) perspective(180px) rotateX(4deg)!important;
+      transform-origin:50% 100%!important;
+    }
+    #battleView .territory-token[data-sector]>.map-unit-marker>b{
+      position:absolute!important;left:50%!important;top:8px!important;
+      transform:translateX(-50%)!important;
+    }
+    @media(max-width:900px){
+      #battleView .territory-token[data-sector]>.map-unit-marker>.v79-field-unit{bottom:-7px!important}
+      #battleView .territory-token[data-sector]>.map-unit-marker>b{top:7px!important}
+    }
+  \`;
+  document.head.appendChild(style);
+
+  function anchorUnitsV86(){
+    const map=document.querySelector('#sectorMap');
+    if(!map)return;
+    map.querySelectorAll('.territory-token[data-sector]>.map-unit-marker').forEach(marker=>{
+      marker.style.setProperty('position','absolute','important');
+      marker.style.setProperty('left','50%','important');
+      marker.style.setProperty('top','50%','important');
+      marker.style.setProperty('width','0','important');
+      marker.style.setProperty('height','0','important');
+      marker.style.setProperty('min-width','0','important');
+      marker.style.setProperty('min-height','0','important');
+      marker.style.setProperty('max-width','none','important');
+      marker.style.setProperty('max-height','none','important');
+      marker.style.setProperty('margin','0','important');
+      marker.style.setProperty('transform','translate(-50%,-50%)','important');
+      marker.style.setProperty('overflow','visible','important');
+    });
+  }
+  const prev=renderBattle;
+  renderBattle=function(){prev();anchorUnitsV86();};
+  anchorUnitsV86();
+})();
