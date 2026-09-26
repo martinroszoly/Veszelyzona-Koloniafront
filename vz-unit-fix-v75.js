@@ -351,6 +351,7 @@
   function renderFieldUnitsV88(){
     const map=document.querySelector('#sectorMap');
     if(!map||typeof state==='undefined'||!Array.isArray(state.grid))return;
+    map.querySelectorAll('.map-unit-marker').forEach(el=>el.style.setProperty('display','none','important'));
     map.querySelectorAll(':scope>.field-unit-v88').forEach(el=>el.remove());
     state.grid.forEach(sector=>{
       if(!sector?.unit)return;
@@ -373,4 +374,21 @@
   const beforeV88=renderBattle;
   renderBattle=function(){beforeV88();renderFieldUnitsV88();};
   renderFieldUnitsV88();
+})();
+
+
+/* V89 — remove the old inline-positioned marker after every render.
+   V79 wrote display:block!important inline, so CSS alone could not hide the duplicate. */
+(function(){
+  function killLegacyUnitMarkersV89(){
+    const map=document.querySelector('#sectorMap');
+    if(!map)return;
+    map.querySelectorAll('.map-unit-marker').forEach(marker=>{
+      marker.style.setProperty('display','none','important');
+      marker.style.setProperty('visibility','hidden','important');
+    });
+  }
+  const beforeV89=renderBattle;
+  renderBattle=function(){beforeV89();killLegacyUnitMarkersV89();};
+  killLegacyUnitMarkersV89();
 })();
