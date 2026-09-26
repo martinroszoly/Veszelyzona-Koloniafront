@@ -271,3 +271,24 @@
   renderBattle=function(){v78RenderBattle();v79Refresh();};
   v79Refresh();
 })();
+
+
+/* V80 — slightly larger field miniatures. */
+(function(){
+  const style=document.createElement('style');
+  style.textContent=\`
+    #battleView .map-unit-marker .v79-field-unit{
+      width:58px!important;height:53px!important;min-width:58px!important;min-height:53px!important;
+      max-width:58px!important;max-height:53px!important;bottom:12px!important;
+    }
+    #battleView .map-unit-marker>b{top:53px!important}
+    @media(max-width:700px){
+      #battleView .map-unit-marker .v79-field-unit{
+        width:49px!important;height:45px!important;min-width:49px!important;min-height:45px!important;
+        max-width:49px!important;max-height:45px!important;bottom:10px!important;
+      }
+      #battleView .map-unit-marker>b{top:46px!important}
+    }
+  \`;
+  document.head.appendChild(style);
+})();
