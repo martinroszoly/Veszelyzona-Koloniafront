@@ -349,7 +349,7 @@
     });
   };
 
-  /* Team AI: enemy destruction is the first priority, then connected expansion. */
+  /* Team AI: territory expansion first, enemy destruction second. */
   const oldAllyTurn=allyTurn;
   allyTurn=async function(side,owner,level){
     if(!modeHas(side))return oldAllyTurn(side,owner,level);
@@ -379,7 +379,12 @@
         const connected=neighbors(t).filter(n=>n.owner===owner).length;
         const resource={metal:10,oil:11,energy:8,tech:12,food:7,terrain:2}[t.resource]||2;
         const defense=(t.unit?.count||0)/180;
-        return (enemyBase?180:enemyUnit?115:hostile?65:t.owner!==owner?34:0)+connected*9+resource-defense-(c.route.length-1)*3;
+        /* Expansion dominates target choice; enemy elimination is the secondary objective. */
+        const expansion=t.owner!==owner ? 150 : 0;
+        const neutralBonus=t.owner==='neutral' ? 70 : 0;
+        const enemyTerritory=t.owner===enemyOwner ? 45 : 0;
+        const combat=enemyBase?55:enemyUnit?38:hostile?22:0;
+        return expansion+neutralBonus+enemyTerritory+combat+connected*12+resource*2-defense-(c.route.length-1)*3;
       };
       choices.sort((a,b)=>score(b)-score(a));
       const action=choices[0];if(!action)break;
