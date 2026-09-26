@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 1024" preserveAspectRatio="xMidYMid slice">
+<defs>
+ <filter id="sea"><feTurbulence baseFrequency=".012" numOctaves="3" seed="7"/><feColorMatrix values="0 0 0 0 0.015 0 0 0 0 0.13 0 0 0 0 0.22 0 0 0 .55 0"/></filter>
+ <clipPath id="center"><path d="M420 70 Q690 15 1024 55 Q1370 15 1630 80 L1690 230 Q1660 420 1710 520 Q1670 770 1570 940 Q1280 1015 1020 965 Q760 1015 470 940 Q365 770 405 525 Q370 350 420 70Z"/></clipPath>
+ <clipPath id="bl"><path d="M15 40 Q160 5 340 55 Q410 130 360 270 Q190 325 30 260 Q-10 150 15 40Z"/></clipPath>
+ <clipPath id="gl"><path d="M10 360 Q175 315 345 370 Q400 475 350 600 Q180 650 25 595 Q-20 480 10 360Z"/></clipPath>
+ <clipPath id="yl"><path d="M20 700 Q180 650 350 710 Q405 830 345 970 Q170 1015 20 950 Q-15 820 20 700Z"/></clipPath>
+ <clipPath id="pr"><path d="M1700 45 Q1870 5 2030 65 Q2070 170 2020 285 Q1860 325 1705 265 Q1660 150 1700 45Z"/></clipPath>
+ <clipPath id="rr"><path d="M1695 365 Q1870 320 2035 380 Q2070 490 2020 610 Q1860 655 1700 595 Q1660 480 1695 365Z"/></clipPath>
+ <clipPath id="pk"><path d="M1700 705 Q1870 655 2030 715 Q2070 835 2015 970 Q1850 1015 1700 950 Q1660 825 1700 705Z"/></clipPath>
+</defs>
+<rect width="2048" height="1024" fill="#05243b"/><rect width="2048" height="1024" filter="url(#sea)" opacity=".75"/>
+<g clip-path="url(#center)"><image href="battlemap-grandfront-v28.png" x="350" y="15" width="1360" height="980" preserveAspectRatio="xMidYMid slice"/></g>
+<g clip-path="url(#bl)"><image href="battlemap-grandfront-v28.png" x="-25" y="-10" width="440" height="330" preserveAspectRatio="xMinYMin slice"/></g>
+<g clip-path="url(#gl)"><image href="battlemap-grandfront-v28.png" x="-20" y="315" width="430" height="340" preserveAspectRatio="xMinYMid slice"/></g>
+<g clip-path="url(#yl)"><image href="battlemap-grandfront-v28.png" x="-20" y="650" width="435" height="360" preserveAspectRatio="xMinYMax slice"/></g>
+<g clip-path="url(#pr)"><image href="battlemap-grandfront-v28.png" x="1650" y="-5" width="430" height="340" preserveAspectRatio="xMaxYMin slice"/></g>
+<g clip-path="url(#rr)"><image href="battlemap-grandfront-v28.png" x="1650" y="315" width="430" height="350" preserveAspectRatio="xMaxYMid slice"/></g>
+<g clip-path="url(#pk)"><image href="battlemap-grandfront-v28.png" x="1650" y="650" width="430" height="365" preserveAspectRatio="xMaxYMax slice"/></g>
+<g fill="none" stroke-width="7" opacity=".92">
+<path d="M20 40 Q160 5 340 55 Q410 130 360 270 Q190 325 30 260 Q-10 150 20 40Z" stroke="#32bfff"/>
+<path d="M10 360 Q175 315 345 370 Q400 475 350 600 Q180 650 25 595 Q-20 480 10 360Z" stroke="#45d17a"/>
+<path d="M20 700 Q180 650 350 710 Q405 830 345 970 Q170 1015 20 950 Q-15 820 20 700Z" stroke="#ffd34f"/>
+<path d="M1700 45 Q1870 5 2030 65 Q2070 170 2020 285 Q1860 325 1705 265 Q1660 150 1700 45Z" stroke="#a56cff"/>
+<path d="M1695 365 Q1870 320 2035 380 Q2070 490 2020 610 Q1860 655 1700 595 Q1660 480 1695 365Z" stroke="#ff4f58"/>
+<path d="M1700 705 Q1870 655 2030 715 Q2070 835 2015 970 Q1850 1015 1700 950 Q1660 825 1700 705Z" stroke="#ff68c9"/>
+</g></svg>
