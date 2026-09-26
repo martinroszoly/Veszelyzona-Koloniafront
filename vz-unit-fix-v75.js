@@ -292,3 +292,24 @@
   \`;
   document.head.appendChild(style);
 })();
+
+
+/* V81 — one more small size increase for field miniatures. */
+(function(){
+  const style=document.createElement('style');
+  style.textContent=\`
+    #battleView .map-unit-marker .v79-field-unit{
+      width:66px!important;height:60px!important;min-width:66px!important;min-height:60px!important;
+      max-width:66px!important;max-height:60px!important;bottom:12px!important;
+    }
+    #battleView .map-unit-marker>b{top:60px!important}
+    @media(max-width:700px){
+      #battleView .map-unit-marker .v79-field-unit{
+        width:56px!important;height:51px!important;min-width:56px!important;min-height:51px!important;
+        max-width:56px!important;max-height:51px!important;bottom:10px!important;
+      }
+      #battleView .map-unit-marker>b{top:52px!important}
+    }
+  \`;
+  document.head.appendChild(style);
+})();
