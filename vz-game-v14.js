@@ -960,7 +960,11 @@ function createVisualTerritoryGrid(model){
     const terrainNames=['Fenyves határ','Nyílt legelő','Régi országút','Mocsári őrhely','Hegyi átjáró','Parti magaslat','Központi mezőség','Folyóőrség','Sziklás körzet'];
     const landmark=landmarksByRegion.get(cell.id),terrainName=terrainNames[index%terrainNames.length],owner=cell.id===humanRegion?'human':cell.id===alienRegion?'alien':'neutral',isBase=owner!=='neutral';
     const inside=interiorAnchor(model,cell);
-    const anchor={x:(inside.x+.5)/model.width*100,y:(inside.y+.5)/model.height*100};
+    /* V94: bases use the illustrated city polygon centroid. interiorAnchor can land near a polygon edge,
+       which put the mobile unit/count against the map border instead of over the city field. */
+    const anchor=isBase
+      ? {x:cell.x/model.width*100,y:cell.y/model.height*100}
+      : {x:(inside.x+.5)/model.width*100,y:(inside.y+.5)/model.height*100};
     const resource=isBase?(owner==='human'?'food':'tech'):(landmark?.resource||'terrain');
     const sector={id:`field-${cell.id}`,name:isBase?(owner==='human'?'Terra-Prime főváros':'Xeno dominion'):`${landmark?.name||terrainName} ${index+1}`,x:anchor.x,y:anchor.y,w:(cell.maxX-cell.minX)/model.width*100,h:(cell.maxY-cell.minY)/model.height*100,resource,owner,isBase,productive:resource!=='terrain',bunker:isBase,watchtower:false,passable:true,terrain:'land',links:[],regionId:cell.id,unit:isBase?unitFor(owner,index,owner==='human'?'infantry':'alien'):neutralUnitFor(resource,cell.area,index)};
     byRegion.set(cell.id,sector);return sector;
