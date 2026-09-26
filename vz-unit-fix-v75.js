@@ -191,3 +191,83 @@
   renderBattle=function(){previousRenderBattle();normalizeUnitMarkers();};
   normalizeUnitMarkers();
 })();
+
+
+/* V79 — reference-matched field miniatures: use the actual EMBER/XENON unit renders,
+   scaled as small stand-up battlefield pieces instead of synthetic CSS figures. */
+(function(){
+  const css=document.createElement('style');
+  css.textContent=\`
+    #battleView .map-unit-marker{
+      width:52px!important;height:52px!important;min-width:52px!important;min-height:52px!important;
+      max-width:52px!important;max-height:52px!important;background:transparent!important;border:0!important;
+      box-shadow:none!important;overflow:visible!important;pointer-events:none!important;
+    }
+    #battleView .map-unit-marker .v79-field-unit{
+      display:block!important;position:absolute!important;left:50%!important;bottom:12px!important;
+      width:48px!important;height:44px!important;min-width:48px!important;min-height:44px!important;
+      max-width:48px!important;max-height:44px!important;transform:translateX(-50%) perspective(180px) rotateX(4deg)!important;
+      transform-origin:50% 100%!important;background-position:center bottom!important;background-repeat:no-repeat!important;
+      background-size:contain!important;background-color:transparent!important;border:0!important;border-radius:0!important;
+      box-shadow:none!important;filter:drop-shadow(0 5px 3px rgba(0,0,0,.72))!important;overflow:visible!important;
+    }
+    #battleView .map-unit-marker .v79-field-unit::after{
+      content:""!important;position:absolute!important;left:50%!important;bottom:-4px!important;width:34px!important;height:7px!important;
+      transform:translateX(-50%)!important;border-radius:50%!important;background:rgba(0,0,0,.42)!important;
+      filter:blur(2px)!important;z-index:-1!important;
+    }
+    #battleView .map-unit-marker>b{
+      top:45px!important;font-size:7px!important;padding:2px 5px!important;z-index:500!important;
+    }
+    @media(max-width:700px){
+      #battleView .map-unit-marker{width:44px!important;height:46px!important;min-width:44px!important;min-height:46px!important;max-width:44px!important;max-height:46px!important}
+      #battleView .map-unit-marker .v79-field-unit{width:40px!important;height:37px!important;min-width:40px!important;min-height:37px!important;max-width:40px!important;max-height:37px!important;bottom:10px!important}
+      #battleView .map-unit-marker>b{top:38px!important;font-size:6px!important}
+    }
+  \`;
+  document.head.appendChild(css);
+
+  function v79Refresh(){
+    const map=document.querySelector('#sectorMap');
+    if(!map||typeof state==='undefined')return;
+    map.querySelectorAll('.territory-token[data-sector]').forEach(token=>{
+      const sector=state.grid.find(s=>String(s.id)===String(token.dataset.sector));
+      const marker=token.querySelector('.map-unit-marker');
+      if(!marker||!sector?.unit)return;
+      const unit=sector.unit;
+      const neutral=unit.side==='neutral';
+      const visible=!neutral||String(state.selected)===String(sector.id);
+      marker.style.setProperty('display',visible?'block':'none','important');
+      marker.style.setProperty('left','50%','important');
+      marker.style.setProperty('top','-42px','important');
+      marker.style.setProperty('transform','translateX(-50%)','important');
+      marker.style.setProperty('background','transparent','important');
+      marker.style.setProperty('border','0','important');
+      marker.style.setProperty('box-shadow','none','important');
+
+      const art=marker.querySelector('span');
+      if(art){
+        art.className='v79-field-unit';
+        art.innerHTML='';
+        art.style.cssText='';
+        art.style.setProperty('background-image',"url('"+artFor(unit)+"')",'important');
+      }
+      const count=marker.querySelector('b');
+      if(count){
+        count.style.setProperty('display','block','important');
+        count.style.setProperty('position','absolute','important');
+        count.style.setProperty('left','50%','important');
+        count.style.setProperty('transform','translateX(-50%)','important');
+        count.style.setProperty('background','rgba(3,10,15,.94)','important');
+        count.style.setProperty('color','#fff','important');
+        count.style.setProperty('border','1px solid rgba(220,238,246,.45)','important');
+        count.style.setProperty('border-radius','999px','important');
+        count.style.setProperty('line-height','1','important');
+        count.style.setProperty('white-space','nowrap','important');
+      }
+    });
+  }
+  const v78RenderBattle=renderBattle;
+  renderBattle=function(){v78RenderBattle();v79Refresh();};
+  v79Refresh();
+})();
