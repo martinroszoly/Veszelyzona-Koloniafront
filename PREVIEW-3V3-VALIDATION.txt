@@ -1,0 +1,45 @@
+TERRA-PRIME 3v3 GAMEPLAY PREVIEW — AUTOMATIKUS VALIDÁCIÓ
+
+[OK] 237 polygon mező — 237
+[OK] 165 központi mező — 165
+[OK] stabil, egyedi mező-ID — 237
+[OK] blue kezdősziget tartalma — {'capital': 1, 'village': 3, 'mine': 2, 'oil': 1, 'energy': 1, 'tech': 1, 'port': 1, 'industrial': 1, 'neutral': 1}
+[OK] green kezdősziget tartalma — {'capital': 1, 'village': 3, 'mine': 2, 'oil': 1, 'energy': 1, 'tech': 1, 'port': 1, 'industrial': 1, 'neutral': 1}
+[OK] yellow kezdősziget tartalma — {'capital': 1, 'village': 3, 'mine': 2, 'oil': 1, 'energy': 1, 'tech': 1, 'port': 1, 'industrial': 1, 'neutral': 1}
+[OK] purple kezdősziget tartalma — {'capital': 1, 'village': 3, 'mine': 2, 'oil': 1, 'energy': 1, 'tech': 1, 'port': 1, 'industrial': 1, 'neutral': 1}
+[OK] red kezdősziget tartalma — {'capital': 1, 'village': 3, 'mine': 2, 'oil': 1, 'energy': 1, 'tech': 1, 'port': 1, 'industrial': 1, 'neutral': 1}
+[OK] pink kezdősziget tartalma — {'capital': 1, 'village': 3, 'mine': 2, 'oil': 1, 'energy': 1, 'tech': 1, 'port': 1, 'industrial': 1, 'neutral': 1}
+[OK] minden anchor saját polygonon belül
+[OK] fővárosi mezők nagyobbak az átlagos szigetmezőnél — min arány 2.09
+[OK] szomszédság szimmetrikus — []
+[OK] teljes pályagráf összefüggő — 237/237
+[OK] 6 sziget-kontinens tengeri kapcsolat — 6
+[OK] központi kontinens minden kezdőszigetnél sokkal nagyobb — arány 9.7×
+[OK] kezdőszigetek közel vannak a kontinenshez — max gap 35.4 px
+[OK] WASD/AWSD kamera implementálva — W/A/S/D
+[OK] SVG viewBox kamera — viewBox
+[OK] pinch pointer kezelés — pointer events
+[OK] mozgás/támadás marker cél-anchorból — target.anchor
+[OK] egység pozíció mező-anchorból — field.anchor
+[OK] semleges zsoldos csak kijelölve renderelődik — selection gated
+[OK] AI területfoglalás-alapú pontozás — capture + resource + connectivity
+[OK] Hard külön stratégiai súlyokkal erősebb — no resource cheat
+[OK] strike gyalogság ellen erős — 2.15×
+[OK] strike tank ellen gyenge — 0.34×
+[OK] tank jó strike ellenpont — 1.72×
+[OK] normál pályaválasztóba nincs betéve — previewOnly
+[OK] főmenü külön preview gomb — separate entry
+[OK] meglévő pályakód/assets változatlan — módosult eredeti fájlok: index.html
+[OK] balansz minta: 1 strike kötelék nem törli a tankot — tank loss≈19.8%, strike loss≈28.2%
+[OK] balansz minta: strike sokkal jobb gyalogság ellen — power ratio infantry 3.51 vs tank 0.29
+
+Összesen: 32/32 ellenőrzés sikeres.
+
+FUTÁSI / DOM-SZIMULÁCIÓ:
+[OK] 237 polygon renderelődik.
+[OK] Kezdetben pontosan 6 játékosszínű fővárosi terület van.
+[OK] Zoomolt állapotban a D/WASD kamera ténylegesen módosítja az SVG viewBox koordinátáját.
+[OK] A kék főváros kijelölése mozgás/támadás markereket ad a szomszédos polygonokra.
+[OK] A kék főváros 3 egységgyártási opciót ad és a költséget levonja.
+[OK] Semleges zsoldos vizuálisan csak a kijelölt semleges mezőn jelenik meg.
+[OK] Az öt AI lejátszik egy kört, területet foglal, majd a 2. körben visszaadja a vezérlést a kék játékosnak.

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Veszélyzóna: Kolóniafront — 3v3 Kontinensfront preview</title>
+  <link rel="stylesheet" href="preview-3v3.css">
+</head>
+<body>
+<div class="preview-shell">
+  <header class="preview-top">
+    <div class="brand"><small>VESZÉLYZÓNA: KOLÓNIAFRONT</small><b>TERRA-PRIME // 3v3 KONTINENSFRONT</b></div>
+    <span class="badge">JÁTSZHATÓ PREVIEW · NINCS A NORMÁL PÁLYAVÁLASZTÓBAN</span>
+    <label class="difficulty"><span>AI</span><select id="difficultySelect"><option value="practice">GYAKORLÓ</option><option value="easy">EASY</option><option value="medium">MEDIUM</option><option value="hard" selected>HARD</option></select></label>
+    <div class="toolbar">
+      <button id="zoomOut" aria-label="Kicsinyítés">−</button><span class="zoom-readout" id="zoomReadout">100%</span><button id="zoomIn" aria-label="Nagyítás">＋</button>
+      <button id="resetCam">TELJES</button><button id="focusBlue">KÉK HQ</button><button id="markerTest">JELÖLŐTESZT</button>
+    </div>
+  </header>
+
+  <main class="map-stage" id="mapStage">
+    <div class="watermark">237 POLYGON MEZŐ · 165 KÖZPONTI · 6×12 KEZDŐSZIGET · WASD KAMERA</div>
+    <svg id="mapSvg" viewBox="0 0 1728 864" preserveAspectRatio="xMidYMid meet" role="application" aria-label="3v3 stratégiai térkép">
+      <image href="assets/terra-prime-3v3-preview-bg.svg" x="0" y="0" width="1728" height="864" preserveAspectRatio="none"/>
+      <g id="territories"></g><g id="resources"></g><g id="units"></g><g id="markers"></g><g id="effects"></g>
+    </svg>
+
+    <section class="team-hud left-team">
+      <b>BAL SZÖVETSÉG</b><span class="blue">KÉK · JÁTÉKOS</span><span class="green">ZÖLD · AI</span><span class="yellow">SÁRGA · AI</span>
+    </section>
+    <section class="team-hud right-team">
+      <b>JOBB SZÖVETSÉG</b><span class="purple">LILA · AI</span><span class="red">PIROS · AI</span><span class="pink">RÓZSASZÍN · AI</span>
+    </section>
+
+    <section class="economy" id="economyPanel">
+      <div><small>KÖR</small><b id="turnValue">1</b></div><div><small>ELLÁTMÁNY</small><b id="resSupply">0</b></div><div><small>FÉM</small><b id="resMetal">0</b></div><div><small>OLAJ</small><b id="resOil">0</b></div><div><small>ENERGIA</small><b id="resEnergy">0</b></div><div><small>TECH</small><b id="resTech">0</b></div>
+    </section>
+
+    <section class="panel" id="infoPanel">
+      <div class="row"><strong id="fieldName">Kattints egy mezőre</strong><span id="fieldOwner">—</span></div>
+      <small id="fieldMeta">Egérgörgő = zoom · húzás = kamera · WASD = kamera · mobilon pinch + egyujjas húzás.</small>
+      <div id="unitInfo" class="unit-info"></div>
+      <div id="production" class="production"></div>
+    </section>
+
+    <section class="battle-controls">
+      <button id="newGame">ÚJ JÁTÉK</button><button id="endTurn" class="primary">KÖR VÉGE</button>
+      <span id="phaseText">Kék játékos köre</span>
+    </section>
+
+    <div class="legend"><span><i class="swatch blue-bg"></i>Kék</span><span><i class="swatch green-bg"></i>Zöld</span><span><i class="swatch yellow-bg"></i>Sárga</span><span><i class="swatch purple-bg"></i>Lila</span><span><i class="swatch red-bg"></i>Piros</span><span><i class="swatch pink-bg"></i>Rózsaszín</span><span><i class="move-dot"></i>Mozgás</span><span><i class="attack-dot"></i>Támadás</span></div>
+    <div id="message" class="message" aria-live="polite"></div>
+  </main>
+
+  <footer class="statusbar"><span><b id="fieldCount">237</b> stabil mezőazonosító</span><span><b>1</b> közös koordinátarendszer</span><span><b>SVG viewBox</b> kamera</span><span><b>WASD</b> pásztázás</span><span class="hint">Rövid érintés = kijelölés/parancs · húzás ≠ kijelölés · semleges zsoldos csak kijelölt mezőn látszik</span></footer>
+</div>
+<script src="preview-3v3-mapdata.js"></script>
+<script>
+window.KOLONIA_3V3_MAP_READY.then(function(){
+  var s=document.createElement('script');
+  s.src='preview-3v3.js';
+  document.body.appendChild(s);
+}).catch(function(err){
+  console.error(err);
+  var box=document.getElementById('message');
+  if(box){box.textContent='A 3v3 pályaadat betöltése sikertelen.';box.className='message show loss';}
+});
+</script>
+</body>
+</html>
