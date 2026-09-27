@@ -1,0 +1,47 @@
+TERRA-PRIME 3v3 KONTINENSFRONT — GAMEPLAY PREVIEW V2
+
+ÚJ FÁJLOK:
+- preview-3v3.html
+- preview-3v3.css
+- preview-3v3.js
+- preview-3v3-mapdata.js
+- PREVIEW-3V3-NOTES.md
+- PREVIEW-3V3-MANIFEST.txt
+- PREVIEW-3V3-VALIDATION.txt
+- assets/terra-prime-3v3-preview-bg.png
+
+MEGLÉVŐ FÁJLBAN EGYETLEN INTEGRÁCIÓS MÓDOSÍTÁS:
+- index.html: külön `3v3 PREVIEW` főmenügomb, amely a preview buildet nyitja meg.
+
+NEM MÓDOSULT:
+- a három normál pálya listája és pályaadatai;
+- vz-game-v14.js;
+- vz-ai-v15.js;
+- vz-modes-v16.js;
+- vz-v18-patch.js;
+- vz-unit-fix-v75.js;
+- a meglévő pályaassetek.
+
+FŐ ELLENŐRZÉSEK:
+- 237 polygon mező;
+- 165 központi kontinensmező;
+- 6 × 12 kezdőszigeti mező;
+- 6 nagyobb, játékosszínű fővárosi polygon;
+- szigetenként legalább 3 falu, 2 bánya, 1 olaj, 1 erőmű;
+- 6 logikai tengeri kapcsolat;
+- Terra-Prime részletes terepgrafikájából maszkolt központi kontinens + 6 kezdősziget háttér;
+- minden mező stabil ID + polygon + belső anchor + szomszédlista;
+- minden anchor saját polygonon belül;
+- teljes gráf összefüggő;
+- mozgás/támadás marker target.anchor alapján;
+- egységpozíció field.anchor alapján;
+- semleges zsoldos csak kijelöléskor látszik;
+- egérgörgős zoom, drag pan, mobil pinch/pan, tap kijelölés;
+- W/A/S/D + nyílbillentyűs kameramozgatás;
+- 3v3 körkezelés és nyersanyagtermelés;
+- területfoglalás-első AI mindkét csapaton;
+- külön Hard stratégiai súlyok, extra nyersanyagcsalás nélkül;
+- strike vs infantry / strike vs tank / tank vs strike matchup balansz;
+- normál pályaválasztó továbbra sem tartalmazza a preview-t.
+
+AUTOMATIKUS VALIDÁCIÓ: 32/32 OK.
