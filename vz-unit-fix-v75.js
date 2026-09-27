@@ -197,7 +197,7 @@
    scaled as small stand-up battlefield pieces instead of synthetic CSS figures. */
 (function(){
   const css=document.createElement('style');
-  css.textContent=\`
+  css.textContent=`
     #battleView .map-unit-marker{
       width:52px!important;height:52px!important;min-width:52px!important;min-height:52px!important;
       max-width:52px!important;max-height:52px!important;background:transparent!important;border:0!important;
@@ -224,7 +224,7 @@
       #battleView .map-unit-marker .v79-field-unit{width:40px!important;height:37px!important;min-width:40px!important;min-height:37px!important;max-width:40px!important;max-height:37px!important;bottom:10px!important}
       #battleView .map-unit-marker>b{top:38px!important;font-size:6px!important}
     }
-  \`;
+  `;
   document.head.appendChild(css);
 
   function v79Refresh(){
@@ -276,7 +276,7 @@
 /* V80 — slightly larger field miniatures. */
 (function(){
   const style=document.createElement('style');
-  style.textContent=\`
+  style.textContent=`
     #battleView .map-unit-marker .v79-field-unit{
       width:58px!important;height:53px!important;min-width:58px!important;min-height:53px!important;
       max-width:58px!important;max-height:53px!important;bottom:12px!important;
@@ -289,7 +289,7 @@
       }
       #battleView .map-unit-marker>b{top:46px!important}
     }
-  \`;
+  `;
   document.head.appendChild(style);
 })();
 
@@ -297,7 +297,7 @@
 /* V81 — one more small size increase for field miniatures. */
 (function(){
   const style=document.createElement('style');
-  style.textContent=\`
+  style.textContent=`
     #battleView .map-unit-marker .v79-field-unit{
       width:66px!important;height:60px!important;min-width:66px!important;min-height:60px!important;
       max-width:66px!important;max-height:60px!important;bottom:12px!important;
@@ -310,7 +310,7 @@
       }
       #battleView .map-unit-marker>b{top:52px!important}
     }
-  \`;
+  `;
   document.head.appendChild(style);
 })();
 
@@ -321,7 +321,7 @@
 /* V88 — clean field-unit layer. One coordinate system only: sector.x / sector.y. */
 (function(){
   const style=document.createElement('style');
-  style.textContent=\`
+  style.textContent=`
     #battleView .territory-token[data-sector]>.map-unit-marker{display:none!important}
     #battleView #sectorMap>.field-unit-v88{
       position:absolute!important;width:0!important;height:0!important;
@@ -345,7 +345,7 @@
       #battleView #sectorMap>.field-unit-v88 .field-unit-art-v88{width:56px!important;height:51px!important}
       #battleView #sectorMap>.field-unit-v88 .field-unit-count-v88{top:3px!important;font-size:6px!important}
     }
-  \`;
+  `;
   document.head.appendChild(style);
 
   function renderFieldUnitsV88(){
@@ -398,7 +398,7 @@
    This avoids using sector centroid coordinates, which can sit outside irregular fields. */
 (function(){
   const style=document.createElement('style');
-  style.textContent=\`
+  style.textContent=`
     #battleView #sectorMap>.field-unit-v88{
       transform:translate(-50%,-50%)!important;
     }
@@ -408,7 +408,7 @@
     #battleView #sectorMap>.field-unit-v88 .field-unit-count-v88{
       top:1px!important;
     }
-  \`;
+  `;
   document.head.appendChild(style);
 
   function anchorUnitsToTerritoriesV90(){
@@ -438,7 +438,7 @@
    Do not translate the zero-size root vertically, which previously shifted the whole model off-field. */
 (function(){
   const style=document.createElement('style');
-  style.textContent=\`
+  style.textContent=`
     #battleView #sectorMap>.field-unit-v88{
       transform:translateX(-50%)!important;
     }
@@ -449,7 +449,7 @@
     #battleView #sectorMap>.field-unit-v88 .field-unit-count-v88{
       left:0!important;top:3px!important;transform:translateX(-50%)!important;
     }
-  \`;
+  `;
   document.head.appendChild(style);
 
   function snapV91(){
@@ -475,7 +475,7 @@
    Removes the detached map-level V88 layer entirely. */
 (function(){
   const style=document.createElement('style');
-  style.textContent=\`
+  style.textContent=`
     #battleView #sectorMap>.field-unit-v88{display:none!important;visibility:hidden!important}
     #battleView .territory-token[data-sector]>.map-unit-marker{
       left:50%!important;top:50%!important;
@@ -492,7 +492,7 @@
       left:50%!important;top:auto!important;bottom:-12px!important;
       transform:translateX(-50%)!important;
     }
-  \`;
+  `;
   document.head.appendChild(style);
 
   function bindV92(){

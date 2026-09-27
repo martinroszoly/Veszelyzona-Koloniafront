@@ -426,6 +426,10 @@
   };
 
   /* Team AI: territory expansion first, enemy destruction second. */
+  /* This optional legacy AI extension is loaded after the function-scoped
+     team-AI module on some builds.  Do not abort the entire map module when
+     that private helper is unavailable. */
+  if(typeof allyTurn!=='function')return;
   const oldAllyTurn=allyTurn;
   allyTurn=async function(side,owner,level){
     if(!modeHas(side))return oldAllyTurn(side,owner,level);
