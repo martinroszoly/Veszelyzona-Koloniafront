@@ -8,8 +8,8 @@
     ['purple','B','ai','alien'],['red','B','ai','alien'],['pink','B','ai','alien']
   ];
   let map=maps.find(item=>item.id===id);
-  if(!map){map={id,name:'Terra-Prime // 3v3 Kontinensfront',image:'assets/battlemap-grandfront-v28.png',text:'Hat kezdőbázis, 237 stratégiai körzet és teljes 3v3 hadszíntér.',stats:['3v3','237 KÖRZET','6 FŐVÁROS']};maps.push(map)}
-  Object.assign(map,{name:'Terra-Prime // 3v3 Kontinensfront',image:'assets/battlemap-grandfront-v28.png',text:'Hat kezdőbázis, 237 stratégiai körzet és teljes 3v3 hadszíntér.',stats:['3v3','237 KÖRZET','6 FŐVÁROS']});
+  if(!map){map={id,name:'Terra-Prime // 3v3 Kontinensfront',image:'assets/terra-prime-3v3-preview-bg.svg',text:'Hat kezdőbázis, 237 stratégiai körzet és teljes 3v3 hadszíntér.',stats:['3v3','237 KÖRZET','6 FŐVÁROS']};maps.push(map)}
+  Object.assign(map,{name:'Terra-Prime // 3v3 Kontinensfront',image:'assets/terra-prime-3v3-preview-bg.svg',text:'Hat kezdőbázis, 237 stratégiai körzet és teljes 3v3 hadszíntér.',stats:['3v3','237 KÖRZET','6 FŐVÁROS']});
   state.teamSlots=state.teamSlots||defaults.map(([position,team,controller,race])=>({position,color:position,team,controller,race,difficulty:'medium'}));
 
   function options(list,value){return list.map(([key,label])=>`<option value="${key}" ${key===value?'selected':''}>${label}</option>`).join('')}

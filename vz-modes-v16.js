@@ -252,7 +252,9 @@
   createGrid=function(){state.teamConfigured=false;state.surrenderFlags=[];baseCreate()};
   const baseStart=startBattle;
   startBattle=function(){
-    if(state.battleMode!=='1v1'&&state.map!==grandId){state.map=grandId;toast('A csapatmód a Teljes kontinensfront pályán indul.');}
+    /* 2v1/1v2/2v2 use the legacy grandfront.  The dedicated 3v3 map must
+       keep its own selected map instead of being silently replaced here. */
+    if(['2v1','1v2','2v2'].includes(state.battleMode)&&state.map!==grandId){state.map=grandId;toast('A csapatmód a Teljes kontinensfront pályán indul.');}
     baseStart();
   };
 
@@ -345,7 +347,7 @@
   ];
   state.teamSlots=state.teamSlots||defaults.map(slot=>({...slot}));
   const gameMap=maps.find(map=>map.id===mapId);
-  if(gameMap){gameMap.image='assets/terra-prime-3v3-preview-bg.svg';gameMap.text='Hat külön kezdőbázis, nagy központi front és szabadon beállítható 3v3 csapatok.';gameMap.stats=['3v3','237 KÖRZET','6 FŐVÁROS'];}
+  if(gameMap){gameMap.image='assets/terra-prime-3v3-preview-bg.svg';gameMap.text='Hat kezdőbázis, nagy központi front és szabadon beállítható 3v3 csapatok.';gameMap.stats=['3v3','237 KÖRZET','6 FŐVÁROS'];}
 
   function slotOptions(values,current,label){return `<label><span>${label}</span><select>${values.map(([value,text])=>`<option value="${value}" ${value===current?'selected':''}>${text}</option>`).join('')}</select></label>`}
   function renderTeamSlots(){
