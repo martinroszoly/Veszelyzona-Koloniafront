@@ -330,6 +330,82 @@
   aiEconomy=function(){economy();const base=state.aiBase,side=enemyOf(state.faction);if(!base?.buildings?.vehicleFactory)return;const vehicle=side==='human'?'apc':'hover',heavy=side==='human'?'tank':'alienTank';if(state.turn>5&&base.queue.length<3){const type=state.turn%3===0?heavy:vehicle;if(base.buildings[unitSpecs[type].building]&&aiCanAfford(unitSpecs[type].cost))aiQueue(type)}};
 })();
 
+/* V103 — teljes 3v3 csapatbeállítás és egységes térképi jelölők. */
+(function(){
+  const mapId='island3v3';
+  const palette={blue:'#32bfff',green:'#45d17a',yellow:'#ffd34f',purple:'#a56cff',red:'#ff4f58',pink:'#ff68c9'};
+  const labels={blue:'Kék',green:'Zöld',yellow:'Sárga',purple:'Lila',red:'Piros',pink:'Rózsaszín'};
+  const defaults=[
+    {position:'blue',color:'blue',team:'A',controller:'player',race:'human',difficulty:'medium'},
+    {position:'green',color:'green',team:'A',controller:'ai',race:'human',difficulty:'medium'},
+    {position:'yellow',color:'yellow',team:'A',controller:'ai',race:'human',difficulty:'medium'},
+    {position:'purple',color:'purple',team:'B',controller:'ai',race:'alien',difficulty:'medium'},
+    {position:'red',color:'red',team:'B',controller:'ai',race:'alien',difficulty:'medium'},
+    {position:'pink',color:'pink',team:'B',controller:'ai',race:'alien',difficulty:'medium'}
+  ];
+  state.teamSlots=state.teamSlots||defaults.map(slot=>({...slot}));
+  const gameMap=maps.find(map=>map.id===mapId);
+  if(gameMap){gameMap.image='assets/terra-prime-3v3-preview-bg.svg';gameMap.text='Hat külön kezdőbázis, nagy központi front és szabadon beállítható 3v3 csapatok.';gameMap.stats=['3v3','237 KÖRZET','6 FŐVÁROS'];}
+
+  function slotOptions(values,current,label){return `<label><span>${label}</span><select>${values.map(([value,text])=>`<option value="${value}" ${value===current?'selected':''}>${text}</option>`).join('')}</select></label>`}
+  function renderTeamSlots(){
+    const host=document.querySelector('#teamSetup');if(!host||state.map!==mapId)return;
+    let panel=document.querySelector('#v103TeamSlots');
+    if(!panel){panel=document.createElement('section');panel.id='v103TeamSlots';panel.className='v103-team-slots';host.append(panel)}
+    const colors=Object.keys(palette).map(key=>[key,labels[key]]),levels=Object.entries(difficulties).map(([key,value])=>[key,value.name]);
+    panel.innerHTML=`<div class="v103-heading"><small>3V3 CSAPATHELYEK</small><b>Minden hely külön állítható</b></div><div class="v103-slot-grid">${state.teamSlots.map((slot,index)=>`<article class="v103-slot" data-v103-slot="${index}" style="--slot:${palette[slot.color]}"><header><i></i><strong>${slot.team}. SZÖVETSÉG · ${index%3+1}. BÁZIS</strong></header><div>${slotOptions([['player','Játékos'],['ai','AI'],['off','Kikapcsolva']],slot.controller,'IRÁNYÍTÁS')}${slotOptions([['human','Emberi'],['alien','Idegen']],slot.race,'FAJ')}${slotOptions(colors,slot.color,'SZÍN')}${slotOptions(levels,slot.difficulty,'ERŐSSÉG')}</div></article>`).join('')}</div>`;
+    panel.querySelectorAll('[data-v103-slot]').forEach(card=>{const index=+card.dataset.v103Slot,selects=card.querySelectorAll('select');selects.forEach((select,field)=>select.dataset.v103Field=['controller','race','color','difficulty'][field]);selects.forEach(select=>select.dataset.v103Index=index)});
+  }
+  const previousMaps=renderMaps;
+  renderMaps=function(){previousMaps();renderTeamSlots()};
+  document.addEventListener('change',event=>{
+    const select=event.target.closest('[data-v103-field]');if(!select)return;
+    const index=+select.dataset.v103Index,field=select.dataset.v103Field,slot=state.teamSlots[index];if(!slot)return;
+    if(field==='color'){
+      const other=state.teamSlots.find((item,at)=>at!==index&&item.color===select.value);
+      if(other)other.color=slot.color;
+    }
+    slot[field]=select.value;
+    const firstPlayer=state.teamSlots.find(item=>item.controller==='player');if(firstPlayer){state.spawnColor=firstPlayer.position;state.faction=firstPlayer.race;}
+    renderTeamSlots();
+  });
+
+  function applySlots(){
+    if(state.map!==mapId||state._v103Applied)return;
+    const capitals=state.grid.filter(sector=>sector.spawnColor);
+    if(capitals.length<6)return;
+    state._v103Applied=true;
+    capitals.forEach(base=>{
+      const slot=state.teamSlots.find(item=>item.position===base.spawnColor);if(!slot)return;
+      base.spawnColor=slot.color;base.teamId=slot.team;base.controller=slot.controller;base.controlSide=slot.color;
+      if(slot.controller==='off'){base.owner='neutral';base.isBase=false;base.bunker=false;base.unit=null;return}
+      const local=slot.controller==='player',type=slot.race==='human'?'infantry':'alien';
+      base.owner=local?state.faction:slot.race;base.isBase=true;base.bunker=true;base.name=`${labels[slot.color]} ${slot.race==='human'?'kolónia':'Xeno'} főváros`;
+      const unit=unitFor(slot.race,930+capitals.indexOf(base),type);unit.side=local?state.faction:`v103-${slot.position}`;unit.count=1000;unit.composition={[type]:1000};unit.teamId=slot.team;unit.race=slot.race;base.unit=unit;
+    });
+  }
+  const previousCreate=createGrid;
+  createGrid=function(){state._v103Applied=false;previousCreate()};
+  const previousRender=renderBattle;
+  renderBattle=function(){if(state.map===mapId)applySlots();previousRender();const scene=document.querySelector('.planet-scene');scene?.classList.toggle('island3v3',state.map===mapId);if(state.map!==mapId)return;document.querySelectorAll('.territory-token[data-sector]').forEach(token=>{const sector=state.grid.find(item=>String(item.id)===String(token.dataset.sector));if(sector?.controlSide&&palette[sector.controlSide])token.style.setProperty('--army-color',palette[sector.controlSide]);});};
+
+  async function v103AiTurn(){
+    if(state.map!==mapId||state.finished)return;
+    for(const slot of state.teamSlots.filter(item=>item.controller==='ai')){
+      const side=`v103-${slot.position}`,profile=difficulties[slot.difficulty]||difficulties.medium,steps=Math.max(1,profile.tempo||1);
+      for(let step=0;step<steps;step++){
+        const candidates=state.grid.filter(sector=>sector.unit?.side===side&&!hasMoved(sector.unit)).flatMap(from=>neighbors(from).filter(target=>target.teamId!==slot.team&&target.unit?.teamId!==slot.team).map(target=>({from,target,score:(target.resource==='terrain'?0:30)-(target.unit?.count||0)/80+Math.random()*8}))).sort((a,b)=>b.score-a.score);
+        const action=candidates[0];if(!action)break;const {from,target}=action;state.aiActive=from.id;state.aiTarget=target.id;renderBattle();await pause(260);
+        if(!target.unit){target.unit=from.unit;from.unit=null;target.owner=slot.race;target.controlSide=slot.color;target.teamId=slot.team;target.unit.movedTurn=state.turn;}
+        else if(target.unit.teamId!==slot.team){const part=takeDetachment(from.unit,1);from.unit=null;await resolveDetachedConflict(from,target,part,profile.army||1);if(target.unit===part){target.owner=slot.race;target.controlSide=slot.color;target.teamId=slot.team;target.unit.side=side;target.unit.teamId=slot.team;}}
+        state.aiActive=null;state.aiTarget=null;renderBattle();
+      }
+    }
+  }
+  const previousEnd=endTurn;
+  endTurn=async function(){await previousEnd();if(state.map===mapId&&!state.finished){await v103AiTurn();renderBattle();}};
+})();
+
 
 /* V99 — field-centered orders, aggressive team AI, stronger Hard. */
 (function(){
@@ -406,9 +482,9 @@
   if(!maps.some(m=>m.id===id))maps.push({
     id,
     name:'Terra-Prime // Hat Sziget 3v3',
-    image:'assets/battlemap-island3v3-v102.svg',
-    text:'Három-három kezdősziget, hat főváros és egy nagy, semleges központi hadszíntér.',
-    stats:['3v3','6 FŐVÁROS','KÖZPONTI FRONT']
+    image:'assets/terra-prime-3v3-preview-bg.svg',
+    text:'Hat külön kezdőbázis, 237 körzet és szabadon beállítható 3v3 csapatok.',
+    stats:['3v3','237 KÖRZET','6 FŐVÁROS']
   });
   state.spawnColor=state.spawnColor||'blue';
   const positions=[
