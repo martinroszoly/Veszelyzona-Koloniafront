@@ -54,6 +54,17 @@
 
   <footer class="statusbar"><span><b id="fieldCount">237</b> stabil mezőazonosító</span><span><b>1</b> közös koordinátarendszer</span><span><b>SVG viewBox</b> kamera</span><span><b>WASD</b> pásztázás</span><span class="hint">Rövid érintés = kijelölés/parancs · húzás ≠ kijelölés · semleges zsoldos csak kijelölt mezőn látszik</span></footer>
 </div>
-<script src="preview-3v3-mapdata.js"></script><script src="preview-3v3.js"></script>
+<script src="preview-3v3-mapdata.js"></script>
+<script>
+window.KOLONIA_3V3_MAP_READY.then(function(){
+  var s=document.createElement('script');
+  s.src='preview-3v3.js';
+  document.body.appendChild(s);
+}).catch(function(err){
+  console.error(err);
+  var box=document.getElementById('message');
+  if(box){box.textContent='A 3v3 pályaadat betöltése sikertelen.';box.className='message show loss';}
+});
+</script>
 </body>
 </html>
