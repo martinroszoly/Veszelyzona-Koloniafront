@@ -8,7 +8,7 @@ TERRA-PRIME 3v3 KONTINENSFRONT — GAMEPLAY PREVIEW V2
 - PREVIEW-3V3-NOTES.md
 - PREVIEW-3V3-MANIFEST.txt
 - PREVIEW-3V3-VALIDATION.txt
-- assets/terra-prime-3v3-preview-bg.png
+- assets/terra-prime-3v3-preview-bg.svg
 
 MEGLÉVŐ FÁJLBAN EGYETLEN INTEGRÁCIÓS MÓDOSÍTÁS:
 - index.html: külön `3v3 PREVIEW` főmenügomb, amely a preview buildet nyitja meg.
