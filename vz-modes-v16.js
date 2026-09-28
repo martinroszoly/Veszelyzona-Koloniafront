@@ -520,7 +520,11 @@
     /* A 3v3 bázisokat kizárólag akkor szabad kiosztani, amikor a tényleges,
        fehér határvonalas mezőháló már elkészült. Korábban a két ideiglenes
        betöltő mezőre futott le, ezért a négy további kezdőbázis eltűnt. */
-    if(state.map!==id||state._v102configured||!state.visualTerritoryGridReady||state.grid?.length<20)return;
+    if(state.map!==id||!state.visualTerritoryGridReady||state.grid?.length<20)return;
+    /* A régebbi renderelési körökből maradhatott egy igaz jelző. Csak akkor
+       hagyjuk érintetlenül a hálót, ha a hat, színhez kötött főváros tényleg
+       már rajta van a végleges térképen. */
+    if(state._v102configured&&state.grid.filter(g=>g.spawnColor).length===6)return;
     state._v102configured=true;
     const used=new Set(),closest=(x,y)=>state.grid.filter(g=>!used.has(g.id)).sort((a,b)=>Math.hypot(a.x-x,a.y-y)-Math.hypot(b.x-x,b.y-y))[0];
     state.grid.forEach((g,i)=>{
