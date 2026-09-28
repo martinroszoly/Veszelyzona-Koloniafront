@@ -517,7 +517,10 @@
 
   /* Six capitals only; every other field starts neutral. */
   function configure(){
-    if(state.map!==id||state._v102configured||!state.grid?.length)return;
+    /* A 3v3 bázisokat kizárólag akkor szabad kiosztani, amikor a tényleges,
+       fehér határvonalas mezőháló már elkészült. Korábban a két ideiglenes
+       betöltő mezőre futott le, ezért a négy további kezdőbázis eltűnt. */
+    if(state.map!==id||state._v102configured||!state.visualTerritoryGridReady||state.grid?.length<20)return;
     state._v102configured=true;
     const used=new Set(),closest=(x,y)=>state.grid.filter(g=>!used.has(g.id)).sort((a,b)=>Math.hypot(a.x-x,a.y-y)-Math.hypot(b.x-x,b.y-y))[0];
     state.grid.forEach((g,i)=>{
