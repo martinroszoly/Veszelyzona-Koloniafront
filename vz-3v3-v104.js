@@ -40,6 +40,24 @@
     .planet-scene.island3v3 .resource-pin,.planet-scene.island3v3 .territory-token:not(.selected) .sector-label,.planet-scene.island3v3 .base-star{display:none!important}
   `;
   document.head.appendChild(style);
+  /* A 3v3 mezői ugyanabból a kattintható régiómodellből készülnek, mint a
+     többi pálya. Itt a közös határokat határozottan kirajzoljuk: nem pontok
+     és nem útvonalvonalak, hanem egymáshoz érő szabálytalan körzetek. */
+  const previousPaintTerritoryMap=paintTerritoryMap;
+  paintTerritoryMap=function(canvas,model){
+    previousPaintTerritoryMap(canvas,model);
+    if(state.map!==id||!model?.region||!model?.valid)return;
+    const ctx=canvas.getContext('2d'),w=model.width,h=model.height,regions=model.region,valid=model.valid;
+    const image=ctx.getImageData(0,0,w,h),data=image.data;
+    for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
+      const at=y*w+x,current=regions[at];
+      if(!valid.has(current))continue;
+      const edge=(valid.has(regions[at+1])&&regions[at+1]!==current)||(valid.has(regions[at+w])&&regions[at+w]!==current);
+      if(!edge)continue;
+      for(const offset of [at,at+1,at+w]){const p=offset*4;data[p]=230;data[p+1]=241;data[p+2]=220;data[p+3]=145;}
+    }
+    ctx.putImageData(image,0,0);
+  };
   const battleRender=renderBattle;
   renderBattle=function(){battleRender();if(state.map!==id)return;const scene=document.querySelector('.planet-scene');if(!scene)return;scene.querySelectorAll('.map-island').forEach(node=>node.remove());scene.style.transform='none';};
   /* A kísérleti zoom az egész vásznat széthúzta. A 3v3 pálya alapállapota
