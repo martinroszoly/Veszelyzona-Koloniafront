@@ -8,8 +8,8 @@
     ['purple','B','ai','alien'],['red','B','ai','alien'],['pink','B','ai','alien']
   ];
   let map=maps.find(item=>item.id===id);
-  if(!map){map={id,name:'Terra-Prime // 3v3 Kontinensfront',image:'assets/terra-prime-3v3-hadszinter.webp',text:'Egybefüggő, hat bázisos hadszíntér: a külső bázisokat kizárólag hidak kapcsolják a kontinenshez.',stats:['3v3','6 BÁZIS','3V3']};maps.push(map)}
-  Object.assign(map,{name:'Terra-Prime // 3v3 Kontinensfront',image:'assets/terra-prime-3v3-hadszinter.webp',text:'Egybefüggő, hat bázisos hadszíntér: a külső bázisokat kizárólag hidak kapcsolják a kontinenshez.',stats:['3v3','6 BÁZIS','3V3']});
+  if(!map){map={id,name:'Terra-Prime // 3v3 Kontinensfront',image:'assets/terra-prime-3v3-clean-v2.webp',text:'Egybefüggő, hat bázisos hadszíntér: szabálytalan mezőkkel, pont- és vonalháló nélkül.',stats:['3v3','6 BÁZIS','3V3']};maps.push(map)}
+  Object.assign(map,{name:'Terra-Prime // 3v3 Kontinensfront',image:'assets/terra-prime-3v3-clean-v2.webp',text:'Egybefüggő, hat bázisos hadszíntér: szabálytalan mezőkkel, pont- és vonalháló nélkül.',stats:['3v3','6 BÁZIS','3V3']});
   state.teamSlots=state.teamSlots||defaults.map(([position,team,controller,race])=>({position,color:position,team,controller,race,difficulty:'medium'}));
 
   function options(list,value){return list.map(([key,label])=>`<option value="${key}" ${key===value?'selected':''}>${label}</option>`).join('')}
@@ -34,9 +34,10 @@
      térképdarabok, valamint nincs pontokat összekötő útvonalháló. */
   const style=document.createElement('style');
   style.textContent=`
-    .planet-scene.island3v3{background:#052637 url('assets/terra-prime-3v3-hadszinter.webp') center/100% 100% no-repeat!important;aspect-ratio:2048/1150!important;overflow:hidden;transform:none!important}
+    .planet-scene.island3v3{background:#052637 url('assets/terra-prime-3v3-clean-v2.webp') center/100% 100% no-repeat!important;aspect-ratio:2048/1150!important;overflow:hidden;transform:none!important}
     .planet-scene.island3v3 .territory-hit-layer{z-index:5!important;image-rendering:auto!important}
     .planet-scene.island3v3 .territory-token{z-index:6!important}
+    .planet-scene.island3v3 .resource-pin,.planet-scene.island3v3 .territory-token:not(.selected) .sector-label,.planet-scene.island3v3 .base-star{display:none!important}
   `;
   document.head.appendChild(style);
   const battleRender=renderBattle;
