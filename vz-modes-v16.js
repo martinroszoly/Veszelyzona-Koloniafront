@@ -488,7 +488,7 @@
   if(!maps.some(m=>m.id===id))maps.push({
     id,
     name:'Terra-Prime // Hat Sziget 3v3',
-    image:'assets/terra-prime-3v3-preview-bg.svg',
+    image:'assets/battlemap-grandfront-v28.png',
     text:'Hat külön kezdőbázis, 237 körzet és szabadon beállítható 3v3 csapatok.',
     stats:['3v3','237 KÖRZET','6 FŐVÁROS']
   });
