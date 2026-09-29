@@ -139,7 +139,9 @@
     const ctx=canvas.getContext('2d',{alpha:true}),image=ctx.createImageData(model.width,model.height),data=image.data,byRegion=new Map(state.grid.map(s=>[s.regionId,s]));
     const color={blue:[40,174,255],green:[52,210,119],yellow:[255,205,62],purple:[164,93,255],red:[255,73,89],pink:[255,93,192],human:[40,174,255],alien:[168,74,214],neutral:[220,225,210]};
     for(let i=0;i<model.region.length;i++){const region=model.region[i],s=byRegion.get(region);if(!s)continue;const side=s.controlSide||s.owner,c=color[side]||color.neutral,o=i*4;data[o]=c[0];data[o+1]=c[1];data[o+2]=c[2];data[o+3]=side==='neutral'?0:92;}
-    for(let y=1;y<model.height-1;y++)for(let x=1;x<model.width-1;x++){const i=y*model.width+x,a=model.region[i];if(!model.valid.has(a))continue;const b=model.region[i+1],d=model.region[i+model.width];if((model.valid.has(b)&&b!==a)||(model.valid.has(d)&&d!==a)){const s=byRegion.get(a),c=color[s?.controlSide||s?.owner]||color.neutral,o=i*4;data[o]=c[0];data[o+1]=c[1];data[o+2]=c[2];data[o+3]=s?.owner==='neutral'?150:210;}}
+    /* Két pixeles, világos kontúr: a határ a valódi kattintási rasterből
+       készül, ezért amit a játékos vonalnak lát, az ugyanaz a mezőhatár. */
+    for(let y=2;y<model.height-2;y++)for(let x=2;x<model.width-2;x++){const i=y*model.width+x,a=model.region[i];if(!model.valid.has(a))continue;const b=model.region[i+1],d=model.region[i+model.width];if((model.valid.has(b)&&b!==a)||(model.valid.has(d)&&d!==a)){const s=byRegion.get(a),c=color[s?.controlSide||s?.owner]||color.neutral;for(const at of [i,i+1,i+model.width,i+model.width+1]){const o=at*4;data[o]=c[0];data[o+1]=c[1];data[o+2]=c[2];data[o+3]=s?.owner==='neutral'?225:245;}}}
     ctx.clearRect(0,0,canvas.width,canvas.height);ctx.putImageData(image,0,0);
   }
   function install3v3(){
