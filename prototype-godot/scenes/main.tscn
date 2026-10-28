@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Script" path="res://scripts/camera_rig.gd" id="2_camera"]
+
+[node name="KoloniafrontPrototype" type="Node3D"]
+script = ExtResource("1_main")
+
+[node name="World" type="Node3D" parent="."]
+
+[node name="Map" type="Node3D" parent="World"]
+
+[node name="Units" type="Node3D" parent="World"]
+
+[node name="CameraRig" type="Node3D" parent="World"]
+script = ExtResource("2_camera")
+
+[node name="Camera3D" type="Camera3D" parent="World/CameraRig"]
+current = true
