@@ -3,19 +3,18 @@
 [ext_resource type="Script" path="res://scripts/test_map.gd" id="1_map"]
 [ext_resource type="Script" path="res://scripts/rts_camera.gd" id="2_camera"]
 
-[sub_resource type="Environment" id="Environment_main"]
-background_mode = 1
-background_color = Color(0.40, 0.57, 0.68, 1)
-sky = SubResource("Sky_main")
-
-[sub_resource type="Sky" id="Sky_main"]
-sky_material = SubResource("SkyMaterial_main")
-
 [sub_resource type="ProceduralSkyMaterial" id="SkyMaterial_main"]
 sky_top_color = Color(0.15, 0.29, 0.39, 1)
 sky_horizon_color = Color(0.62, 0.70, 0.72, 1)
 ground_bottom_color = Color(0.13, 0.16, 0.13, 1)
 ground_horizon_color = Color(0.54, 0.58, 0.51, 1)
+
+[sub_resource type="Sky" id="Sky_main"]
+sky_material = SubResource("SkyMaterial_main")
+
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 2
+sky = SubResource("Sky_main")
 
 [node name="TestMap" type="Node3D"]
 script = ExtResource("1_map")
