@@ -10,6 +10,7 @@
 | 360° vízszintes forgatás | Kód elkészült; futtatás még ellenőrizendő |
 | Nagyítás/kicsinyítés | Kód elkészült; futtatás még ellenőrizendő |
 | Dőlésszög rögzített | Kód nem enged dőlésbemenetet |
+| Biztonságos első renderelő | OpenGL 3 / Compatibility beállítva |
 | Windows build export | Nem része ennek az első ellenőrző szakasznak |
 | Régi játék/Main ág érintetlen | Külön ág; csak új `godot47-fresh/` fájlok kerülnek fel |
 
