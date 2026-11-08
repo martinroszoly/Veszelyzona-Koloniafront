@@ -6,6 +6,8 @@ Ez a frissen létrehozott projekt a `Veszelyzona_Koloniafront_TELJES_TERV_2026-1
 
 Elkészült az önálló Godot projekt, induló 3D jelenet, procedurálisan kirakott természetes terep graybox, erdőcsoportok, utak, sziklák, alap napfény/égbolt, valamint rögzített dőlésszögű, teljesen forgatható, mozgatható és nagyítható RTS kamera.
 
+Az első Windows-teszt kedvéért a projekt jelenleg az OpenGL 3 alapú Compatibility renderelővel indul. Ez elkerüli, hogy egy Vulkan-kompatibilitási vagy videokártya-illesztőprogram hiba már a szerkesztő megnyitását megakadályozza. A részletes 3D látvány fejlesztése előtt a célgépen külön ellenőrizzük a Forward+ renderelőt.
+
 Ez az első indíthatósági szakasz. Még nincs benne egység, foglalható pont, gáztermelés, harc, AI, Fog of War, minimap, hátország menü vagy többjátékos mód. Ezeket a terv szerinti későbbi szakaszokban, a felhasználói teszteredmény után kell hozzáadni. Nem állítjuk, hogy ez a minimális jelenet már futtatva lett: az elkészítési környezetben ellenőrizni kell Godot 4.7.2 alatt.
 
 ## Indítás Windows alatt
@@ -14,6 +16,8 @@ Ez az első indíthatósági szakasz. Még nincs benne egység, foglalható pont
 2. Telepítsd/indítsd el a Godot 4.7.2 normál szerkesztőjét.
 3. A Project Managerben válaszd az **Import** gombot, majd jelöld ki a `godot47-fresh/project.godot` fájlt.
 4. Nyisd meg a projektet, és nyomd meg az **F6**-ot az aktuális tesztjelenet futtatásához, vagy az **F5**-öt a főjelenethez.
+
+Ha a Project Manager egy korábbi, hibásan eltárolt példányt mutat, távolítsd el azt a projektlistából, majd az **Import** gombbal válaszd ki újra a frissen letöltött `godot47-fresh/project.godot` fájlt. Ez csak a projektlistából távolítja el a bejegyzést, a fájlokat nem törli.
 
 ## Kamera
 
