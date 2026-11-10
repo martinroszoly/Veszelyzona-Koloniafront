@@ -19,7 +19,7 @@ const RTS_UNIT := preload("res://scripts/rts_unit.gd")
 const CAPTURE_POINT := preload("res://scripts/capture_point.gd")
 const COVER_OBJECT := preload("res://scripts/cover_object.gd")
 const INFANTRY_SQUAD_COST := 120.0
-const INFANTRY_SQUAD_SIZE := 3
+const INFANTRY_SQUAD_SIZE := 5
 const LIGHT_VEHICLE_COST := 260.0
 const SUPPLY_LINK_DISTANCE := 290.0
 const INFANTRY_BUILD_TIME := 8.0
@@ -168,12 +168,18 @@ func _build_capture_points() -> void:
 		{"id": "V1", "position": Vector3(-156.0, 0.0, -36.0), "victory": true, "gas": 0.0},
 		{"id": "V2", "position": Vector3(0.0, 0.0, 0.0), "victory": true, "gas": 0.0},
 		{"id": "V3", "position": Vector3(156.0, 0.0, 36.0), "victory": true, "gas": 0.0},
-		{"id": "G1", "position": Vector3(-210.0, 0.0, -144.0), "victory": false, "gas": 2.0},
-		{"id": "G2", "position": Vector3(-188.0, 0.0, 116.0), "victory": false, "gas": 2.0},
-		{"id": "G3", "position": Vector3(-64.0, 0.0, 140.0), "victory": false, "gas": 2.0},
-		{"id": "G4", "position": Vector3(64.0, 0.0, -140.0), "victory": false, "gas": 2.0},
-		{"id": "G5", "position": Vector3(188.0, 0.0, -116.0), "victory": false, "gas": 2.0},
-		{"id": "G6", "position": Vector3(210.0, 0.0, 144.0), "victory": false, "gas": 2.0},
+		{"id": "G1", "position": Vector3(-210.0, 0.0, -144.0), "victory": false, "gas": 1.5},
+		{"id": "G2", "position": Vector3(-188.0, 0.0, 116.0), "victory": false, "gas": 1.5},
+		{"id": "G3", "position": Vector3(-64.0, 0.0, 140.0), "victory": false, "gas": 1.5},
+		{"id": "G4", "position": Vector3(64.0, 0.0, -140.0), "victory": false, "gas": 1.5},
+		{"id": "G5", "position": Vector3(188.0, 0.0, -116.0), "victory": false, "gas": 1.5},
+		{"id": "G6", "position": Vector3(210.0, 0.0, 144.0), "victory": false, "gas": 1.5},
+		{"id": "G7", "position": Vector3(-250.0, 0.0, 20.0), "victory": false, "gas": 1.5},
+		{"id": "G8", "position": Vector3(-120.0, 0.0, -190.0), "victory": false, "gas": 1.5},
+		{"id": "G9", "position": Vector3(0.0, 0.0, 200.0), "victory": false, "gas": 1.5},
+		{"id": "G10", "position": Vector3(120.0, 0.0, 190.0), "victory": false, "gas": 1.5},
+		{"id": "G11", "position": Vector3(250.0, 0.0, -20.0), "victory": false, "gas": 1.5},
+		{"id": "G12", "position": Vector3(0.0, 0.0, -200.0), "victory": false, "gas": 1.5},
 	]
 	for data in point_data:
 		var point = CAPTURE_POINT.new()
@@ -226,7 +232,7 @@ func _update_objective_status() -> void:
 		for point in _resource_points:
 			if point.owner_team_id == 0:
 				owned_resources += 1
-		objective_status.text = "★ GYŐZELMI PONT: %d / 3   ·   NYERSANYAG: %d / %d\nCél: elsőként 50 győzelmi pont." % [owned_victory, owned_resources, _resource_points.size()]
+	objective_status.text = "★ GYŐZELMI PONT: %d / 3   ·   NYERSANYAG: %d / %d\nCél: elsőként 50 győzelmi pont." % [owned_victory, owned_resources, _resource_points.size()]
 
 func _update_supply_network() -> void:
 	for point in _capture_points:

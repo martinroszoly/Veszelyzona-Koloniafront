@@ -5,7 +5,7 @@ signal ownership_changed(point, old_owner: int, new_owner: int)
 signal supply_changed(point, supplied: bool)
 
 @export var point_id: String = "A"
-@export var capture_seconds: float = 6.0
+@export var capture_seconds: float = 12.0
 @export var capture_radius: float = 4.0
 @export var gas_income_per_second: float = 2.0
 @export var is_victory_point: bool = false

@@ -13,7 +13,7 @@ const UNIT_PROJECTILE := preload("res://scripts/projectile.gd")
 @export var attack_damage: float = 9.0
 @export var attack_cooldown: float = 0.78
 @export var is_vehicle: bool = false
-@export var sight_range: float = 32.0
+@export var sight_range: float = 96.0
 @export var unit_type: String = "infantry"
 @export var faction_id: String = ""
 @export var retreat_speed_multiplier: float = 1.65
@@ -69,28 +69,28 @@ func _ready() -> void:
 		attack_range = 26.0
 		attack_damage = 32.0
 		attack_cooldown = 1.55
-		sight_range = 42.0
+		sight_range = 126.0
 	elif unit_type == "tank":
 		max_health = 560.0
 		move_speed = 5.8
 		attack_range = 31.0
 		attack_damage = 58.0
 		attack_cooldown = 2.1
-		sight_range = 38.0
+		sight_range = 114.0
 	elif unit_type == "helicopter":
 		max_health = 260.0
 		move_speed = 11.5
 		attack_range = 30.0
 		attack_damage = 25.0
 		attack_cooldown = 1.45
-		sight_range = 48.0
+		sight_range = 144.0
 	elif unit_type == "fighter":
 		max_health = 220.0
 		move_speed = 15.0
 		attack_range = 35.0
 		attack_damage = 42.0
 		attack_cooldown = 2.0
-		sight_range = 56.0
+		sight_range = 168.0
 	_build_visuals()
 	var has_external_model := _apply_external_faction_model()
 	if unit_type == "vehicle":
