@@ -29,6 +29,7 @@ func register_capture_point(point) -> void:
 		return
 	_registered_points.append(point)
 	point.ownership_changed.connect(_on_point_ownership_changed)
+	point.supply_changed.connect(_on_point_supply_changed)
 	_recalculate_income()
 
 
@@ -75,11 +76,15 @@ func _on_point_ownership_changed(_point, old_owner: int, new_owner: int) -> void
 	_recalculate_income()
 
 
+func _on_point_supply_changed(_point, _supplied: bool) -> void:
+	_recalculate_income()
+
+
 func _recalculate_income() -> void:
 	for team_id in _income_by_team.keys():
 		_income_by_team[team_id] = 0.0
 	for point in _registered_points:
-		if not is_instance_valid(point) or point.owner_team_id < 0:
+		if not is_instance_valid(point) or point.owner_team_id < 0 or not point.is_supplied():
 			continue
 		_ensure_team(point.owner_team_id)
 		_income_by_team[point.owner_team_id] = get_income_per_second(point.owner_team_id) + point.gas_income_per_second

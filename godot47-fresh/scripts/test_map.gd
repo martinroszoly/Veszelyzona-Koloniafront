@@ -21,6 +21,8 @@ const INFANTRY_SQUAD_SIZE := 3
 
 var _capture_points: Array = []
 var _owned_point_count := 0
+var _supplied_point_count := 0
+var _supply_links: Array = []
 @onready var objective_status: Label = get_node_or_null("HUD/ObjectivePanel/Margin/ObjectiveStatus")
 @onready var economy_manager: Node = get_node_or_null("EconomyManager")
 @onready var resource_status: Label = get_node_or_null("HUD/ResourcePanel/Margin/ResourceStatus")
@@ -38,9 +40,11 @@ func _ready() -> void:
 	_build_grass_patches()
 	_build_test_cover()
 	_build_capture_points()
+	_build_supply_links()
 	_build_player_squad()
 	_build_enemy_test_squad()
 	_update_objective_status()
+	_update_supply_network()
 	if is_instance_valid(economy_manager):
 		economy_manager.resources_changed.connect(_on_resources_changed)
 		_on_resources_changed(0, economy_manager.get_gas(0), economy_manager.get_income_per_second(0))
@@ -159,11 +163,69 @@ func _on_capture_point_ownership_changed(_point, old_owner: int, new_owner: int)
 		_owned_point_count -= 1
 	if new_owner == 0:
 		_owned_point_count += 1
+	_update_supply_network()
 	_update_objective_status()
 
 func _update_objective_status() -> void:
 	if is_instance_valid(objective_status):
-		objective_status.text = "STRATÉGIAI PONTOK: %d / %d\nÁllj a körön belül 6 másodpercig a foglaláshoz." % [_owned_point_count, _capture_points.size()]
+		objective_status.text = "STRATÉGIAI PONTOK: %d / %d  ·  ELLÁTVA: %d\nAz elszigetelt pont nem termel gázt." % [_owned_point_count, _capture_points.size(), _supplied_point_count]
+
+func _update_supply_network() -> void:
+	for point in _capture_points:
+		point.set_supplied(false)
+	var enemy_chain_open := true
+	for index in range(_capture_points.size()):
+		var point = _capture_points[index]
+		if enemy_chain_open and point.owner_team_id == 1:
+			point.set_supplied(true)
+		else:
+			enemy_chain_open = false
+	var player_chain_open := true
+	for index in range(_capture_points.size() - 1, -1, -1):
+		var point = _capture_points[index]
+		if player_chain_open and point.owner_team_id == 0:
+			point.set_supplied(true)
+		else:
+			player_chain_open = false
+	_supplied_point_count = 0
+	for point in _capture_points:
+		if point.owner_team_id == 0 and point.is_supplied():
+			_supplied_point_count += 1
+	_update_supply_link_visuals()
+	_update_objective_status()
+
+func _build_supply_links() -> void:
+	for index in range(_capture_points.size() - 1):
+		var left_point = _capture_points[index]
+		var right_point = _capture_points[index + 1]
+		var link := MeshInstance3D.new()
+		link.name = "SupplyLink_%s_%s" % [left_point.point_id, right_point.point_id]
+		var mesh := BoxMesh.new()
+		var distance: float = left_point.global_position.distance_to(right_point.global_position)
+		mesh.size = Vector3(0.32, 0.04, distance)
+		link.mesh = mesh
+		link.position = (left_point.position + right_point.position) * 0.5 + Vector3.UP * 0.07
+		link.look_at(right_point.global_position + Vector3.UP * 0.07, Vector3.UP)
+		add_child(link)
+		_supply_links.append({"mesh": link, "left": left_point, "right": right_point})
+	_update_supply_link_visuals()
+
+func _update_supply_link_visuals() -> void:
+	for data in _supply_links:
+		var left = data.left
+		var right = data.right
+		var color := Color(0.24, 0.25, 0.22, 0.38)
+		if left.owner_team_id == 0 and right.owner_team_id == 0 and left.is_supplied() and right.is_supplied():
+			color = Color(0.16, 0.62, 1.0, 0.85)
+		elif left.owner_team_id == 1 and right.owner_team_id == 1 and left.is_supplied() and right.is_supplied():
+			color = Color(1.0, 0.20, 0.12, 0.85)
+		var material := StandardMaterial3D.new()
+		material.albedo_color = color
+		material.emission_enabled = color.a > 0.5
+		material.emission = Color(color.r, color.g, color.b) * 0.45
+		material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		data.mesh.material_override = material
 
 func _on_resources_changed(team_id: int, gas: float, income_per_second: float) -> void:
 	if team_id != 0 or not is_instance_valid(resource_status):

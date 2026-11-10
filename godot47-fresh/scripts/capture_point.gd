@@ -2,6 +2,7 @@ class_name CapturePoint
 extends Area3D
 
 signal ownership_changed(point, old_owner: int, new_owner: int)
+signal supply_changed(point, supplied: bool)
 
 @export var point_id: String = "A"
 @export var capture_seconds: float = 6.0
@@ -9,6 +10,7 @@ signal ownership_changed(point, old_owner: int, new_owner: int)
 @export var gas_income_per_second: float = 2.0
 
 var owner_team_id: int = -1
+var supplied := false
 var _capturing_team_id: int = -1
 var _capture_progress: float = 0.0
 var _ring: MeshInstance3D
@@ -61,6 +63,18 @@ func _physics_process(delta: float) -> void:
 
 func get_capture_ratio() -> float:
 	return clampf(_capture_progress / capture_seconds, 0.0, 1.0)
+
+
+func set_supplied(value: bool) -> void:
+	if supplied == value:
+		return
+	supplied = value
+	supply_changed.emit(self, supplied)
+	_update_visuals()
+
+
+func is_supplied() -> bool:
+	return owner_team_id >= 0 and supplied
 
 
 func _get_present_teams() -> Array[int]:
@@ -144,13 +158,15 @@ func _update_visuals() -> void:
 
 	var state_text := "SEMLEGES"
 	if owner_team_id == 0:
-		state_text = "EMBER"
+		state_text = "EMBER · ELLÁTVA" if supplied else "EMBER · ELSZIGETELT"
 	elif owner_team_id > 0:
-		state_text = "ELLENSÉG"
+		state_text = "ELLENSÉG · ELLÁTVA" if supplied else "ELLENSÉG · ELSZIGETELT"
 	if _capturing_team_id >= 0:
 		state_text = "FOGLALÁS %d%%" % roundi(ratio * 100.0)
 	_label.text = "%s PONT  +%.0f GÁZ/mp\n%s" % [point_id, gas_income_per_second, state_text]
 	_label.modulate = display_color.lightened(0.25)
+	if owner_team_id >= 0 and not supplied:
+		_label.modulate.a = 0.55
 
 
 func _team_color(team_id: int) -> Color:
