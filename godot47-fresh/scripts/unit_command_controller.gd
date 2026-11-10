@@ -1,5 +1,7 @@
 extends Node
 
+const MOVE_COMMAND_MARKER := preload("res://scripts/move_command_marker.gd")
+
 @export var player_team_id: int = 0
 @export var formation_spacing: float = 2.2
 @export var ray_length: float = 1000.0
@@ -56,6 +58,7 @@ func _finish_selection_drag(screen_position: Vector2, additive: bool) -> void:
 func _select_in_screen_rect(selection_rect: Rect2, additive: bool) -> void:
 	if not additive:
 		_clear_selection()
+	var squads_to_select: Array[String] = []
 	for node in get_tree().get_nodes_in_group("rts_units"):
 		var unit := node as RTSUnit
 		if unit == null or unit.team_id != player_team_id:
@@ -63,10 +66,11 @@ func _select_in_screen_rect(selection_rect: Rect2, additive: bool) -> void:
 		if camera.is_position_behind(unit.global_position):
 			continue
 		var screen_position := camera.unproject_position(unit.global_position + Vector3.UP)
-		if selection_rect.has_point(screen_position) and not unit.is_selected():
-			unit.set_selected(true)
-			_selected_units.append(unit)
-	_update_status("Kerettel kijelölve: %d egység" % _selected_units.size())
+		if selection_rect.has_point(screen_position) and not squads_to_select.has(unit.squad_id):
+			squads_to_select.append(unit.squad_id)
+	for squad_id in squads_to_select:
+		_select_squad(squad_id)
+	_update_selection_status("Kerettel kijelölve")
 
 
 func _normalized_drag_rect() -> Rect2:
@@ -111,12 +115,10 @@ func _select_at(screen_position: Vector2, additive: bool) -> void:
 		_clear_selection()
 	if clicked_unit != null and clicked_unit.team_id == player_team_id:
 		if additive and clicked_unit.is_selected():
-			clicked_unit.set_selected(false)
-			_selected_units.erase(clicked_unit)
+			_deselect_squad(clicked_unit.squad_id)
 		else:
-			clicked_unit.set_selected(true)
-			_selected_units.append(clicked_unit)
-	_update_status("Kijelölve: %d egység" % _selected_units.size())
+			_select_squad(clicked_unit.squad_id)
+	_update_selection_status("Kijelölve")
 
 
 func _issue_move_command(screen_position: Vector2) -> void:
@@ -127,6 +129,7 @@ func _issue_move_command(screen_position: Vector2) -> void:
 	if hit.is_empty():
 		return
 	var center: Vector3 = hit.position
+	_show_move_command_marker(center)
 	var columns := ceili(sqrt(float(_selected_units.size())))
 	for index in range(_selected_units.size()):
 		var row := index / columns
@@ -134,7 +137,43 @@ func _issue_move_command(screen_position: Vector2) -> void:
 		var offset_x := (float(column) - float(columns - 1) * 0.5) * formation_spacing
 		var offset_z := float(row) * formation_spacing
 		_selected_units[index].move_to(center + Vector3(offset_x, 0.0, offset_z))
-	_update_status("Mozgási parancs kiadva %d egységnek." % _selected_units.size())
+	_update_status("Mozgási parancs kiadva %d rajnak." % _selected_squad_count())
+
+
+func _select_squad(squad_id: String) -> void:
+	for node in get_tree().get_nodes_in_group("rts_units"):
+		var unit := node as RTSUnit
+		if unit == null or unit.team_id != player_team_id or unit.squad_id != squad_id:
+			continue
+		unit.set_selected(true)
+		if not _selected_units.has(unit):
+			_selected_units.append(unit)
+
+
+func _deselect_squad(squad_id: String) -> void:
+	for index in range(_selected_units.size() - 1, -1, -1):
+		var unit := _selected_units[index]
+		if is_instance_valid(unit) and unit.squad_id == squad_id:
+			unit.set_selected(false)
+			_selected_units.remove_at(index)
+
+
+func _selected_squad_count() -> int:
+	var squad_ids: Array[String] = []
+	for unit in _selected_units:
+		if is_instance_valid(unit) and not squad_ids.has(unit.squad_id):
+			squad_ids.append(unit.squad_id)
+	return squad_ids.size()
+
+
+func _update_selection_status(prefix: String) -> void:
+	_update_status("%s: %d raj / %d katona" % [prefix, _selected_squad_count(), _selected_units.size()])
+
+
+func _show_move_command_marker(world_position: Vector3) -> void:
+	var marker := MOVE_COMMAND_MARKER.new() as MoveCommandMarker
+	marker.position = world_position + Vector3.UP * 0.12
+	get_tree().current_scene.add_child(marker)
 
 
 func _raycast(screen_position: Vector2, collision_mask: int) -> Dictionary:

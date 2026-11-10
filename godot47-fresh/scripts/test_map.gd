@@ -94,6 +94,7 @@ func _build_player_squad() -> void:
 		var unit := RTS_UNIT.new() as RTSUnit
 		unit.name = "EmberInfantry_%02d" % (index + 1)
 		unit.team_id = 0
+		unit.squad_id = "ember_kezdoraj"
 		unit.collision_layer = 2
 		unit.collision_mask = 1 | 2
 		unit.position = squad_positions[index]
@@ -148,6 +149,7 @@ func _on_infantry_call_in_pressed() -> void:
 		var unit := RTS_UNIT.new() as RTSUnit
 		unit.name = "EmberReinforcement_%02d_%02d" % [_reinforcement_wave, index + 1]
 		unit.team_id = 0
+		unit.squad_id = "ember_erosites_%02d" % _reinforcement_wave
 		unit.collision_layer = 2
 		unit.collision_mask = 1 | 2
 		unit.position = Vector3(-2.4 + float(index) * 2.4, 0.0, wave_z)

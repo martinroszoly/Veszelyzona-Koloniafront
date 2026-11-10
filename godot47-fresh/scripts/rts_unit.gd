@@ -2,6 +2,7 @@ class_name RTSUnit
 extends CharacterBody3D
 
 @export var team_id: int = 0
+@export var squad_id: String = ""
 @export var move_speed: float = 7.0
 @export var acceleration: float = 22.0
 @export var arrival_distance: float = 0.35
@@ -14,6 +15,8 @@ var _selection_ring: MeshInstance3D
 
 func _ready() -> void:
 	add_to_group("rts_units")
+	if squad_id.is_empty():
+		squad_id = name
 	_build_visuals()
 	_destination = global_position
 

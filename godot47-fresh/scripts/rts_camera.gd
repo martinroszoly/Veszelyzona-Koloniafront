@@ -6,10 +6,10 @@ extends Node3D
 @export var pan_smoothing: float = 10.0
 @export var rotate_sensitivity: float = 0.006
 @export var zoom_smoothing: float = 10.0
-@export var min_zoom: float = 0.72
+@export var min_zoom: float = 0.45
 @export var max_zoom: float = 1.42
 @export var edge_scroll_enabled: bool = true
-@export var edge_scroll_margin: float = 18.0
+@export var edge_scroll_margin: float = 64.0
 @export var map_limit_x: float = 86.0
 @export var map_limit_z: float = 66.0
 

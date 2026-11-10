@@ -22,12 +22,13 @@
 | Időzített pontfoglalás | Körön belüli, 6 másodperces foglalás és vizuális állapot elkészült |
 | Gázalapú gazdaság | 100 kezdőgáz, pontonként +2 gáz/mp és élő HUD-kijelzés elkészült |
 | HÁTORSZÁG alapváltozat | 120 gázért 3 fős EMBER gyalogsági raj behívható az indulási területre |
+| Rajalapú irányítás | Egy katonára kattintva a teljes raj kijelölődik és együtt kap parancsot |
+| Mozgási céljelző | Jobb kattintáskor kék, animált parancsjelző jelenik meg |
 
 ## Rögzített tesztvisszajelzések – későbbi javítás
 
-- A jobb kattintásos mozgási parancsnál legyen látható céljelző effekt.
-- A képernyőszéli egérmozgatás jelenleg nem mozgatja megbízhatóan a kamerát.
-- A kamera engedjen a jelenleginél közelebbi nagyítást.
+- A képernyőszéli kameramozgás érzékelési sávja 64 képpontra nőtt; felhasználói újrateszt szükséges.
+- A kamera minimális zoomja 0,45-re csökkent; felhasználói újrateszt szükséges.
 
 ## A környezetben végzett ellenőrzés
 
