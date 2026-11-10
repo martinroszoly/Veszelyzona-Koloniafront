@@ -7,6 +7,7 @@ const FACING_COMMAND_PREVIEW := preload("res://scripts/facing_command_preview.gd
 @export var formation_spacing: float = 2.2
 @export var ray_length: float = 1000.0
 @export var drag_threshold: float = 8.0
+@export var cover_search_distance: float = 6.0
 
 @onready var camera: Camera3D = get_viewport().get_camera_3d()
 @onready var status_label: Label = get_node_or_null("../HUD/StatusPanel/Margin/Status")
@@ -183,6 +184,17 @@ func _issue_move_command(screen_position: Vector2) -> void:
 
 func _issue_move_command_at(center: Vector3, facing_direction: Vector3) -> void:
 	_show_move_command_marker(center)
+	var cover := _find_nearby_cover(center)
+	if cover != null:
+		var slots := cover.get_cover_slots(_selected_units.size(), center)
+		var cover_facing := facing_direction
+		if cover_facing.length_squared() < 0.01:
+			cover_facing = cover.get_cover_facing(center)
+		for index in range(mini(_selected_units.size(), slots.size())):
+			_selected_units[index].move_to(slots[index], cover_facing)
+		cover.show_slot_preview(_selected_units.size(), center)
+		_update_status("%d raj erős fedezékbe rendeződik." % _selected_squad_count())
+		return
 	var columns := ceili(sqrt(float(_selected_units.size())))
 	for index in range(_selected_units.size()):
 		var row := index / columns
@@ -191,6 +203,20 @@ func _issue_move_command_at(center: Vector3, facing_direction: Vector3) -> void:
 		var offset_z := float(row) * formation_spacing
 		_selected_units[index].move_to(center + Vector3(offset_x, 0.0, offset_z), facing_direction)
 	_update_status("Mozgási parancs kiadva %d rajnak." % _selected_squad_count())
+
+
+func _find_nearby_cover(world_position: Vector3) -> CoverObject:
+	var closest_cover: CoverObject = null
+	var closest_distance := cover_search_distance
+	for node in get_tree().get_nodes_in_group("cover_objects"):
+		var cover := node as CoverObject
+		if cover == null:
+			continue
+		var distance := cover.distance_to_cover(world_position)
+		if distance <= closest_distance and distance <= cover.snap_distance:
+			closest_distance = distance
+			closest_cover = cover
+	return closest_cover
 
 
 func _select_squad(squad_id: String) -> void:

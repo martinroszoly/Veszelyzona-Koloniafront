@@ -25,6 +25,7 @@
 | Rajalapú irányítás | Egy katonára kattintva a teljes raj kijelölődik és együtt kap parancsot |
 | Mozgási céljelző | Jobb kattintáskor kék, animált parancsjelző jelenik meg |
 | Érkezési irány megadása | Jobb gombos húzásnál iránynyíl, érkezéskor a raj a megadott irányba fordul |
+| Company of Heroes-szerű fedezékalap | Homokzsákfal, automatikus rajszétosztás, zöld erős-fedezék helyek és irányba fordulás elkészült |
 
 ## Rögzített tesztvisszajelzések – későbbi javítás
 

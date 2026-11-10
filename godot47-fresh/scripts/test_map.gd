@@ -15,6 +15,7 @@ var _rng := RandomNumberGenerator.new()
 
 const RTS_UNIT := preload("res://scripts/rts_unit.gd")
 const CAPTURE_POINT := preload("res://scripts/capture_point.gd")
+const COVER_OBJECT := preload("res://scripts/cover_object.gd")
 const INFANTRY_SQUAD_COST := 120.0
 const INFANTRY_SQUAD_SIZE := 3
 
@@ -35,6 +36,7 @@ func _ready() -> void:
 	_build_forests()
 	_build_rocks()
 	_build_grass_patches()
+	_build_test_cover()
 	_build_capture_points()
 	_build_player_squad()
 	_update_objective_status()
@@ -118,6 +120,20 @@ func _build_capture_points() -> void:
 		add_child(point)
 		if is_instance_valid(economy_manager):
 			economy_manager.register_capture_point(point)
+
+func _build_test_cover() -> void:
+	var cover_data := [
+		{"name": "SandbagWall_Center", "position": Vector3(0.0, 0.0, -15.0), "rotation": 0.0, "length": 13.0},
+		{"name": "SandbagWall_West", "position": Vector3(-42.0, 0.0, 20.0), "rotation": 0.45, "length": 10.0},
+		{"name": "SandbagWall_East", "position": Vector3(43.0, 0.0, -22.0), "rotation": -0.52, "length": 11.0},
+	]
+	for data in cover_data:
+		var cover := COVER_OBJECT.new() as CoverObject
+		cover.name = data.name
+		cover.position = data.position
+		cover.rotation.y = data.rotation
+		cover.cover_length = data.length
+		add_child(cover)
 
 func _on_capture_point_ownership_changed(_point: CapturePoint, old_owner: int, new_owner: int) -> void:
 	if old_owner == 0:
