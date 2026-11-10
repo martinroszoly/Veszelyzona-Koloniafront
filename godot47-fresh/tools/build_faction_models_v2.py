@@ -68,7 +68,6 @@ def ember_infantry():
     box('rifle body',(0,-.46,1.08),(.12,.11,.39),gun,r=(math.radians(12),0,0),b=.025)
     box('rifle blue casing',(0,-.49,1.20),(.16,.12,.14),blue,b=.025)
     cyl('rifle barrel',(0,-.63,.72),.045,.52,gun,r=(math.radians(12),0,0),v=12)
-    make_infantry_animation_rig()
     export('ember_infantry')
 
 def xenon_infantry():
@@ -95,7 +94,6 @@ def xenon_infantry():
     for x in (-.36,.36): cone('back spine',(x,.35,1.57),.14,.58,xedge,r=(math.radians(-8),0,math.radians(-18 if x<0 else 18)))
     box('organic weapon',(0,-.72,.80),(.16,.35,.14),xflesh,r=(math.radians(18),0,0),b=.08)
     sphere('weapon core',(0,-.93,.71),(.13,.16,.12),xglow)
-    make_infantry_animation_rig()
     export('xenon_infantry')
 
 def ember_vehicle():
@@ -118,190 +116,25 @@ def ember_vehicle():
 
 def xenon_vehicle():
     clear()
-    # Floating, elongated alien carrier: no legs, no wheels. Dense layered carapace.
-    sphere('levitating underbody',(0,.10,1.10),(1.03,1.90,.38),xflesh)
-    sphere('main red carrier hull',(0,.06,1.48),(1.12,1.82,.56),xred)
-    sphere('upper armored shell',(0,.24,1.78),(.91,1.40,.34),xedge)
-    box('front wedge carapace',(0,-1.55,1.50),(.82,.39,.34),xred,r=(math.radians(16),0,0),b=.16)
-    box('rear cargo carapace',(0,1.40,1.62),(.82,.38,.43),xred,r=(math.radians(-10),0,0),b=.14)
-    # Layered side armor ribs make the body feel grown rather than box-built.
+    # Long rectangular living carrier suspended between arched crab legs.
+    box('dark belly',(0,.05,.74),(.88,1.78,.25),xflesh,b=.16)
+    sphere('long organic hull',(0,.05,1.14),(1.02,1.72,.52),xred)
+    box('armored cargo back',(0,.32,1.39),(.72,1.10,.26),xedge,r=(math.radians(-4),0,0),b=.13)
+    box('front armored snout',(0,-1.46,1.13),(.75,.36,.35),xred,r=(math.radians(12),0,0),b=.12)
+    # Three large arched legs per side form the recognizable spider carrier silhouette.
     for side in (-1,1):
-        for y in (-1.15,-.58,0,.58,1.15):
-            sphere('side armor node',(side*.98,y,1.52),(.18,.30,.25),xedge)
-            cone('side spike',(side*1.17,y,1.58),.105,.42,xedge,r=(0,math.radians(90*side),0))
-    for y in (-.82,-.30,.30,.82):
-        box('spinal plate',(0,y,2.10),(.36,.19,.10),xedge,r=(0,0,math.radians(6 if y<0 else -6)),b=.04)
-    # Four distinct anti-gravity engines sit below the belly, with red energy cores.
-    for x in (-.64,.64):
-        for y in (-.82,.82):
-            cyl('hover engine housing',(x,y,.90),.22,.20,xflesh,v=16)
-            cone('hover plume',(x,y,.67),.18,.42,xedge,r=(math.pi,0,0))
-            sphere('hover core',(x,y,.78),(.105,.105,.08),xglow)
-    # Forward organic turret and hard-surface cannon assembly.
-    sphere('weapon cradle',(0,-.72,1.98),(.43,.48,.25),xflesh)
-    box('cannon mantle',(0,-1.05,1.99),(.18,.28,.16),xedge,b=.07)
-    cyl('long bio cannon',(0,-1.72,2.00),.105,1.20,xedge,r=(math.radians(90),0,0),v=16)
-    cyl('cannon inner bore',(0,-2.34,2.00),.065,.08,xflesh,r=(math.radians(90),0,0),v=16)
-    sphere('muzzle energy',(0,-2.40,2.00),(.12,.06,.12),xglow)
-    for x in (-.31,.31): sphere('front sensor',(x,-1.87,1.50),(.085,.045,.07),xglow)
-    for x in (-.48,.48): cone('crest',(x,.56,2.20),.13,.48,xedge,r=(0,0,math.radians(-16 if x<0 else 16)))
+        for y in (-1.10,0,1.10):
+            sphere('leg shoulder',(side*.91,y,1.04),(.22,.28,.24),xedge)
+            cyl('upper arched leg',(side*1.20,y,.77),.13,.72,xred,r=(0,math.radians(90),math.radians(-28*side)),v=12)
+            sphere('leg joint',(side*1.46,y,.52),(.17,.20,.16),xglow)
+            cyl('lower leg',(side*1.58,y,.29),.11,.55,xflesh,r=(0,math.radians(90),math.radians(28*side)),v=10)
+            cone('ground claw',(side*1.78,y,.14),.14,.44,xedge,r=(0,math.radians(90*side),0))
+    sphere('weapon carapace',(0,-.68,1.63),(.43,.52,.26),xflesh)
+    cyl('long bio cannon',(0,-1.50,1.62),.11,1.35,xedge,r=(math.radians(90),0,0),v=12)
+    sphere('muzzle energy',(0,-2.17,1.62),(.15,.08,.15),xglow)
+    for x in (-.30,.30): sphere('sensor eye',(x,-1.80,1.18),(.09,.05,.07),xglow)
+    for x in (-.48,.48): cone('hull spike',(x,.72,1.82),.13,.55,xedge,r=(0,0,math.radians(-18 if x<0 else 18)))
     export('xenon_vehicle')
 
-## Final runtime meshes: true geometry only (no camera-facing cards).
-## The detailed subassemblies deliberately stay readable from the RTS camera.
-tan=material('EMBER sand ceramic',(.46,.33,.20),.38,.42)
-black=material('EMBER black fabric',(.012,.016,.019),.08,.7)
-redsteel=material('XENON graphite',(.055,.058,.065),.75,.28)
-redtrim=material('XENON scarlet alloy',(.24,.005,.008),.72,.25)
-
-def make_infantry_animation_rig():
-    # GLTF node pivots exported with the mesh. Godot rotates these nodes at run time,
-    # giving the infantry real articulated motion rather than camera-facing sprites.
-    root=bpy.data.objects.new('AnimRoot',None); bpy.context.collection.objects.link(root)
-    pivots={
-        'LeftLegPivot':(-.19,0,1.16), 'RightLegPivot':(.19,0,1.16),
-        'LeftArmPivot':(-.34,0,1.54), 'RightArmPivot':(.34,0,1.54),
-        'WeaponPivot':(0,-.42,1.21),
-    }
-    nodes={}
-    for name,pos in pivots.items():
-        node=bpy.data.objects.new(name,None); bpy.context.collection.objects.link(node); node.location=pos; node.parent=root; nodes[name]=node
-    leg_words=('boot','ankle','shin','thigh','knee','digitigrade','reverse','toe','claw')
-    arm_words=('shoulder','upper arm','forearm','elbow')
-    gun_words=('rifle','plasma','weapon core','magazine')
-    for obj in list(bpy.context.scene.objects):
-        if obj.type!='MESH': continue
-        lower=obj.name.lower()
-        parent=None
-        if any(word in lower for word in leg_words):
-            parent=nodes['LeftLegPivot'] if obj.location.x < 0 else nodes['RightLegPivot']
-        elif any(word in lower for word in arm_words):
-            parent=nodes['LeftArmPivot'] if obj.location.x < 0 else nodes['RightArmPivot']
-        elif any(word in lower for word in gun_words):
-            parent=nodes['WeaponPivot']
-        if parent:
-            matrix=obj.matrix_world.copy(); obj.parent=parent; obj.matrix_world=matrix
-    # The weapon follows the right hand, but still has its own recoil/aim pivot.
-    matrix=nodes['WeaponPivot'].matrix_world.copy(); nodes['WeaponPivot'].parent=nodes['RightArmPivot']; nodes['WeaponPivot'].matrix_world=matrix
-
-def torus(n,p,major,minor,m,r=(0,0,0)):
-    bpy.ops.mesh.primitive_torus_add(major_radius=major,minor_radius=minor,major_segments=20,minor_segments=8,location=p,rotation=r)
-    o=bpy.context.object; o.name=n; return done(o,m,0)
-
-def ember_infantry_final():
-    clear()
-    # boots / articulated legs
-    for x in (-.19,.19):
-        box('armored boot',(x,-.10,.10),(.15,.25,.095),rubber,b=.035)
-        cyl('ankle piston',(x,.02,.27),.075,.22,gun,v=12)
-        box('shin shell',(x,-.065,.48),(.14,.13,.25),tan,r=(math.radians(-5),0,0),b=.035)
-        cyl('shin core',(x,.045,.48),.105,.48,black,v=12)
-        sphere('knee armor',(x,-.10,.76),(.15,.10,.13),blue)
-        cyl('thigh core',(x,.025,1.00),.13,.37,black,v=12)
-        box('thigh plate',(x,-.09,1.00),(.15,.08,.19),tan,b=.03)
-        for z in (.35,.50,.65): box('shin seam',(x,-.205,z),(.105,.012,.012),steel,b=.003)
-    box('combat belt',(0,.0,1.20),(.36,.22,.10),black,b=.045)
-    for x in (-.26,.26): box('utility pouch',(x,-.20,1.22),(.10,.07,.11),tan,b=.02)
-    box('under vest',(0,.04,1.43),(.37,.23,.28),black,b=.06)
-    box('front plate carrier',(0,-.19,1.46),(.41,.055,.29),tan,b=.05)
-    box('chest armor',(0,-.245,1.54),(.29,.026,.16),blue,b=.018)
-    for x in (-.34,.34):
-        sphere('shoulder pauldron',(x,-.01,1.58),(.22,.20,.17),blue)
-        box('pauldron trim',(x,-.17,1.61),(.16,.035,.10),tan,b=.015)
-        cyl('upper arm',(x,.0,1.30),.10,.36,black,r=(0,0,math.radians(-8 if x<0 else 8)),v=12)
-        sphere('elbow',(x,-.02,1.10),(.10,.10,.10),tan)
-        cyl('forearm',(x,-.13,.99),.09,.28,blue,r=(math.radians(16),0,0),v=12)
-    # helmet has visor, jaw seal, antenna and rear pack.
-    cyl('neck seal',(0,0,1.72),.13,.13,black,v=12)
-    sphere('helmet shell',(0,.0,1.86),(.275,.25,.24),blue)
-    sphere('visor recess',(0,-.235,1.84),(.205,.035,.08),black)
-    box('blue visor',(0,-.274,1.85),(.17,.012,.045),optic,b=.008)
-    box('helmet crown',(0,.0,2.05),(.18,.17,.045),tan,b=.015)
-    box('jaw respirator',(0,-.235,1.73),(.18,.05,.065),tan,b=.015)
-    cyl('antenna',(.20,.07,2.16),.016,.35,gun,r=(math.radians(-8),0,0),v=8)
-    box('radio pack',(0,.27,1.47),(.26,.10,.34),navy,b=.04)
-    # layered rifle: receiver, stock, handguard, scope and muzzle.
-    box('rifle receiver',(0,-.45,1.18),(.13,.12,.28),gun,r=(math.radians(13),0,0),b=.018)
-    box('rifle handguard',(0,-.64,.91),(.085,.09,.33),gun,r=(math.radians(13),0,0),b=.012)
-    cyl('rifle barrel',(0,-.84,.67),.033,.35,gun,r=(math.radians(13),0,0),v=10)
-    box('rifle optic',(0,-.49,1.33),(.07,.12,.09),black,b=.01)
-    box('magazine',(0,-.43,1.02),(.07,.06,.15),tan,r=(math.radians(-7),0,0),b=.01)
-    make_infantry_animation_rig()
-    export('ember_infantry')
-
-def xenon_infantry_final():
-    clear()
-    # digitigrade legs and articulated, sharp graphite armor.
-    for x in (-.18,.18):
-        sphere('hip joint',(x,.08,.95),(.13,.13,.15),redsteel)
-        cyl('upper digitigrade',(x,.08,.73),.09,.40,xflesh,r=(math.radians(-17),0,0),v=12)
-        box('upper carapace',(x,-.03,.76),(.12,.08,.21),redsteel,r=(math.radians(-17),0,0),b=.025)
-        sphere('knee actuator',(x,-.02,.52),(.11,.10,.11),redtrim)
-        cyl('reverse shin',(x,.13,.31),.08,.39,xflesh,r=(math.radians(28),0,0),v=12)
-        box('clawed foot',(x,-.13,.10),(.13,.25,.06),redsteel,b=.025)
-        for toe in (-.06,.06): cone('toe claw',(x+toe,-.36,.09),.035,.18,redtrim,r=(math.radians(90),0,0))
-    sphere('ribbed torso',(0,.02,1.25),(.37,.25,.39),xflesh)
-    for z in (1.10,1.24,1.38): torus('energy rib',(0,-.02,z),.28,.024,xglow,r=(math.radians(90),0,0))
-    box('chest carapace',(0,-.25,1.31),(.36,.07,.32),redsteel,b=.06)
-    for x in (-.38,.38):
-        sphere('shoulder node',(x,0,1.49),(.20,.18,.19),redsteel)
-        cone('shoulder blade',(x*1.12,.02,1.55),.14,.35,redtrim,r=(0,math.radians(-90*x),0))
-        cyl('upper arm',(x,-.03,1.25),.085,.34,xflesh,r=(0,0,math.radians(-12 if x<0 else 12)),v=12)
-        sphere('elbow actuator',(x,-.10,1.07),(.10,.09,.10),redtrim)
-        cyl('forearm',(x,-.23,.99),.085,.28,redsteel,r=(math.radians(15),0,0),v=12)
-    sphere('elongated skull',(0,.02,1.78),(.28,.31,.25),redsteel)
-    cone('swept crest',(0,.22,2.00),.19,.47,redtrim,r=(math.radians(-34),0,0))
-    for x in (-.13,.13): sphere('eye glow',(x,-.275,1.79),(.052,.025,.04),xglow)
-    box('mandible',(0,-.28,1.66),(.17,.05,.07),xflesh,b=.015)
-    # asymmetric plasma rifle with energy core.
-    box('plasma receiver',(0,-.50,1.11),(.14,.11,.27),redsteel,r=(math.radians(12),0,0),b=.025)
-    cyl('plasma barrel',(0,-.78,.82),.055,.48,redtrim,r=(math.radians(12),0,0),v=12)
-    torus('plasma coil',(0,-.64,.96),.085,.018,xglow,r=(math.radians(90),0,0))
-    sphere('weapon core',(0,-.54,1.13),(.075,.055,.075),xglow)
-    make_infantry_animation_rig()
-    export('xenon_infantry')
-
-def ember_vehicle_final():
-    clear()
-    # actual 8x8 APC with layered hull, wheels, stowage and a small remote weapon station.
-    box('lower hull',(0,0,.46),(1.00,1.85,.28),navy,b=.11)
-    box('troop compartment',(0,.08,.92),(.93,1.42,.42),steel,b=.10)
-    box('sloped glacis',(0,-1.52,.91),(.86,.33,.35),tan,r=(math.radians(24),0,0),b=.07)
-    box('roof armor',(0,.10,1.38),(.79,1.18,.10),tan,b=.035)
-    for side in (-1,1):
-        for y in (-1.28,-.43,.43,1.28):
-            cyl('tire',(side*1.08,y,.37),.31,.22,rubber,r=(0,math.radians(90),0),v=20)
-            torus('wheel rim',(side*1.25,y,.37),.15,.035,blue,r=(0,math.radians(90),0))
-            box('fender',(side*1.02,y,.77),(.10,.31,.10),tan,b=.02)
-        for y in (-.86,0,.86): box('side armor slab',(side*1.01,y,.98),(.075,.30,.21),blue,b=.025)
-    for x in (-.52,.52): box('front light',(x,-1.86,.78),(.11,.025,.065),optic,b=.008)
-    for y in (-.70,.02,.72): box('roof stowage',(-.57,y,1.54),(.19,.18,.10),tan,b=.02)
-    cyl('remote weapon base',(0,-.28,1.55),.30,.14,gun,v=16)
-    box('remote weapon housing',(0,-.35,1.73),(.22,.19,.13),blue,b=.035)
-    cyl('remote autocannon',(0,-.76,1.73),.052,.63,gun,r=(math.radians(90),0,0),v=12)
-    box('sensor block',(0,-.43,1.86),(.09,.07,.06),optic,b=.01)
-    export('ember_vehicle')
-
-def xenon_vehicle_final():
-    clear()
-    # Low hovering APC, same footprint as the Ember carrier; no legs and no tank cannon.
-    sphere('hover underbody',(0,.03,.85),(1.02,1.82,.28),xflesh)
-    box('alien troop cabin',(0,.08,1.23),(1.00,1.48,.37),redsteel,b=.15)
-    box('wedge prow',(0,-1.50,1.20),(.83,.38,.31),redsteel,r=(math.radians(18),0,0),b=.12)
-    for side in (-1,1):
-        for y in (-.88,0,.88):
-            box('segmented carapace',(side*1.01,y,1.29),(.08,.31,.20),redtrim,b=.035)
-            box('red seam',(side*1.10,y,1.30),(.008,.19,.025),xglow,b=0)
-        for y in (-1.05,1.05):
-            cyl('levitation ring',(side*.77,y,.77),.25,.14,redsteel,v=20)
-            torus('hover emitter',(side*.77,y,.69),.15,.026,xglow,r=(0,0,0))
-    for y in (-.85,-.25,.35,.95): box('spine plate',(0,y,1.64),(.45,.16,.06),redtrim,b=.02)
-    # compact defensive turret, deliberately much smaller than a tank turret.
-    cyl('small turret ring',(0,-.33,1.61),.24,.10,redsteel,v=16)
-    sphere('turret pod',(0,-.38,1.76),(.20,.18,.14),redtrim)
-    for x in (-.07,.07): cyl('short plasma barrel',(x,-.67,1.77),.030,.32,xglow,r=(math.radians(90),0,0),v=10)
-    for x in (-.52,.52): sphere('prow sensor',(x,-1.67,1.22),(.055,.025,.05),xglow)
-    export('xenon_vehicle')
-
-ember_infantry_final(); xenon_infantry_final(); ember_vehicle_final(); xenon_vehicle_final()
-print('Final true 3D faction meshes exported')
+ember_infantry(); xenon_infantry(); ember_vehicle(); xenon_vehicle()
+print('V2 reference-matched models exported')
