@@ -7,7 +7,7 @@ signal resources_changed(team_id: int, gas: float, income_per_second: float)
 
 var _gas_by_team: Dictionary = {}
 var _income_by_team: Dictionary = {}
-var _registered_points: Array[CapturePoint] = []
+var _registered_points: Array = []
 
 
 func _ready() -> void:
@@ -24,7 +24,7 @@ func _process(delta: float) -> void:
 		resources_changed.emit(team_id, get_gas(team_id), income)
 
 
-func register_capture_point(point: CapturePoint) -> void:
+func register_capture_point(point) -> void:
 	if point == null or _registered_points.has(point):
 		return
 	_registered_points.append(point)
@@ -67,7 +67,7 @@ func _ensure_team(team_id: int) -> void:
 		_income_by_team[team_id] = 0.0
 
 
-func _on_point_ownership_changed(_point: CapturePoint, old_owner: int, new_owner: int) -> void:
+func _on_point_ownership_changed(_point, old_owner: int, new_owner: int) -> void:
 	if old_owner >= 0:
 		_ensure_team(old_owner)
 	if new_owner >= 0:

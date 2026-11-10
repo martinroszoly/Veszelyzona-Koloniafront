@@ -20,7 +20,7 @@ var _cover_strength := -1
 var _pending_cover_strength := -1
 var _health := 100.0
 var _attack_timer := 0.0
-var _target: RTSUnit
+var _target = null
 var _health_fill: MeshInstance3D
 
 
@@ -107,11 +107,11 @@ func _update_combat() -> void:
 		_attack_timer = attack_cooldown
 
 
-func _find_nearest_enemy() -> RTSUnit:
-	var closest: RTSUnit = null
+func _find_nearest_enemy():
+	var closest = null
 	var closest_distance := attack_range
 	for node in get_tree().get_nodes_in_group("rts_units"):
-		var candidate := node as RTSUnit
+		var candidate = node
 		if candidate == null or candidate == self or candidate.team_id == team_id:
 			continue
 		var distance := global_position.distance_to(candidate.global_position)
@@ -121,7 +121,7 @@ func _find_nearest_enemy() -> RTSUnit:
 	return closest
 
 
-func _has_line_of_sight(candidate: RTSUnit) -> bool:
+func _has_line_of_sight(candidate) -> bool:
 	var origin := global_position + Vector3.UP * 1.75
 	var destination := candidate.global_position + Vector3.UP * 1.75
 	var query := PhysicsRayQueryParameters3D.create(origin, destination, 1)

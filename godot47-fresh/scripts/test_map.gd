@@ -19,10 +19,10 @@ const COVER_OBJECT := preload("res://scripts/cover_object.gd")
 const INFANTRY_SQUAD_COST := 120.0
 const INFANTRY_SQUAD_SIZE := 3
 
-var _capture_points: Array[CapturePoint] = []
+var _capture_points: Array = []
 var _owned_point_count := 0
 @onready var objective_status: Label = get_node_or_null("HUD/ObjectivePanel/Margin/ObjectiveStatus")
-@onready var economy_manager: EconomyManager = get_node_or_null("EconomyManager")
+@onready var economy_manager: Node = get_node_or_null("EconomyManager")
 @onready var resource_status: Label = get_node_or_null("HUD/ResourcePanel/Margin/ResourceStatus")
 @onready var infantry_call_in_button: Button = get_node_or_null("HUD/BacklinePanel/Margin/BacklineContent/InfantryCallIn")
 @onready var backline_status: Label = get_node_or_null("HUD/BacklinePanel/Margin/BacklineContent/BacklineStatus")
@@ -94,7 +94,7 @@ func _build_player_squad() -> void:
 		Vector3(8.0, 0.0, 54.0),
 	]
 	for index in range(squad_positions.size()):
-		var unit := RTS_UNIT.new() as RTSUnit
+		var unit = RTS_UNIT.new()
 		unit.name = "EmberInfantry_%02d" % (index + 1)
 		unit.team_id = 0
 		unit.squad_id = "ember_kezdoraj"
@@ -112,7 +112,7 @@ func _build_enemy_test_squad() -> void:
 		Vector3(6.0, 0.0, -55.0),
 	]
 	for index in range(squad_positions.size()):
-		var unit := RTS_UNIT.new() as RTSUnit
+		var unit = RTS_UNIT.new()
 		unit.name = "XenonTestInfantry_%02d" % (index + 1)
 		unit.team_id = 1
 		unit.squad_id = "xenon_tesztraj"
@@ -130,7 +130,7 @@ func _build_capture_points() -> void:
 		{"id": "E", "position": Vector3(58.0, 0.0, 42.0)},
 	]
 	for data in point_data:
-		var point := CAPTURE_POINT.new() as CapturePoint
+		var point = CAPTURE_POINT.new()
 		point.name = "CapturePoint_%s" % data.id
 		point.point_id = data.id
 		point.position = data.position
@@ -147,14 +147,14 @@ func _build_test_cover() -> void:
 		{"name": "SandbagWall_East", "position": Vector3(43.0, 0.0, -22.0), "rotation": -0.52, "length": 11.0},
 	]
 	for data in cover_data:
-		var cover := COVER_OBJECT.new() as CoverObject
+		var cover = COVER_OBJECT.new()
 		cover.name = data.name
 		cover.position = data.position
 		cover.rotation.y = data.rotation
 		cover.cover_length = data.length
 		add_child(cover)
 
-func _on_capture_point_ownership_changed(_point: CapturePoint, old_owner: int, new_owner: int) -> void:
+func _on_capture_point_ownership_changed(_point, old_owner: int, new_owner: int) -> void:
 	if old_owner == 0:
 		_owned_point_count -= 1
 	if new_owner == 0:
@@ -181,7 +181,7 @@ func _on_infantry_call_in_pressed() -> void:
 	_reinforcement_wave += 1
 	var wave_z := 61.0 + float((_reinforcement_wave - 1) % 3) * 2.4
 	for index in range(INFANTRY_SQUAD_SIZE):
-		var unit := RTS_UNIT.new() as RTSUnit
+		var unit = RTS_UNIT.new()
 		unit.name = "EmberReinforcement_%02d_%02d" % [_reinforcement_wave, index + 1]
 		unit.team_id = 0
 		unit.squad_id = "ember_erosites_%02d" % _reinforcement_wave

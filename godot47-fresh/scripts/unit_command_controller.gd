@@ -12,7 +12,7 @@ const FACING_COMMAND_PREVIEW := preload("res://scripts/facing_command_preview.gd
 @onready var camera: Camera3D = get_viewport().get_camera_3d()
 @onready var status_label: Label = get_node_or_null("../HUD/StatusPanel/Margin/Status")
 
-var _selected_units: Array[RTSUnit] = []
+var _selected_units: Array = []
 var _drag_start := Vector2.ZERO
 var _drag_current := Vector2.ZERO
 var _dragging_selection := false
@@ -21,7 +21,7 @@ var _right_dragging := false
 var _right_drag_start_screen := Vector2.ZERO
 var _right_command_position := Vector3.ZERO
 var _right_facing_direction := Vector3.ZERO
-var _facing_preview: FacingCommandPreview
+var _facing_preview = null
 
 
 func _ready() -> void:
@@ -59,7 +59,7 @@ func _begin_facing_command(screen_position: Vector2) -> void:
 	_right_drag_start_screen = screen_position
 	_right_command_position = hit.position
 	_right_facing_direction = Vector3.ZERO
-	_facing_preview = FACING_COMMAND_PREVIEW.new() as FacingCommandPreview
+	_facing_preview = FACING_COMMAND_PREVIEW.new()
 	_facing_preview.position = _right_command_position + Vector3.UP * 0.13
 	get_tree().current_scene.add_child(_facing_preview)
 
@@ -111,7 +111,7 @@ func _select_in_screen_rect(selection_rect: Rect2, additive: bool) -> void:
 		_clear_selection()
 	var squads_to_select: Array[String] = []
 	for node in get_tree().get_nodes_in_group("rts_units"):
-		var unit := node as RTSUnit
+		var unit = node
 		if unit == null or unit.team_id != player_team_id:
 			continue
 		if camera.is_position_behind(unit.global_position):
@@ -161,7 +161,9 @@ func _build_selection_box() -> void:
 
 func _select_at(screen_position: Vector2, additive: bool) -> void:
 	var hit := _raycast(screen_position, 1 | 2)
-	var clicked_unit := hit.get("collider") as RTSUnit
+	var clicked_unit = hit.get("collider")
+	if clicked_unit != null and not clicked_unit.is_in_group("rts_units"):
+		clicked_unit = null
 	if not additive:
 		_clear_selection()
 	if clicked_unit != null and clicked_unit.team_id == player_team_id:
@@ -209,11 +211,11 @@ func _issue_move_command_at(center: Vector3, facing_direction: Vector3) -> void:
 	_update_status("Mozgási parancs kiadva %d rajnak." % _selected_squad_count())
 
 
-func _find_nearby_cover(world_position: Vector3) -> CoverObject:
-	var closest_cover: CoverObject = null
+func _find_nearby_cover(world_position: Vector3):
+	var closest_cover = null
 	var closest_distance := cover_search_distance
 	for node in get_tree().get_nodes_in_group("cover_objects"):
-		var cover := node as CoverObject
+		var cover = node
 		if cover == null:
 			continue
 		var distance := cover.distance_to_cover(world_position)
@@ -225,7 +227,7 @@ func _find_nearby_cover(world_position: Vector3) -> CoverObject:
 
 func _select_squad(squad_id: String) -> void:
 	for node in get_tree().get_nodes_in_group("rts_units"):
-		var unit := node as RTSUnit
+		var unit = node
 		if unit == null or unit.team_id != player_team_id or unit.squad_id != squad_id:
 			continue
 		unit.set_selected(true)
@@ -260,7 +262,7 @@ func _update_selection_status(prefix: String) -> void:
 
 
 func _show_move_command_marker(world_position: Vector3) -> void:
-	var marker := MOVE_COMMAND_MARKER.new() as MoveCommandMarker
+	var marker = MOVE_COMMAND_MARKER.new()
 	marker.position = world_position + Vector3.UP * 0.12
 	get_tree().current_scene.add_child(marker)
 

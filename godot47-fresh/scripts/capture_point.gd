@@ -1,7 +1,7 @@
 class_name CapturePoint
 extends Area3D
 
-signal ownership_changed(point: CapturePoint, old_owner: int, new_owner: int)
+signal ownership_changed(point, old_owner: int, new_owner: int)
 
 @export var point_id: String = "A"
 @export var capture_seconds: float = 6.0
@@ -65,8 +65,8 @@ func get_capture_ratio() -> float:
 func _get_present_teams() -> Array[int]:
 	var teams: Array[int] = []
 	for body in get_overlapping_bodies():
-		var unit := body as RTSUnit
-		if unit != null and not teams.has(unit.team_id):
+		var unit = body
+		if unit != null and unit.is_in_group("rts_units") and not teams.has(unit.team_id):
 			teams.append(unit.team_id)
 	return teams
 
