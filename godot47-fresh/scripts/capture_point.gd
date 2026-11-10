@@ -6,6 +6,7 @@ signal ownership_changed(point: CapturePoint, old_owner: int, new_owner: int)
 @export var point_id: String = "A"
 @export var capture_seconds: float = 6.0
 @export var capture_radius: float = 5.5
+@export var gas_income_per_second: float = 2.0
 
 var owner_team_id: int = -1
 var _capturing_team_id: int = -1
@@ -147,7 +148,7 @@ func _update_visuals() -> void:
 		state_text = "ELLENSÉG"
 	if _capturing_team_id >= 0:
 		state_text = "FOGLALÁS %d%%" % roundi(ratio * 100.0)
-	_label.text = "%s PONT\n%s" % [point_id, state_text]
+	_label.text = "%s PONT  +%.0f GÁZ/mp\n%s" % [point_id, gas_income_per_second, state_text]
 	_label.modulate = display_color.lightened(0.25)
 
 

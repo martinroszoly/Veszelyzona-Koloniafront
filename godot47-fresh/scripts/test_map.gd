@@ -19,6 +19,8 @@ const CAPTURE_POINT := preload("res://scripts/capture_point.gd")
 var _capture_points: Array[CapturePoint] = []
 var _owned_point_count := 0
 @onready var objective_status: Label = get_node_or_null("HUD/ObjectivePanel/Margin/ObjectiveStatus")
+@onready var economy_manager: EconomyManager = get_node_or_null("EconomyManager")
+@onready var resource_status: Label = get_node_or_null("HUD/ResourcePanel/Margin/ResourceStatus")
 
 func _ready() -> void:
 	_rng.seed = 4702
@@ -30,6 +32,9 @@ func _ready() -> void:
 	_build_capture_points()
 	_build_player_squad()
 	_update_objective_status()
+	if is_instance_valid(economy_manager):
+		economy_manager.resources_changed.connect(_on_resources_changed)
+		_on_resources_changed(0, economy_manager.get_gas(0), economy_manager.get_income_per_second(0))
 
 func _build_ground() -> void:
 	var ground := MeshInstance3D.new()
@@ -102,6 +107,8 @@ func _build_capture_points() -> void:
 		point.ownership_changed.connect(_on_capture_point_ownership_changed)
 		_capture_points.append(point)
 		add_child(point)
+		if is_instance_valid(economy_manager):
+			economy_manager.register_capture_point(point)
 
 func _on_capture_point_ownership_changed(_point: CapturePoint, old_owner: int, new_owner: int) -> void:
 	if old_owner == 0:
@@ -113,6 +120,11 @@ func _on_capture_point_ownership_changed(_point: CapturePoint, old_owner: int, n
 func _update_objective_status() -> void:
 	if is_instance_valid(objective_status):
 		objective_status.text = "STRATÉGIAI PONTOK: %d / %d\nÁllj a körön belül 6 másodpercig a foglaláshoz." % [_owned_point_count, _capture_points.size()]
+
+func _on_resources_changed(team_id: int, gas: float, income_per_second: float) -> void:
+	if team_id != 0 or not is_instance_valid(resource_status):
+		return
+	resource_status.text = "GÁZ: %d\nBEVÉTEL: +%.1f / mp" % [floori(gas), income_per_second]
 
 func _build_road_network() -> void:
 	_add_road(Vector3(0, 0.035, 0), Vector2(7.0, MAP_SIZE.y * 0.78), 0.0)

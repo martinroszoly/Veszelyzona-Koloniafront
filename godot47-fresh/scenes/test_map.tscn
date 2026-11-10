@@ -1,8 +1,9 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/test_map.gd" id="1_map"]
 [ext_resource type="Script" path="res://scripts/rts_camera.gd" id="2_camera"]
 [ext_resource type="Script" path="res://scripts/unit_command_controller.gd" id="3_controller"]
+[ext_resource type="Script" path="res://scripts/economy_manager.gd" id="4_economy"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMaterial_main"]
 sky_top_color = Color(0.15, 0.29, 0.39, 1)
@@ -42,6 +43,9 @@ fov = 55.0
 
 [node name="UnitCommandController" type="Node" parent="."]
 script = ExtResource("3_controller")
+
+[node name="EconomyManager" type="Node" parent="."]
+script = ExtResource("4_economy")
 
 [node name="Panel" type="PanelContainer" parent="HUD"]
 offset_left = 24.0
@@ -102,3 +106,25 @@ theme_override_colors/font_color = Color(0.83, 0.90, 1, 1)
 theme_override_font_sizes/font_size = 16
 text = "STRATÉGIAI PONTOK: 0 / 5"
 horizontal_alignment = 1
+
+[node name="ResourcePanel" type="PanelContainer" parent="HUD"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -250.0
+offset_top = 112.0
+offset_right = -24.0
+offset_bottom = 184.0
+
+[node name="Margin" type="MarginContainer" parent="HUD/ResourcePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 10
+
+[node name="ResourceStatus" type="Label" parent="HUD/ResourcePanel/Margin"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 0.85, 1, 1)
+theme_override_font_sizes/font_size = 17
+text = "GÁZ: 100\nBEVÉTEL: +0.0 / mp"
+horizontal_alignment = 2

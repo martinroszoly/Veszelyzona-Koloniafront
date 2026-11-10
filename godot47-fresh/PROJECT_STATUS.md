@@ -20,6 +20,13 @@
 | Földhöz kötött RTS-kamera | Pályahatár, simítás és képernyőszéli görgetés elkészült |
 | Öt stratégiai pont | A–E pontok elhelyezve a tesztpályán |
 | Időzített pontfoglalás | Körön belüli, 6 másodperces foglalás és vizuális állapot elkészült |
+| Gázalapú gazdaság | 100 kezdőgáz, pontonként +2 gáz/mp és élő HUD-kijelzés elkészült |
+
+## Rögzített tesztvisszajelzések – későbbi javítás
+
+- A jobb kattintásos mozgási parancsnál legyen látható céljelző effekt.
+- A képernyőszéli egérmozgatás jelenleg nem mozgatja megbízhatóan a kamerát.
+- A kamera engedjen a jelenleginél közelebbi nagyítást.
 
 ## A környezetben végzett ellenőrzés
 
