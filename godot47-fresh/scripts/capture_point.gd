@@ -6,7 +6,7 @@ signal supply_changed(point, supplied: bool)
 
 @export var point_id: String = "A"
 @export var capture_seconds: float = 6.0
-@export var capture_radius: float = 5.5
+@export var capture_radius: float = 4.0
 @export var gas_income_per_second: float = 2.0
 @export var is_victory_point: bool = false
 
@@ -109,8 +109,8 @@ func _build_visuals() -> void:
 
 	_center_disc = MeshInstance3D.new()
 	var disc_mesh := CylinderMesh.new()
-	disc_mesh.top_radius = 0.95
-	disc_mesh.bottom_radius = 0.95
+	disc_mesh.top_radius = 0.68
+	disc_mesh.bottom_radius = 0.68
 	disc_mesh.height = 0.10
 	_center_disc.mesh = disc_mesh
 	_center_disc.position.y = 0.08
@@ -118,11 +118,11 @@ func _build_visuals() -> void:
 
 	var mast := MeshInstance3D.new()
 	var mast_mesh := CylinderMesh.new()
-	mast_mesh.top_radius = 0.08
-	mast_mesh.bottom_radius = 0.10
-	mast_mesh.height = 3.2
+	mast_mesh.top_radius = 0.06
+	mast_mesh.bottom_radius = 0.075
+	mast_mesh.height = 2.3
 	mast.mesh = mast_mesh
-	mast.position.y = 1.65
+	mast.position.y = 1.18
 	var mast_material := StandardMaterial3D.new()
 	mast_material.albedo_color = Color(0.24, 0.25, 0.23)
 	mast_material.roughness = 0.8
@@ -130,9 +130,9 @@ func _build_visuals() -> void:
 	add_child(mast)
 
 	_label = Label3D.new()
-	_label.position = Vector3(0.0, 4.0, 0.0)
-	_label.font_size = 42
-	_label.outline_size = 8
+	_label.position = Vector3(0.0, 2.9, 0.0)
+	_label.font_size = 32
+	_label.outline_size = 6
 	_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	_label.no_depth_test = true
 	add_child(_label)

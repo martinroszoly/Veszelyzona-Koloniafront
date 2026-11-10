@@ -4,9 +4,9 @@ extends Node3D
 enum CoverStrength { LIGHT, HEAVY }
 
 @export var cover_length: float = 12.0
-@export var slot_spacing: float = 1.65
-@export var unit_offset: float = 1.15
-@export var snap_distance: float = 5.5
+@export var slot_spacing: float = 1.20
+@export var unit_offset: float = 0.82
+@export var snap_distance: float = 4.5
 @export var strength: CoverStrength = CoverStrength.HEAVY
 
 var _preview_markers: Array[MeshInstance3D] = []
@@ -77,19 +77,19 @@ func _build_cover_visual() -> void:
 	bag_material.albedo_color = Color(0.46, 0.39, 0.26)
 	bag_material.roughness = 1.0
 
-	var bag_count := maxi(2, floori(cover_length / 1.25))
+	var bag_count := maxi(2, floori(cover_length / 0.90))
 	var spacing := cover_length / float(bag_count)
 	for row in range(2):
 		for index in range(bag_count):
 			var bag := MeshInstance3D.new()
 			var mesh := CapsuleMesh.new()
-			mesh.radius = 0.34
-			mesh.height = 1.15
+			mesh.radius = 0.24
+			mesh.height = 0.82
 			bag.mesh = mesh
 			bag.rotation.z = PI * 0.5
 			bag.position = Vector3(
 				-cover_length * 0.5 + spacing * (float(index) + 0.5) + (spacing * 0.25 if row == 1 else 0.0),
-				0.32 + float(row) * 0.42,
+				0.23 + float(row) * 0.30,
 				0.0
 			)
 			bag.scale = Vector3(1.0, 0.72, 0.72)
@@ -103,9 +103,9 @@ func _build_collision() -> void:
 	body.collision_mask = 2
 	var collision := CollisionShape3D.new()
 	var shape := BoxShape3D.new()
-	shape.size = Vector3(cover_length, 1.25, 0.7)
+	shape.size = Vector3(cover_length, 0.90, 0.52)
 	collision.shape = shape
-	collision.position.y = 0.62
+	collision.position.y = 0.45
 	body.add_child(collision)
 	add_child(body)
 
@@ -114,9 +114,9 @@ func _build_preview_markers() -> void:
 	for _index in range(12):
 		var marker := MeshInstance3D.new()
 		var mesh := CylinderMesh.new()
-		mesh.top_radius = 0.34
-		mesh.bottom_radius = 0.34
-		mesh.height = 0.04
+		mesh.top_radius = 0.20
+		mesh.bottom_radius = 0.20
+		mesh.height = 0.025
 		marker.mesh = mesh
 		var material := StandardMaterial3D.new()
 		material.albedo_color = Color(0.18, 1.0, 0.32, 0.82) if strength == CoverStrength.HEAVY else Color(1.0, 0.82, 0.18, 0.82)
@@ -133,3 +133,8 @@ func _build_preview_markers() -> void:
 func _hide_preview() -> void:
 	for marker in _preview_markers:
 		marker.visible = false
+
+
+func hide_slot_preview() -> void:
+	_preview_time = 0.0
+	_hide_preview()

@@ -155,7 +155,7 @@ func _fire_projectile(projectile_target) -> void:
 		return
 	var projectile = UNIT_PROJECTILE.new()
 	projectile.initialize(projectile_target, attack_damage, global_position, team_id)
-	projectile.position = global_position + Vector3.UP * 1.35 - global_basis.z * 0.55
+	projectile.position = global_position + Vector3.UP * 0.92 - global_basis.z * 0.38
 	get_tree().current_scene.add_child(projectile)
 
 
@@ -174,8 +174,8 @@ func _find_nearest_enemy():
 
 
 func _has_line_of_sight(candidate) -> bool:
-	var origin := global_position + Vector3.UP * 1.75
-	var destination: Vector3 = candidate.global_position + Vector3.UP * 1.75
+	var origin := global_position + Vector3.UP * 1.18
+	var destination: Vector3 = candidate.global_position + Vector3.UP * 1.18
 	var query := PhysicsRayQueryParameters3D.create(origin, destination, 1)
 	query.collide_with_areas = false
 	return get_world_3d().direct_space_state.intersect_ray(query).is_empty()
@@ -234,18 +234,18 @@ func is_selected() -> bool:
 func _build_visuals() -> void:
 	_collision_shape = CollisionShape3D.new()
 	var capsule_shape := CapsuleShape3D.new()
-	capsule_shape.radius = 0.55
-	capsule_shape.height = 2.2
+	capsule_shape.radius = 0.38
+	capsule_shape.height = 1.55
 	_collision_shape.shape = capsule_shape
-	_collision_shape.position.y = 1.1
+	_collision_shape.position.y = 0.78
 	add_child(_collision_shape)
 
 	_body_visual = MeshInstance3D.new()
 	var capsule_mesh := CapsuleMesh.new()
-	capsule_mesh.radius = 0.55
-	capsule_mesh.height = 2.2
+	capsule_mesh.radius = 0.38
+	capsule_mesh.height = 1.55
 	_body_visual.mesh = capsule_mesh
-	_body_visual.position.y = 1.1
+	_body_visual.position.y = 0.78
 	var body_material := StandardMaterial3D.new()
 	body_material.albedo_color = Color(0.16, 0.42, 0.62) if team_id == 0 else Color(0.70, 0.18, 0.14)
 	body_material.roughness = 0.8
@@ -256,7 +256,8 @@ func _build_visuals() -> void:
 	var facing_mesh := BoxMesh.new()
 	facing_mesh.size = Vector3(0.18, 0.18, 0.75)
 	_facing_visual.mesh = facing_mesh
-	_facing_visual.position = Vector3(0.0, 1.25, -0.72)
+	_facing_visual.position = Vector3(0.0, 0.88, -0.50)
+	_facing_visual.scale = Vector3.ONE * 0.70
 	var facing_material := StandardMaterial3D.new()
 	facing_material.albedo_color = Color(0.08, 0.10, 0.11)
 	_facing_visual.material_override = facing_material
@@ -264,8 +265,8 @@ func _build_visuals() -> void:
 
 	_selection_ring = MeshInstance3D.new()
 	var ring_mesh := TorusMesh.new()
-	ring_mesh.inner_radius = 0.72
-	ring_mesh.outer_radius = 0.88
+	ring_mesh.inner_radius = 0.50
+	ring_mesh.outer_radius = 0.62
 	ring_mesh.rings = 12
 	ring_mesh.ring_segments = 24
 	_selection_ring.mesh = ring_mesh
@@ -279,9 +280,9 @@ func _build_visuals() -> void:
 
 	_health_background = MeshInstance3D.new()
 	var health_background_mesh := BoxMesh.new()
-	health_background_mesh.size = Vector3(1.5, 0.10, 0.08)
+	health_background_mesh.size = Vector3(1.05, 0.08, 0.06)
 	_health_background.mesh = health_background_mesh
-	_health_background.position = Vector3(0.0, 2.65, 0.0)
+	_health_background.position = Vector3(0.0, 1.82, 0.0)
 	var health_background_material := StandardMaterial3D.new()
 	health_background_material.albedo_color = Color(0.08, 0.08, 0.08)
 	health_background_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -290,9 +291,9 @@ func _build_visuals() -> void:
 
 	_health_fill = MeshInstance3D.new()
 	var health_fill_mesh := BoxMesh.new()
-	health_fill_mesh.size = Vector3(1.4, 0.12, 0.10)
+	health_fill_mesh.size = Vector3(0.98, 0.09, 0.07)
 	_health_fill.mesh = health_fill_mesh
-	_health_fill.position = Vector3(0.0, 2.65, -0.01)
+	_health_fill.position = Vector3(0.0, 1.82, -0.01)
 	var health_fill_material := StandardMaterial3D.new()
 	health_fill_material.albedo_color = Color(0.18, 0.92, 0.25)
 	health_fill_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -309,9 +310,9 @@ func _convert_visuals_to_vehicle() -> void:
 	_body_visual.visible = false
 	_facing_visual.visible = false
 	var box_shape := BoxShape3D.new()
-	box_shape.size = Vector3(2.3, 1.25, 3.8)
+	box_shape.size = Vector3(1.72, 0.94, 2.85)
 	_collision_shape.shape = box_shape
-	_collision_shape.position.y = 0.72
+	_collision_shape.position.y = 0.54
 
 	var vehicle_material := StandardMaterial3D.new()
 	vehicle_material.albedo_color = Color(0.13, 0.38, 0.58) if team_id == 0 else Color(0.58, 0.12, 0.10)
@@ -320,33 +321,33 @@ func _convert_visuals_to_vehicle() -> void:
 
 	var hull := MeshInstance3D.new()
 	var hull_mesh := BoxMesh.new()
-	hull_mesh.size = Vector3(2.3, 1.0, 3.8)
+	hull_mesh.size = Vector3(1.72, 0.75, 2.85)
 	hull.mesh = hull_mesh
-	hull.position.y = 0.75
+	hull.position.y = 0.56
 	hull.material_override = vehicle_material
 	add_child(hull)
 
 	var turret := MeshInstance3D.new()
 	var turret_mesh := CylinderMesh.new()
-	turret_mesh.top_radius = 0.72
-	turret_mesh.bottom_radius = 0.88
-	turret_mesh.height = 0.55
+	turret_mesh.top_radius = 0.54
+	turret_mesh.bottom_radius = 0.66
+	turret_mesh.height = 0.41
 	turret.mesh = turret_mesh
-	turret.position = Vector3(0.0, 1.5, -0.2)
+	turret.position = Vector3(0.0, 1.12, -0.15)
 	turret.material_override = vehicle_material
 	add_child(turret)
 
 	var cannon := MeshInstance3D.new()
 	var cannon_mesh := BoxMesh.new()
-	cannon_mesh.size = Vector3(0.18, 0.18, 2.25)
+	cannon_mesh.size = Vector3(0.14, 0.14, 1.69)
 	cannon.mesh = cannon_mesh
-	cannon.position = Vector3(0.0, 1.55, -1.75)
+	cannon.position = Vector3(0.0, 1.16, -1.31)
 	var cannon_material := StandardMaterial3D.new()
 	cannon_material.albedo_color = Color(0.10, 0.12, 0.13)
 	cannon_material.metallic = 0.7
 	cannon.material_override = cannon_material
 	add_child(cannon)
 
-	_selection_ring.scale = Vector3.ONE * 2.0
-	_health_background.position.y = 2.25
-	_health_fill.position.y = 2.25
+	_selection_ring.scale = Vector3.ONE * 1.5
+	_health_background.position.y = 1.70
+	_health_fill.position.y = 1.70

@@ -47,7 +47,9 @@
 | Fog of War – első réteg | Az ellenséges egységek csak saját látótávon és tiszta látóvonal mellett jelennek meg |
 | Felderítési távolság | Gyalogság 32 méter, könnyű jármű 42 méter |
 | Győzelmi pontok | Mindkét oldal 0-ról indul; minden birtokolt csillagos pont másodpercenként 1 pontot ad |
-| Mérkőzés vége | Az első 50 összegyűjtött győzelmi pontnál győzelem vagy vereség jelenik meg |
+| Mérkőzés vége | Az első 250 összegyűjtött pontnál teljes képernyős eredmény és új mérkőzés gomb jelenik meg |
+| Egységesebb méretarány | Kisebb katonák, fák, kövek és talajfoltok; tágasabb harctéri összhatás |
+| Fedezék-előnézet | Kijelölt rajjal a fedezék fölé vitt egér már jobb kattintás előtt megmutatja a kisebb zöld/sárga érkezési helyeket |
 
 ## Rögzített tesztvisszajelzések – későbbi javítás
 

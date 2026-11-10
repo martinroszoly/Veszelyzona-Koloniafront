@@ -176,7 +176,7 @@ func _build_test_cover() -> void:
 		cover.name = data.name
 		cover.position = data.position
 		cover.rotation.y = data.rotation
-		cover.cover_length = data.length
+		cover.cover_length = data.length * 0.72
 		add_child(cover)
 
 func _on_capture_point_ownership_changed(_point, old_owner: int, new_owner: int) -> void:
@@ -356,7 +356,7 @@ func _build_forests() -> void:
 			var z: float = group.center.y + _rng.randf_range(-group.size.y * 0.5, group.size.y * 0.5)
 			if _is_near_road(Vector2(x, z)):
 				continue
-			_add_tree(Vector3(x, 0.0, z), _rng.randf_range(0.82, 1.28))
+			_add_tree(Vector3(x, 0.0, z), _rng.randf_range(0.58, 0.90))
 
 func _add_tree(at: Vector3, scale_factor: float) -> void:
 	var tree := Node3D.new()
@@ -397,7 +397,7 @@ func _build_rocks() -> void:
 			continue
 		var rock := MeshInstance3D.new()
 		var mesh := SphereMesh.new()
-		mesh.radius = _rng.randf_range(0.6, 1.6)
+		mesh.radius = _rng.randf_range(0.42, 1.10)
 		mesh.height = mesh.radius * _rng.randf_range(0.65, 1.0)
 		rock.mesh = mesh
 		rock.position = Vector3(x, mesh.height * 0.35, z)
@@ -416,7 +416,7 @@ func _build_grass_patches() -> void:
 			continue
 		var patch := MeshInstance3D.new()
 		var mesh := CylinderMesh.new()
-		mesh.top_radius = _rng.randf_range(1.4, 3.2)
+		mesh.top_radius = _rng.randf_range(0.9, 2.2)
 		mesh.bottom_radius = mesh.top_radius
 		mesh.height = 0.025
 		patch.mesh = mesh

@@ -22,6 +22,7 @@ var _right_drag_start_screen := Vector2.ZERO
 var _right_command_position := Vector3.ZERO
 var _right_facing_direction := Vector3.ZERO
 var _facing_preview = null
+var _hovered_cover = null
 
 
 func _ready() -> void:
@@ -41,11 +42,27 @@ func _unhandled_input(event: InputEvent) -> void:
 				_begin_facing_command(event.position)
 			else:
 				_finish_facing_command(event.position)
-	elif event is InputEventMouseMotion and _dragging_selection:
-		_drag_current = event.position
-		_update_selection_box()
-	elif event is InputEventMouseMotion and _right_dragging:
-		_update_facing_command(event.position)
+	elif event is InputEventMouseMotion:
+		if _dragging_selection:
+			_drag_current = event.position
+			_update_selection_box()
+		elif _right_dragging:
+			_update_facing_command(event.position)
+		else:
+			_update_cover_hover(event.position)
+
+
+func _update_cover_hover(screen_position: Vector2) -> void:
+	_prune_selected_units()
+	var next_cover = null
+	var hit := _raycast(screen_position, 1)
+	if not _selected_units.is_empty() and not hit.is_empty():
+		next_cover = _find_nearby_cover(hit.position)
+	if is_instance_valid(_hovered_cover) and _hovered_cover != next_cover:
+		_hovered_cover.hide_slot_preview()
+	_hovered_cover = next_cover
+	if is_instance_valid(_hovered_cover):
+		_hovered_cover.show_slot_preview(_selected_units.size(), hit.position)
 
 
 func _begin_facing_command(screen_position: Vector2) -> void:
@@ -280,6 +297,9 @@ func _raycast(screen_position: Vector2, collision_mask: int) -> Dictionary:
 
 
 func _clear_selection() -> void:
+	if is_instance_valid(_hovered_cover):
+		_hovered_cover.hide_slot_preview()
+	_hovered_cover = null
 	for unit in _selected_units:
 		if is_instance_valid(unit):
 			unit.set_selected(false)
