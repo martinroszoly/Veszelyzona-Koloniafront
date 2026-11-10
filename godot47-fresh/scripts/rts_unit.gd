@@ -132,7 +132,10 @@ func _apply_external_faction_model() -> bool:
 	elif unit_type == "vehicle":
 		# Vehicles must dominate the silhouette of infantry on the battlefield.
 		_faction_model.scale = Vector3.ONE * 1.75
-	if unit_type == "infantry":
+	# The Ember officer asset already contains its rifle. Do not add the old
+	# procedural placeholder on top of it; Xenon keeps the fallback until its
+	# weapon-ready asset is replaced.
+	if unit_type == "infantry" and faction_id != "ember":
 		_attach_faction_rifle()
 	_body_visual.visible = false
 	_facing_visual.visible = false
