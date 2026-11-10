@@ -239,7 +239,7 @@ func _update_objective_status() -> void:
 		for point in _resource_points:
 			if point.owner_team_id == 0:
 				owned_resources += 1
-	objective_status.text = "★ GYŐZELMI PONT: %d / 3   ·   NYERSANYAG: %d / %d\nCél: elsőként 500 győzelmi pont." % [owned_victory, owned_resources, _resource_points.size()]
+		objective_status.text = "★ GYŐZELMI PONT: %d / 3   ·   NYERSANYAG: %d / %d\nCél: elsőként 500 győzelmi pont." % [owned_victory, owned_resources, _resource_points.size()]
 
 func _update_supply_network() -> void:
 	for point in _capture_points:
