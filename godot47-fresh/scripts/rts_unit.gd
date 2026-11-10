@@ -96,8 +96,8 @@ func _ready() -> void:
 func _apply_external_faction_model() -> bool:
 	if unit_type != "infantry" and unit_type != "vehicle":
 		return false
-	if _apply_detail_sprite():
-		return true
+	# Detailed billboard art is kept only as concept reference. Runtime units use
+	# actual 3D meshes so their facing follows their movement, never the camera.
 	var role := "infantry" if unit_type == "infantry" else "vehicle"
 	var model_path := "res://assets/models/%s_%s.glb" % [faction_id, role]
 	var packed_model = load(model_path)
