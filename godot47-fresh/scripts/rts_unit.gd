@@ -134,7 +134,7 @@ func _find_nearest_enemy():
 
 func _has_line_of_sight(candidate) -> bool:
 	var origin := global_position + Vector3.UP * 1.75
-	var destination := candidate.global_position + Vector3.UP * 1.75
+	var destination: Vector3 = candidate.global_position + Vector3.UP * 1.75
 	var query := PhysicsRayQueryParameters3D.create(origin, destination, 1)
 	query.collide_with_areas = false
 	return get_world_3d().direct_space_state.intersect_ray(query).is_empty()
