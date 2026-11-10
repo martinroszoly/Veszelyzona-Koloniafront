@@ -3,24 +3,105 @@ extends Node
 @export var player_team_id: int = 0
 @export var formation_spacing: float = 2.2
 @export var ray_length: float = 1000.0
+@export var drag_threshold: float = 8.0
 
 @onready var camera: Camera3D = get_viewport().get_camera_3d()
 @onready var status_label: Label = get_node_or_null("../HUD/StatusPanel/Margin/Status")
 
 var _selected_units: Array[RTSUnit] = []
+var _drag_start := Vector2.ZERO
+var _drag_current := Vector2.ZERO
+var _dragging_selection := false
+var _selection_box: Panel
 
 
 func _ready() -> void:
-	_update_status("Jelölj ki egy kék egységet bal egérgombbal.")
+	_build_selection_box()
+	_update_status("Bal klikk: kijelölés. Bal gomb húzása: keretes kijelölés.")
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not event is InputEventMouseButton or not event.pressed:
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			if event.pressed:
+				_begin_selection_drag(event.position)
+			else:
+				_finish_selection_drag(event.position, Input.is_key_pressed(KEY_SHIFT))
+		elif event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
+			_issue_move_command(event.position)
+	elif event is InputEventMouseMotion and _dragging_selection:
+		_drag_current = event.position
+		_update_selection_box()
+
+
+func _begin_selection_drag(screen_position: Vector2) -> void:
+	_drag_start = screen_position
+	_drag_current = screen_position
+	_dragging_selection = true
+	_update_selection_box()
+
+
+func _finish_selection_drag(screen_position: Vector2, additive: bool) -> void:
+	if not _dragging_selection:
 		return
-	if event.button_index == MOUSE_BUTTON_LEFT:
-		_select_at(event.position, Input.is_key_pressed(KEY_SHIFT))
-	elif event.button_index == MOUSE_BUTTON_RIGHT:
-		_issue_move_command(event.position)
+	_drag_current = screen_position
+	_dragging_selection = false
+	_selection_box.visible = false
+	if _drag_start.distance_to(_drag_current) < drag_threshold:
+		_select_at(screen_position, additive)
+	else:
+		_select_in_screen_rect(_normalized_drag_rect(), additive)
+
+
+func _select_in_screen_rect(selection_rect: Rect2, additive: bool) -> void:
+	if not additive:
+		_clear_selection()
+	for node in get_tree().get_nodes_in_group("rts_units"):
+		var unit := node as RTSUnit
+		if unit == null or unit.team_id != player_team_id:
+			continue
+		if camera.is_position_behind(unit.global_position):
+			continue
+		var screen_position := camera.unproject_position(unit.global_position + Vector3.UP)
+		if selection_rect.has_point(screen_position) and not unit.is_selected():
+			unit.set_selected(true)
+			_selected_units.append(unit)
+	_update_status("Kerettel kijelölve: %d egység" % _selected_units.size())
+
+
+func _normalized_drag_rect() -> Rect2:
+	var top_left := Vector2(
+		minf(_drag_start.x, _drag_current.x),
+		minf(_drag_start.y, _drag_current.y)
+	)
+	var size := Vector2(
+		absf(_drag_current.x - _drag_start.x),
+		absf(_drag_current.y - _drag_start.y)
+	)
+	return Rect2(top_left, size)
+
+
+func _update_selection_box() -> void:
+	if not is_instance_valid(_selection_box):
+		return
+	var rect := _normalized_drag_rect()
+	_selection_box.position = rect.position
+	_selection_box.size = rect.size
+	_selection_box.visible = rect.size.length() >= drag_threshold
+
+
+func _build_selection_box() -> void:
+	_selection_box = Panel.new()
+	_selection_box.name = "DragSelectionBox"
+	_selection_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_selection_box.z_index = 100
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.18, 0.75, 1.0, 0.12)
+	style.border_color = Color(0.25, 0.88, 1.0, 0.95)
+	style.set_border_width_all(2)
+	_selection_box.add_theme_stylebox_override("panel", style)
+	_selection_box.visible = false
+	get_node("../HUD").add_child(_selection_box)
 
 
 func _select_at(screen_position: Vector2, additive: bool) -> void:

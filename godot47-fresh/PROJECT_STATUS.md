@@ -15,6 +15,7 @@
 | Régi játék/Main ág érintetlen | Külön ág; csak új `godot47-fresh/` fájlok kerülnek fel |
 | EMBER gyalogsági tesztegységek | 5 saját graybox egység létrehozva |
 | Egységkijelölés | Bal klikk és Shift+bal klikk elkészült; futtatás ellenőrizendő |
+| Keretes egységkijelölés | Bal gombos húzás, látható kijelölőkeret és Shift-hozzáadás elkészült |
 | Mozgási parancs | Jobb klikkes csoportos alakzat elkészült; futtatás ellenőrizendő |
 
 ## A környezetben végzett ellenőrzés
