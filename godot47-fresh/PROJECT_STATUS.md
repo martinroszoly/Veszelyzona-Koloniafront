@@ -28,7 +28,7 @@
 | Company of Heroes-szerű fedezékalap | Homokzsákfal, automatikus rajszétosztás, zöld erős-fedezék helyek és irányba fordulás elkészült |
 | Egyszerű harcrendszer | Életerő, automatikus célkeresés, lőtáv, sebzés és vörös ellenséges tesztraj elkészült |
 | Fedezéki védelem | Erős fedezékből, megfelelő irányból érkező találatok sebzése 50%-kal csökken |
-| Harci észlelés | 8,5 méteres lőtáv és fizikai látóvonal-ellenőrzés |
+| Harci észlelés | 22 méteres teszt-lőtáv és fizikai látóvonal-ellenőrzés |
 | Akadálykerülés | Előre irányuló érzékelés és homokzsákfal melletti oldalirányú kerülés alapja elkészült |
 
 ## Rögzített tesztvisszajelzések – későbbi javítás
