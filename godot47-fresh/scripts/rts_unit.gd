@@ -128,6 +128,9 @@ func _apply_external_faction_model() -> bool:
 		# Uploaded soldier and alien assets face +Z; RTSUnit uses -Z as forward.
 		_faction_model.rotation.y = PI
 	_cache_animation_nodes()
+	elif unit_type == "vehicle":
+		# Vehicles must dominate the silhouette of infantry on the battlefield.
+		_faction_model.scale = Vector3.ONE * 1.75
 	if unit_type == "infantry":
 		_attach_faction_rifle()
 	_body_visual.visible = false
@@ -216,26 +219,27 @@ func _find_skeleton(parent: Node) -> Skeleton3D:
 
 func _attach_faction_rifle() -> void:
 	var skeleton := _find_skeleton(_faction_model)
-	if not is_instance_valid(skeleton):
-		return
 	var hand_bone := ""
-	for bone_index in range(skeleton.get_bone_count()):
-		var bone_name := skeleton.get_bone_name(bone_index)
-		var normalized := bone_name.to_lower().replace(":", "").replace("_", "")
-		if normalized.contains("righthand") or normalized.contains("handr") or normalized.contains("handrgt"):
-			hand_bone = bone_name
-			break
-	if hand_bone.is_empty():
-		return
-	var hand := BoneAttachment3D.new()
-	hand.name = "RifleHandMount"
-	hand.bone_name = hand_bone
-	skeleton.add_child(hand)
+	if is_instance_valid(skeleton):
+		for bone_index in range(skeleton.get_bone_count()):
+			var bone_name := skeleton.get_bone_name(bone_index)
+			var normalized := bone_name.to_lower().replace(":", "").replace("_", "")
+			if normalized.contains("righthand") or normalized.contains("handr") or normalized.contains("handrgt"):
+				hand_bone = bone_name
+				break
+	var rifle_parent: Node3D = _faction_model
+	var root_fallback := hand_bone.is_empty()
+	if not root_fallback:
+		var hand := BoneAttachment3D.new()
+		hand.name = "RifleHandMount"
+		hand.bone_name = hand_bone
+		skeleton.add_child(hand)
+		rifle_parent = hand
 	var rifle := Node3D.new()
 	rifle.name = "FactionRifle"
-	rifle.position = Vector3(0.035, -0.045, -0.175)
-	rifle.rotation = Vector3(-0.12, 0.0, PI * 0.5)
-	hand.add_child(rifle)
+	rifle.position = Vector3(0.28, 1.12, -0.46) if root_fallback else Vector3(0.035, -0.045, -0.175)
+	rifle.rotation = Vector3(-0.12, 0.0, 0.0 if root_fallback else PI * 0.5)
+	rifle_parent.add_child(rifle)
 	var armor_color := Color("1c2935") if faction_id == "ember" else Color("15171e")
 	var panel_color := Color("315f95") if faction_id == "ember" else Color("4a080e")
 	var glow_color := Color("55bbff") if faction_id == "ember" else Color("ff1a25")

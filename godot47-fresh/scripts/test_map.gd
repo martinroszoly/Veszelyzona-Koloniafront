@@ -136,6 +136,8 @@ func _build_player_squad() -> void:
 		Vector3(0.0, 0.0, 88.0),
 		Vector3(-1.6, 0.0, 90.0),
 		Vector3(1.6, 0.0, 90.0),
+		Vector3(-3.2, 0.0, 92.0),
+		Vector3(3.2, 0.0, 92.0),
 	]
 	for index in range(squad_positions.size()):
 		var unit = RTS_UNIT.new()
@@ -152,6 +154,8 @@ func _build_enemy_test_squad() -> void:
 		Vector3(0.0, 0.0, -88.0),
 		Vector3(-1.6, 0.0, -90.0),
 		Vector3(1.6, 0.0, -90.0),
+		Vector3(-3.2, 0.0, -92.0),
+		Vector3(3.2, 0.0, -92.0),
 	]
 	for index in range(squad_positions.size()):
 		var unit = RTS_UNIT.new()
