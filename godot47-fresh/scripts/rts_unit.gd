@@ -141,15 +141,15 @@ func _cache_animation_nodes() -> void:
 
 
 func _find_model_node(node_name: String) -> Node3D:
-	var found := _find_node_recursive(_faction_model, node_name)
+	var found: Node = _find_node_recursive(_faction_model, node_name)
 	return found as Node3D
 
 
-func _find_node_recursive(parent: Node, node_name: String):
+func _find_node_recursive(parent: Node, node_name: String) -> Node:
 	if parent.name == node_name:
 		return parent
 	for child in parent.get_children():
-		var found = _find_node_recursive(child, node_name)
+		var found: Node = _find_node_recursive(child, node_name)
 		if found != null:
 			return found
 	return null
