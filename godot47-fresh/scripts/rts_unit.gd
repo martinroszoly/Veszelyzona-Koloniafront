@@ -52,6 +52,7 @@ var _right_arm_pivot: Node3D
 var _weapon_pivot: Node3D
 var _model_animation_player: AnimationPlayer
 var _active_model_animation := ""
+var _squad_marker: Node3D
 
 
 func _ready() -> void:
@@ -223,14 +224,14 @@ func _attach_faction_rifle() -> void:
 	var rifle_parent: Node3D = _faction_model
 	var rifle := Node3D.new()
 	rifle.name = "FactionRifle"
-	rifle.position = Vector3(0.32, 1.10, -0.58)
-	rifle.rotation = Vector3(-0.16, 0.0, 0.0)
+	rifle.position = Vector3(0.0, 1.10, 0.38)
+	rifle.rotation = Vector3(-0.16, PI, 0.0)
 	rifle_parent.add_child(rifle)
 	var armor_color := Color("1c2935") if faction_id == "ember" else Color("15171e")
 	var panel_color := Color("315f95") if faction_id == "ember" else Color("4a080e")
 	var glow_color := Color("55bbff") if faction_id == "ember" else Color("ff1a25")
-	_add_rifle_part(rifle, Vector3(0.10, 0.10, 0.72), Vector3(0.0, 0.0, -0.03), armor_color)
-	_add_rifle_part(rifle, Vector3(0.060, 0.060, 0.52), Vector3(0.0, 0.0, -0.59), Color("111820"), true)
+	_add_rifle_part(rifle, Vector3(0.08, 0.08, 0.52), Vector3(0.0, 0.0, -0.03), armor_color)
+	_add_rifle_part(rifle, Vector3(0.045, 0.045, 0.34), Vector3(0.0, 0.0, -0.42), Color("111820"), true)
 	_add_rifle_part(rifle, Vector3(0.10, 0.12, 0.16), Vector3(0.0, -0.055, 0.17), panel_color)
 	_add_rifle_part(rifle, Vector3(0.06, 0.065, 0.19), Vector3(0.0, 0.10, -0.07), panel_color)
 	_add_rifle_part(rifle, Vector3(0.035, 0.035, 0.09), Vector3(0.0, 0.15, 0.08), glow_color, false, true)
@@ -277,6 +278,7 @@ func _process(delta: float) -> void:
 	_animation_time += delta
 	_fire_pose_time = maxf(0.0, _fire_pose_time - delta)
 	_update_infantry_animation(delta)
+	_update_squad_marker()
 
 
 func _update_infantry_animation(delta: float) -> void:
@@ -379,9 +381,8 @@ func _physics_process(delta: float) -> void:
 	_attack_timer = maxf(0.0, _attack_timer - delta)
 	_avoidance_time = maxf(0.0, _avoidance_time - delta)
 	if _update_combat():
-		var combat_spacing := _get_combat_spacing_vector()
-		velocity.x = move_toward(velocity.x, combat_spacing.x * move_speed * 0.42, acceleration * delta)
-		velocity.z = move_toward(velocity.z, combat_spacing.z * move_speed * 0.42, acceleration * delta)
+		velocity.x = move_toward(velocity.x, 0.0, acceleration * delta)
+		velocity.z = move_toward(velocity.z, 0.0, acceleration * delta)
 		move_and_slide()
 		return
 	if not _has_destination:
@@ -698,12 +699,15 @@ func _build_visuals() -> void:
 
 func _build_unit_role_marker() -> void:
 	if not _is_squad_marker_owner():
+		_health_background.visible = false
+		_health_fill.visible = false
 		return
 	# A restrained 3D squad badge: a dark lozenge with the faction's chevrons.
 	var marker := Node3D.new()
 	marker.name = "UnitRoleMarker"
 	marker.position.y = 2.34 if unit_type == "infantry" else 2.92
 	add_child(marker)
+	_squad_marker = marker
 	var icon_color := Color(0.25, 0.78, 1.0) if team_id == 0 else Color(1.0, 0.20, 0.16)
 	var icon_material := StandardMaterial3D.new()
 	icon_material.albedo_color = icon_color
@@ -748,6 +752,19 @@ func _is_squad_marker_owner() -> bool:
 		if unit != self and unit.team_id == team_id and unit.squad_id == squad_id and unit.get_instance_id() < get_instance_id():
 			return false
 	return true
+
+
+func _update_squad_marker() -> void:
+	if not is_instance_valid(_squad_marker):
+		return
+	var center := Vector3.ZERO
+	var member_count := 0
+	for unit in get_tree().get_nodes_in_group("rts_units"):
+		if unit.team_id == team_id and unit.squad_id == squad_id:
+			center += unit.global_position
+			member_count += 1
+	if member_count > 0:
+		_squad_marker.global_position = center / float(member_count) + Vector3.UP * 3.0
 
 
 func _update_health_bar() -> void:

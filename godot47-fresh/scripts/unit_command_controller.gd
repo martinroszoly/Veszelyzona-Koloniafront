@@ -4,7 +4,7 @@ const MOVE_COMMAND_MARKER := preload("res://scripts/move_command_marker.gd")
 const FACING_COMMAND_PREVIEW := preload("res://scripts/facing_command_preview.gd")
 
 @export var player_team_id: int = 0
-@export var formation_spacing: float = 2.8
+@export var formation_spacing: float = 1.65
 @export var ray_length: float = 1000.0
 @export var drag_threshold: float = 8.0
 @export var cover_search_distance: float = 6.0
@@ -280,20 +280,22 @@ func _issue_move_command_at(center: Vector3, facing_direction: Vector3) -> void:
 		_update_status("%d raj erős fedezékbe rendeződik." % _selected_squad_count())
 		return
 	var columns := ceili(sqrt(float(_selected_units.size())))
-	if _selected_units.size() == 3:
+	if _selected_units.size() <= 5:
 		var forward := facing_direction
 		if forward.length_squared() < 0.01:
 			forward = Vector3.FORWARD
 		forward = forward.normalized()
 		var side := Vector3(forward.z, 0.0, -forward.x)
 		var triangle_offsets := [
-			-forward * formation_spacing * 0.45,
-			forward * formation_spacing * 0.35 - side * formation_spacing * 0.55,
-			forward * formation_spacing * 0.35 + side * formation_spacing * 0.55,
+			-forward * formation_spacing * 0.7,
+			-forward * formation_spacing * 0.15 - side * formation_spacing * 0.62,
+			-forward * formation_spacing * 0.15 + side * formation_spacing * 0.62,
+			forward * formation_spacing * 0.52 - side * formation_spacing * 0.95,
+			forward * formation_spacing * 0.52 + side * formation_spacing * 0.95,
 		]
 		for index in range(_selected_units.size()):
 			_selected_units[index].move_to(center + triangle_offsets[index], facing_direction, -1)
-		_update_status("A háromfős raj háromszög alakzatban mozog.")
+		_update_status("A raj zárt ék alakzatban mozog.")
 		return
 	for index in range(_selected_units.size()):
 		var row := index / columns
