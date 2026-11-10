@@ -41,6 +41,7 @@
 | Változó frontvonal | A pontok közti vonalak semleges, kék vagy vörös színnel mutatják az ellátott frontot |
 | Első katonai jármű | 260 gázért behívható könnyű páncélozott jármű, külön életerővel, sebességgel és fegyverrel |
 | Rácsalapú útvonaltervezés | A* útvonal készül a homokzsákfalak körül, helyi kerüléssel és elakadás-feloldással kiegészítve |
+| Tesztpálya hátországi kapcsolat | EMBER: B–E közvetlenül ellátott, A a B-n át; AI: A–D közvetlenül ellátott, E a D-n át |
 
 ## Rögzített tesztvisszajelzések – későbbi javítás
 

@@ -177,20 +177,26 @@ func _update_objective_status() -> void:
 func _update_supply_network() -> void:
 	for point in _capture_points:
 		point.set_supplied(false)
-	var enemy_chain_open := true
-	for index in range(_capture_points.size()):
+	# A kis tesztpályán B–E közvetlen EMBER-hátországi kapcsolatot kap.
+	# Csak a bal felső A pont igényli a B ponton át vezető ellátást.
+	for index in range(1, _capture_points.size()):
 		var point = _capture_points[index]
-		if enemy_chain_open and point.owner_team_id == 1:
+		if point.owner_team_id == 0:
 			point.set_supplied(true)
-		else:
-			enemy_chain_open = false
-	var player_chain_open := true
-	for index in range(_capture_points.size() - 1, -1, -1):
+	var point_a = _capture_points[0]
+	var point_b = _capture_points[1]
+	if point_a.owner_team_id == 0 and point_b.owner_team_id == 0 and point_b.is_supplied():
+		point_a.set_supplied(true)
+
+	# Az AI számára az ellenkező oldal tükrözött: A–D közvetlen, E a D-n át ellátott.
+	for index in range(0, _capture_points.size() - 1):
 		var point = _capture_points[index]
-		if player_chain_open and point.owner_team_id == 0:
+		if point.owner_team_id == 1:
 			point.set_supplied(true)
-		else:
-			player_chain_open = false
+	var point_d = _capture_points[_capture_points.size() - 2]
+	var point_e = _capture_points[_capture_points.size() - 1]
+	if point_e.owner_team_id == 1 and point_d.owner_team_id == 1 and point_d.is_supplied():
+		point_e.set_supplied(true)
 	_supplied_point_count = 0
 	for point in _capture_points:
 		if point.owner_team_id == 0 and point.is_supplied():
