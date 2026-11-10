@@ -2,6 +2,7 @@ class_name RTSUnit
 extends CharacterBody3D
 
 const UNIT_PROJECTILE := preload("res://scripts/projectile.gd")
+const FACTION_ROSTER := preload("res://scripts/faction_roster.gd")
 
 @export var team_id: int = 0
 @export var squad_id: String = ""
@@ -15,6 +16,7 @@ const UNIT_PROJECTILE := preload("res://scripts/projectile.gd")
 @export var is_vehicle: bool = false
 @export var sight_range: float = 32.0
 @export var unit_type: String = "infantry"
+@export var faction_id: String = ""
 @export var retreat_speed_multiplier: float = 1.65
 @export var base_healing_per_second: float = 14.0
 
@@ -38,12 +40,15 @@ var _avoidance_time := 0.0
 var _stuck_time := 0.0
 var _waypoints: Array[Vector3] = []
 var _retreating := false
+var _hover_time := 0.0
 
 
 func _ready() -> void:
 	add_to_group("rts_units")
 	if squad_id.is_empty():
 		squad_id = name
+	if faction_id.is_empty():
+		faction_id = "ember" if team_id == 0 else "xenon"
 	if unit_type != "infantry":
 		is_vehicle = true
 	if unit_type == "vehicle":
@@ -92,9 +97,8 @@ func _ready() -> void:
 func _apply_external_faction_model() -> bool:
 	if unit_type != "infantry" and unit_type != "vehicle":
 		return false
-	var faction := "ember" if team_id == 0 else "xenon"
-	var role := "infantry" if unit_type == "infantry" else "vehicle"
-	var model_path := "res://assets/models/%s_%s.glb" % [faction, role]
+	var role := "infantry" if unit_type == "infantry" else "carrier"
+	var model_path := FACTION_ROSTER.get_model_path(faction_id, role)
 	var packed_model = load(model_path)
 	if packed_model == null:
 		return false
@@ -114,7 +118,19 @@ func _apply_external_faction_model() -> bool:
 	return true
 
 
+func _update_hover_animation(delta: float) -> void:
+	if unit_type != "vehicle" or team_id != 1:
+		return
+	var model = get_node_or_null("FactionModel")
+	if not is_instance_valid(model):
+		return
+	_hover_time += delta
+	model.position.y = 0.52 + sin(_hover_time * 2.4) * 0.07
+	model.rotation.z = sin(_hover_time * 1.3) * 0.018
+
+
 func _physics_process(delta: float) -> void:
+	_update_hover_animation(delta)
 	_update_base_healing(delta)
 	_attack_timer = maxf(0.0, _attack_timer - delta)
 	_avoidance_time = maxf(0.0, _avoidance_time - delta)
