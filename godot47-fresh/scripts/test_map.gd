@@ -169,17 +169,18 @@ func _build_enemy_test_squad() -> void:
 
 func _build_capture_points() -> void:
 	var point_data := [
-		{"id": "V1", "position": Vector3(-156.0, 0.0, -36.0), "victory": true, "gas": 0.0},
-		{"id": "V2", "position": Vector3(0.0, 0.0, 0.0), "victory": true, "gas": 0.0},
-		{"id": "V3", "position": Vector3(156.0, 0.0, 36.0), "victory": true, "gas": 0.0},
-		{"id": "G1", "position": Vector3(-210.0, 0.0, -144.0), "victory": false, "gas": 1.5, "metal": 0.0},
-		{"id": "G2", "position": Vector3(-188.0, 0.0, 116.0), "victory": false, "gas": 1.5, "metal": 0.0},
+		{"id": "V1", "position": Vector3(-150.0, 0.0, -72.0), "victory": true, "gas": 0.0},
+		{"id": "V2", "position": Vector3(8.0, 0.0, 74.0), "victory": true, "gas": 0.0},
+		{"id": "V3", "position": Vector3(154.0, 0.0, -26.0), "victory": true, "gas": 0.0},
+		# Resources deliberately occupy different lanes and corners, never one strip.
+		{"id": "G1", "position": Vector3(-224.0, 0.0, -156.0), "victory": false, "gas": 1.5, "metal": 0.0},
+		{"id": "G2", "position": Vector3(-208.0, 0.0, 132.0), "victory": false, "gas": 1.5, "metal": 0.0},
 		{"id": "G3", "position": Vector3(-64.0, 0.0, 140.0), "victory": false, "gas": 1.5, "metal": 0.0},
 		{"id": "G4", "position": Vector3(64.0, 0.0, -140.0), "victory": false, "gas": 1.5, "metal": 0.0},
 		{"id": "G5", "position": Vector3(188.0, 0.0, -116.0), "victory": false, "gas": 1.5, "metal": 0.0},
 		{"id": "G6", "position": Vector3(210.0, 0.0, 144.0), "victory": false, "gas": 1.5, "metal": 0.0},
-		{"id": "G7", "position": Vector3(-250.0, 0.0, 20.0), "victory": false, "gas": 1.5, "metal": 0.0},
-		{"id": "G8", "position": Vector3(250.0, 0.0, -20.0), "victory": false, "gas": 1.5, "metal": 0.0},
+		{"id": "G7", "position": Vector3(-136.0, 0.0, 22.0), "victory": false, "gas": 1.5, "metal": 0.0},
+		{"id": "G8", "position": Vector3(142.0, 0.0, 42.0), "victory": false, "gas": 1.5, "metal": 0.0},
 		{"id": "M1", "position": Vector3(-120.0, 0.0, -190.0), "victory": false, "gas": 0.0, "metal": 1.2},
 		{"id": "M2", "position": Vector3(-100.0, 0.0, 190.0), "victory": false, "gas": 0.0, "metal": 1.2},
 		{"id": "M3", "position": Vector3(120.0, 0.0, 190.0), "victory": false, "gas": 0.0, "metal": 1.2},

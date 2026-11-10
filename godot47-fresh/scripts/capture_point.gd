@@ -121,17 +121,30 @@ func _build_visuals() -> void:
 	var mast_mesh := CylinderMesh.new()
 	mast_mesh.top_radius = 0.06
 	mast_mesh.bottom_radius = 0.075
-	mast_mesh.height = 2.3
+	mast_mesh.height = 4.2 if is_victory_point else 2.3
 	mast.mesh = mast_mesh
-	mast.position.y = 1.18
+	mast.position.y = 2.1 if is_victory_point else 1.18
 	var mast_material := StandardMaterial3D.new()
 	mast_material.albedo_color = Color(0.24, 0.25, 0.23)
 	mast_material.roughness = 0.8
 	mast.material_override = mast_material
 	add_child(mast)
+	if is_victory_point:
+		var flag := MeshInstance3D.new()
+		var flag_mesh := QuadMesh.new()
+		flag_mesh.size = Vector2(2.2, 1.35)
+		flag.mesh = flag_mesh
+		flag.position = Vector3(1.08, 3.45, 0.0)
+		flag.rotation.y = PI * 0.5
+		var flag_material := StandardMaterial3D.new()
+		flag_material.albedo_color = Color(0.95, 0.68, 0.12)
+		flag_material.emission_enabled = true
+		flag_material.emission = Color(0.38, 0.22, 0.02)
+		flag.material_override = flag_material
+		add_child(flag)
 
 	_label = Label3D.new()
-	_label.position = Vector3(0.0, 2.9, 0.0)
+	_label.position = Vector3(0.0, 4.85 if is_victory_point else 2.9, 0.0)
 	_label.font_size = 32
 	_label.outline_size = 6
 	_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED

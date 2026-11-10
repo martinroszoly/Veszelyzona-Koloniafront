@@ -62,7 +62,8 @@ func _issue_squad_orders() -> void:
 			for member in members:
 				member.attack_target(enemy)
 			continue
-		var objective = _find_nearest_uncaptured_point(squad_center)
+		var owned_resources := _get_owned_resource_count()
+		var objective = _find_nearest_uncaptured_point(squad_center, owned_resources < 2)
 		if objective == null:
 			continue
 		var phase := int(_squad_phase.get(squad_id, 0))
@@ -114,11 +115,13 @@ func _find_staging_cover(from_position: Vector3, objective_position: Vector3):
 	return selected
 
 
-func _find_nearest_uncaptured_point(from_position: Vector3):
+func _find_nearest_uncaptured_point(from_position: Vector3, resources_first: bool):
 	var closest = null
 	var closest_score := INF
 	for point in get_tree().get_nodes_in_group("capture_points"):
 		if point.owner_team_id == team_id:
+			continue
+		if resources_first and point.is_victory_point:
 			continue
 		var distance: float = from_position.distance_to(point.global_position)
 		var priority_bonus := 28.0 if point.is_victory_point else 0.0
@@ -127,6 +130,14 @@ func _find_nearest_uncaptured_point(from_position: Vector3):
 			closest_score = score
 			closest = point
 	return closest
+
+
+func _get_owned_resource_count() -> int:
+	var count := 0
+	for point in get_tree().get_nodes_in_group("resource_points"):
+		if point.owner_team_id == team_id and (point.gas_income_per_second > 0.0 or point.metal_income_per_second > 0.0):
+			count += 1
+	return count
 
 
 func _get_squad_center(members: Array) -> Vector3:

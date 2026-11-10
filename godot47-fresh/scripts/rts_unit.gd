@@ -218,33 +218,19 @@ func _find_skeleton(parent: Node) -> Skeleton3D:
 
 
 func _attach_faction_rifle() -> void:
-	var skeleton := _find_skeleton(_faction_model)
-	var hand_bone := ""
-	if is_instance_valid(skeleton):
-		for bone_index in range(skeleton.get_bone_count()):
-			var bone_name := skeleton.get_bone_name(bone_index)
-			var normalized := bone_name.to_lower().replace(":", "").replace("_", "")
-			if normalized.contains("righthand") or normalized.contains("handr") or normalized.contains("handrgt"):
-				hand_bone = bone_name
-				break
+	# Downloaded rigs expose inconsistent bone names. Use a fixed torso mount so
+	# the weapon is always visible instead of silently failing to attach.
 	var rifle_parent: Node3D = _faction_model
-	var root_fallback := hand_bone.is_empty()
-	if not root_fallback:
-		var hand := BoneAttachment3D.new()
-		hand.name = "RifleHandMount"
-		hand.bone_name = hand_bone
-		skeleton.add_child(hand)
-		rifle_parent = hand
 	var rifle := Node3D.new()
 	rifle.name = "FactionRifle"
-	rifle.position = Vector3(0.28, 1.12, -0.46) if root_fallback else Vector3(0.035, -0.045, -0.175)
-	rifle.rotation = Vector3(-0.12, 0.0, 0.0 if root_fallback else PI * 0.5)
+	rifle.position = Vector3(0.32, 1.10, -0.58)
+	rifle.rotation = Vector3(-0.16, 0.0, 0.0)
 	rifle_parent.add_child(rifle)
 	var armor_color := Color("1c2935") if faction_id == "ember" else Color("15171e")
 	var panel_color := Color("315f95") if faction_id == "ember" else Color("4a080e")
 	var glow_color := Color("55bbff") if faction_id == "ember" else Color("ff1a25")
-	_add_rifle_part(rifle, Vector3(0.075, 0.075, 0.56), Vector3(0.0, 0.0, -0.03), armor_color)
-	_add_rifle_part(rifle, Vector3(0.045, 0.045, 0.42), Vector3(0.0, 0.0, -0.47), Color("111820"), true)
+	_add_rifle_part(rifle, Vector3(0.10, 0.10, 0.72), Vector3(0.0, 0.0, -0.03), armor_color)
+	_add_rifle_part(rifle, Vector3(0.060, 0.060, 0.52), Vector3(0.0, 0.0, -0.59), Color("111820"), true)
 	_add_rifle_part(rifle, Vector3(0.10, 0.12, 0.16), Vector3(0.0, -0.055, 0.17), panel_color)
 	_add_rifle_part(rifle, Vector3(0.06, 0.065, 0.19), Vector3(0.0, 0.10, -0.07), panel_color)
 	_add_rifle_part(rifle, Vector3(0.035, 0.035, 0.09), Vector3(0.0, 0.15, 0.08), glow_color, false, true)
@@ -299,8 +285,10 @@ func _update_infantry_animation(delta: float) -> void:
 	var running := _has_destination and velocity.length() > 0.25
 	_crouch_time = maxf(0.0, _crouch_time - delta)
 	_crouch_cooldown = maxf(0.0, _crouch_cooldown - delta)
-	var crouch_offset := -0.22 if _crouch_time > 0.0 and not running else 0.0
-	_faction_model.position.y = move_toward(_faction_model.position.y, crouch_offset, delta * 3.5)
+	var crouching := _crouch_time > 0.0 and not running
+	var target_scale_y := 0.68 if crouching else 0.95
+	_faction_model.scale.y = move_toward(_faction_model.scale.y, target_scale_y, delta * 2.8)
+	_faction_model.position.y = move_toward(_faction_model.position.y, 0.0, delta * 3.5)
 	if is_instance_valid(_model_animation_player):
 		var aiming := is_instance_valid(_target)
 		if aiming and running:
@@ -332,7 +320,7 @@ func _update_infantry_animation(delta: float) -> void:
 		if is_instance_valid(_right_leg_pivot): _right_leg_pivot.rotation.x = move_toward(_right_leg_pivot.rotation.x, 0.0, delta * 5.0)
 		if is_instance_valid(_left_arm_pivot): _left_arm_pivot.rotation.x = move_toward(_left_arm_pivot.rotation.x, 0.0, delta * 5.0)
 		if is_instance_valid(_right_arm_pivot): _right_arm_pivot.rotation.x = move_toward(_right_arm_pivot.rotation.x, 0.0, delta * 5.0)
-	_faction_model.position.y = move_toward(_faction_model.position.y, bob + crouch_offset, delta * 3.5)
+	_faction_model.position.y = move_toward(_faction_model.position.y, bob, delta * 3.5)
 	var firing_pitch := -0.16 if _fire_pose_time > 0.0 else 0.0
 	_faction_model.rotation.x = move_toward(_faction_model.rotation.x, firing_pitch, delta * 4.8)
 	_faction_model.rotation.z = move_toward(_faction_model.rotation.z, roll, delta * 5.5)
@@ -709,6 +697,8 @@ func _build_visuals() -> void:
 
 
 func _build_unit_role_marker() -> void:
+	if not _is_squad_marker_owner():
+		return
 	# A restrained 3D squad badge: a dark lozenge with the faction's chevrons.
 	var marker := Node3D.new()
 	marker.name = "UnitRoleMarker"
@@ -751,6 +741,13 @@ func _build_unit_role_marker() -> void:
 			chevron.rotation.y = side * 0.72
 			chevron.material_override = icon_material
 			marker.add_child(chevron)
+
+
+func _is_squad_marker_owner() -> bool:
+	for unit in get_tree().get_nodes_in_group("rts_units"):
+		if unit != self and unit.team_id == team_id and unit.squad_id == squad_id and unit.get_instance_id() < get_instance_id():
+			return false
+	return true
 
 
 func _update_health_bar() -> void:
