@@ -7,7 +7,7 @@ extends CharacterBody3D
 @export var acceleration: float = 22.0
 @export var arrival_distance: float = 0.35
 @export var max_health: float = 100.0
-@export var attack_range: float = 15.0
+@export var attack_range: float = 8.5
 @export var attack_damage: float = 9.0
 @export var attack_cooldown: float = 1.15
 
@@ -55,7 +55,7 @@ func _physics_process(delta: float) -> void:
 		_pending_cover_strength = -1
 		return
 
-	var direction := offset.normalized()
+	var direction := _apply_obstacle_avoidance(offset.normalized())
 	velocity.x = move_toward(velocity.x, direction.x * move_speed, acceleration * delta)
 	velocity.z = move_toward(velocity.z, direction.z * move_speed, acceleration * delta)
 	look_at(global_position + direction, Vector3.UP)
@@ -115,10 +115,40 @@ func _find_nearest_enemy() -> RTSUnit:
 		if candidate == null or candidate == self or candidate.team_id == team_id:
 			continue
 		var distance := global_position.distance_to(candidate.global_position)
-		if distance <= closest_distance:
+		if distance <= closest_distance and _has_line_of_sight(candidate):
 			closest_distance = distance
 			closest = candidate
 	return closest
+
+
+func _has_line_of_sight(candidate: RTSUnit) -> bool:
+	var origin := global_position + Vector3.UP * 1.75
+	var destination := candidate.global_position + Vector3.UP * 1.75
+	var query := PhysicsRayQueryParameters3D.create(origin, destination, 1)
+	query.collide_with_areas = false
+	return get_world_3d().direct_space_state.intersect_ray(query).is_empty()
+
+
+func _apply_obstacle_avoidance(desired_direction: Vector3) -> Vector3:
+	var origin := global_position + Vector3.UP * 0.65
+	var target := origin + desired_direction * 2.4
+	var query := PhysicsRayQueryParameters3D.create(origin, target, 1)
+	query.collide_with_areas = false
+	var hit := get_world_3d().direct_space_state.intersect_ray(query)
+	if hit.is_empty():
+		return desired_direction
+	var normal: Vector3 = hit.normal
+	normal.y = 0.0
+	if normal.length_squared() < 0.01:
+		return desired_direction
+	var tangent := Vector3.UP.cross(normal.normalized()).normalized()
+	var destination_offset := _destination - global_position
+	destination_offset.y = 0.0
+	if tangent.dot(destination_offset) < 0.0:
+		tangent = -tangent
+	elif absf(tangent.dot(destination_offset)) < 0.05 and get_instance_id() % 2 == 0:
+		tangent = -tangent
+	return (tangent * 0.92 + desired_direction * 0.08).normalized()
 
 
 func set_selected(value: bool) -> void:

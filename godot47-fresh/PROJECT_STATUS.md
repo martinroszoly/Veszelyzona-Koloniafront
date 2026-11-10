@@ -28,11 +28,14 @@
 | Company of Heroes-szerű fedezékalap | Homokzsákfal, automatikus rajszétosztás, zöld erős-fedezék helyek és irányba fordulás elkészült |
 | Egyszerű harcrendszer | Életerő, automatikus célkeresés, lőtáv, sebzés és vörös ellenséges tesztraj elkészült |
 | Fedezéki védelem | Erős fedezékből, megfelelő irányból érkező találatok sebzése 50%-kal csökken |
+| Harci észlelés | 8,5 méteres lőtáv és fizikai látóvonal-ellenőrzés |
+| Akadálykerülés | Előre irányuló érzékelés és homokzsákfal melletti oldalirányú kerülés alapja elkészült |
 
 ## Rögzített tesztvisszajelzések – későbbi javítás
 
 - A képernyőszéli kameramozgás érzékelési sávja 64 képpontra nőtt; felhasználói újrateszt szükséges.
 - A kamera minimális zoomja 0,45-re csökkent; felhasználói újrateszt szükséges.
+- Az elpusztult kijelölt egységek hivatkozása mozgási parancs előtt automatikusan törlődik.
 
 ## A környezetben végzett ellenőrzés
 

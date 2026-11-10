@@ -183,6 +183,10 @@ func _issue_move_command(screen_position: Vector2) -> void:
 
 
 func _issue_move_command_at(center: Vector3, facing_direction: Vector3) -> void:
+	_prune_selected_units()
+	if _selected_units.is_empty():
+		_update_status("A kijelölt rajnak nem maradt bevethető katonája.")
+		return
 	_show_move_command_marker(center)
 	var cover := _find_nearby_cover(center)
 	if cover != null:
@@ -243,6 +247,12 @@ func _selected_squad_count() -> int:
 		if is_instance_valid(unit) and not squad_ids.has(unit.squad_id):
 			squad_ids.append(unit.squad_id)
 	return squad_ids.size()
+
+
+func _prune_selected_units() -> void:
+	for index in range(_selected_units.size() - 1, -1, -1):
+		if not is_instance_valid(_selected_units[index]):
+			_selected_units.remove_at(index)
 
 
 func _update_selection_status(prefix: String) -> void:
