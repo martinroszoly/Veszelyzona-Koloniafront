@@ -1,6 +1,7 @@
 extends Node
 
 const MOVE_COMMAND_MARKER := preload("res://scripts/move_command_marker.gd")
+const FACING_COMMAND_PREVIEW := preload("res://scripts/facing_command_preview.gd")
 
 @export var player_team_id: int = 0
 @export var formation_spacing: float = 2.2
@@ -15,6 +16,11 @@ var _drag_start := Vector2.ZERO
 var _drag_current := Vector2.ZERO
 var _dragging_selection := false
 var _selection_box: Panel
+var _right_dragging := false
+var _right_drag_start_screen := Vector2.ZERO
+var _right_command_position := Vector3.ZERO
+var _right_facing_direction := Vector3.ZERO
+var _facing_preview: FacingCommandPreview
 
 
 func _ready() -> void:
@@ -29,11 +35,55 @@ func _unhandled_input(event: InputEvent) -> void:
 				_begin_selection_drag(event.position)
 			else:
 				_finish_selection_drag(event.position, Input.is_key_pressed(KEY_SHIFT))
-		elif event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
-			_issue_move_command(event.position)
+		elif event.button_index == MOUSE_BUTTON_RIGHT:
+			if event.pressed:
+				_begin_facing_command(event.position)
+			else:
+				_finish_facing_command(event.position)
 	elif event is InputEventMouseMotion and _dragging_selection:
 		_drag_current = event.position
 		_update_selection_box()
+	elif event is InputEventMouseMotion and _right_dragging:
+		_update_facing_command(event.position)
+
+
+func _begin_facing_command(screen_position: Vector2) -> void:
+	if _selected_units.is_empty():
+		_update_status("Nincs kijelölt raj.")
+		return
+	var hit := _raycast(screen_position, 1)
+	if hit.is_empty():
+		return
+	_right_dragging = true
+	_right_drag_start_screen = screen_position
+	_right_command_position = hit.position
+	_right_facing_direction = Vector3.ZERO
+	_facing_preview = FACING_COMMAND_PREVIEW.new() as FacingCommandPreview
+	_facing_preview.position = _right_command_position + Vector3.UP * 0.13
+	get_tree().current_scene.add_child(_facing_preview)
+
+
+func _update_facing_command(screen_position: Vector2) -> void:
+	if not _right_dragging or not is_instance_valid(_facing_preview):
+		return
+	var hit := _raycast(screen_position, 1)
+	if hit.is_empty():
+		return
+	_right_facing_direction = hit.position - _right_command_position
+	_right_facing_direction.y = 0.0
+	if _right_drag_start_screen.distance_to(screen_position) < drag_threshold:
+		_right_facing_direction = Vector3.ZERO
+	_facing_preview.set_facing_direction(_right_facing_direction)
+
+
+func _finish_facing_command(screen_position: Vector2) -> void:
+	if not _right_dragging:
+		return
+	_update_facing_command(screen_position)
+	_right_dragging = false
+	if is_instance_valid(_facing_preview):
+		_facing_preview.queue_free()
+	_issue_move_command_at(_right_command_position, _right_facing_direction)
 
 
 func _begin_selection_drag(screen_position: Vector2) -> void:
@@ -128,7 +178,10 @@ func _issue_move_command(screen_position: Vector2) -> void:
 	var hit := _raycast(screen_position, 1)
 	if hit.is_empty():
 		return
-	var center: Vector3 = hit.position
+	_issue_move_command_at(hit.position, Vector3.ZERO)
+
+
+func _issue_move_command_at(center: Vector3, facing_direction: Vector3) -> void:
 	_show_move_command_marker(center)
 	var columns := ceili(sqrt(float(_selected_units.size())))
 	for index in range(_selected_units.size()):
@@ -136,7 +189,7 @@ func _issue_move_command(screen_position: Vector2) -> void:
 		var column := index % columns
 		var offset_x := (float(column) - float(columns - 1) * 0.5) * formation_spacing
 		var offset_z := float(row) * formation_spacing
-		_selected_units[index].move_to(center + Vector3(offset_x, 0.0, offset_z))
+		_selected_units[index].move_to(center + Vector3(offset_x, 0.0, offset_z), facing_direction)
 	_update_status("Mozgási parancs kiadva %d rajnak." % _selected_squad_count())
 
 

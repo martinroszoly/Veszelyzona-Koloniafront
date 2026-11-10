@@ -11,6 +11,7 @@ var _destination := Vector3.ZERO
 var _has_destination := false
 var _selected := false
 var _selection_ring: MeshInstance3D
+var _final_facing := Vector3.ZERO
 
 
 func _ready() -> void:
@@ -33,6 +34,9 @@ func _physics_process(delta: float) -> void:
 	if offset.length() <= arrival_distance:
 		_has_destination = false
 		velocity = Vector3.ZERO
+		if _final_facing.length_squared() > 0.01:
+			look_at(global_position + _final_facing, Vector3.UP)
+			_final_facing = Vector3.ZERO
 		return
 
 	var direction := offset.normalized()
@@ -42,9 +46,13 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 
-func move_to(world_position: Vector3) -> void:
+func move_to(world_position: Vector3, final_facing: Vector3 = Vector3.ZERO) -> void:
 	_destination = world_position
 	_destination.y = global_position.y
+	_final_facing = final_facing
+	_final_facing.y = 0.0
+	if _final_facing.length_squared() > 0.01:
+		_final_facing = _final_facing.normalized()
 	_has_destination = true
 
 

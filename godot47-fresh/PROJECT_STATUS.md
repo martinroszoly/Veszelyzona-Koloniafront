@@ -24,6 +24,7 @@
 | HÁTORSZÁG alapváltozat | 120 gázért 3 fős EMBER gyalogsági raj behívható az indulási területre |
 | Rajalapú irányítás | Egy katonára kattintva a teljes raj kijelölődik és együtt kap parancsot |
 | Mozgási céljelző | Jobb kattintáskor kék, animált parancsjelző jelenik meg |
+| Érkezési irány megadása | Jobb gombos húzásnál iránynyíl, érkezéskor a raj a megadott irányba fordul |
 
 ## Rögzített tesztvisszajelzések – későbbi javítás
 
