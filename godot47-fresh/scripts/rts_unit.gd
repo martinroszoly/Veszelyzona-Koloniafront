@@ -40,6 +40,14 @@ var _stuck_time := 0.0
 var _waypoints: Array[Vector3] = []
 var _retreating := false
 var _hover_time := 0.0
+var _animation_time := 0.0
+var _fire_pose_time := 0.0
+var _faction_model: Node3D
+var _left_leg_pivot: Node3D
+var _right_leg_pivot: Node3D
+var _left_arm_pivot: Node3D
+var _right_arm_pivot: Node3D
+var _weapon_pivot: Node3D
 
 
 func _ready() -> void:
@@ -88,6 +96,7 @@ func _ready() -> void:
 		_convert_visuals_to_graybox_unit()
 	elif not has_external_model:
 		_decorate_infantry()
+	_build_unit_role_marker()
 	_health = max_health
 	_update_health_bar()
 	_destination = global_position
@@ -106,6 +115,8 @@ func _apply_external_faction_model() -> bool:
 	var model = packed_model.instantiate()
 	model.name = "FactionModel"
 	add_child(model)
+	_faction_model = model as Node3D
+	_cache_animation_nodes()
 	_body_visual.visible = false
 	_facing_visual.visible = false
 	if unit_type == "vehicle":
@@ -117,6 +128,67 @@ func _apply_external_faction_model() -> bool:
 		_health_background.position.y = 2.35
 		_health_fill.position.y = 2.35
 	return true
+
+
+func _cache_animation_nodes() -> void:
+	if not is_instance_valid(_faction_model):
+		return
+	_left_leg_pivot = _find_model_node("LeftLegPivot")
+	_right_leg_pivot = _find_model_node("RightLegPivot")
+	_left_arm_pivot = _find_model_node("LeftArmPivot")
+	_right_arm_pivot = _find_model_node("RightArmPivot")
+	_weapon_pivot = _find_model_node("WeaponPivot")
+
+
+func _find_model_node(node_name: String) -> Node3D:
+	var found := _find_node_recursive(_faction_model, node_name)
+	return found as Node3D
+
+
+func _find_node_recursive(parent: Node, node_name: String):
+	if parent.name == node_name:
+		return parent
+	for child in parent.get_children():
+		var found = _find_node_recursive(child, node_name)
+		if found != null:
+			return found
+	return null
+
+
+func _process(delta: float) -> void:
+	_animation_time += delta
+	_fire_pose_time = maxf(0.0, _fire_pose_time - delta)
+	_update_infantry_animation(delta)
+
+
+func _update_infantry_animation(delta: float) -> void:
+	if unit_type != "infantry" or not is_instance_valid(_faction_model):
+		return
+	var running := _has_destination and velocity.length() > 0.25
+	var bob := 0.0
+	var roll := 0.0
+	if running:
+		var stride := _animation_time * 11.0
+		bob = absf(sin(stride)) * 0.075
+		roll = sin(stride * 0.5) * 0.045
+		var leg_swing := sin(stride) * 0.55
+		var arm_swing := sin(stride) * 0.32
+		if is_instance_valid(_left_leg_pivot): _left_leg_pivot.rotation.x = leg_swing
+		if is_instance_valid(_right_leg_pivot): _right_leg_pivot.rotation.x = -leg_swing
+		if is_instance_valid(_left_arm_pivot): _left_arm_pivot.rotation.x = -arm_swing
+		if is_instance_valid(_right_arm_pivot): _right_arm_pivot.rotation.x = arm_swing
+	else:
+		if is_instance_valid(_left_leg_pivot): _left_leg_pivot.rotation.x = move_toward(_left_leg_pivot.rotation.x, 0.0, delta * 5.0)
+		if is_instance_valid(_right_leg_pivot): _right_leg_pivot.rotation.x = move_toward(_right_leg_pivot.rotation.x, 0.0, delta * 5.0)
+		if is_instance_valid(_left_arm_pivot): _left_arm_pivot.rotation.x = move_toward(_left_arm_pivot.rotation.x, 0.0, delta * 5.0)
+		if is_instance_valid(_right_arm_pivot): _right_arm_pivot.rotation.x = move_toward(_right_arm_pivot.rotation.x, 0.0, delta * 5.0)
+	_faction_model.position.y = move_toward(_faction_model.position.y, bob, delta * 1.5)
+	var firing_pitch := -0.16 if _fire_pose_time > 0.0 else 0.0
+	_faction_model.rotation.x = move_toward(_faction_model.rotation.x, firing_pitch, delta * 4.8)
+	_faction_model.rotation.z = move_toward(_faction_model.rotation.z, roll, delta * 5.5)
+	if is_instance_valid(_weapon_pivot):
+		var aim_pitch := -0.42 if _fire_pose_time > 0.0 else 0.0
+		_weapon_pivot.rotation.x = move_toward(_weapon_pivot.rotation.x, aim_pitch, delta * 8.0)
 
 
 func _apply_detail_sprite() -> bool:
@@ -297,6 +369,7 @@ func _update_combat() -> bool:
 func _fire_projectile(projectile_target) -> void:
 	if not is_instance_valid(projectile_target):
 		return
+	_fire_pose_time = 0.22
 	var projectile = UNIT_PROJECTILE.new()
 	projectile.initialize(projectile_target, attack_damage, global_position, team_id)
 	projectile.position = global_position + Vector3.UP * 0.92 - global_basis.z * 0.38
@@ -443,6 +516,40 @@ func _build_visuals() -> void:
 	health_fill_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	_health_fill.material_override = health_fill_material
 	add_child(_health_fill)
+
+
+func _build_unit_role_marker() -> void:
+	# A restrained 3D squad badge: a dark lozenge with the faction's chevrons.
+	var marker := Node3D.new()
+	marker.name = "UnitRoleMarker"
+	marker.position.y = 2.18 if unit_type == "infantry" else 2.82
+	add_child(marker)
+	var icon_color := Color(0.25, 0.78, 1.0) if team_id == 0 else Color(1.0, 0.20, 0.16)
+	var icon_material := StandardMaterial3D.new()
+	icon_material.albedo_color = icon_color
+	icon_material.emission_enabled = true
+	icon_material.emission = icon_color * 0.55
+	icon_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	var dark_material := StandardMaterial3D.new()
+	dark_material.albedo_color = Color(0.035, 0.045, 0.055)
+	dark_material.metallic = 0.6
+	var base := MeshInstance3D.new()
+	var base_mesh := BoxMesh.new()
+	base_mesh.size = Vector3(0.34, 0.045, 0.34)
+	base.mesh = base_mesh
+	base.rotation.y = PI * 0.25
+	base.material_override = dark_material
+	marker.add_child(base)
+	for rank in range(2):
+		for side in [-1.0, 1.0]:
+			var chevron := MeshInstance3D.new()
+			var chevron_mesh := BoxMesh.new()
+			chevron_mesh.size = Vector3(0.12, 0.022, 0.040)
+			chevron.mesh = chevron_mesh
+			chevron.position = Vector3(side * 0.052, 0.040, -0.065 + rank * 0.12)
+			chevron.rotation.y = side * 0.72
+			chevron.material_override = icon_material
+			marker.add_child(chevron)
 
 
 func _update_health_bar() -> void:

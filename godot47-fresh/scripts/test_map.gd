@@ -133,11 +133,9 @@ func _build_ground() -> void:
 
 func _build_player_squad() -> void:
 	var squad_positions := [
-		Vector3(-8.0, 0.0, 88.0),
-		Vector3(-4.0, 0.0, 88.0),
 		Vector3(0.0, 0.0, 88.0),
-		Vector3(4.0, 0.0, 88.0),
-		Vector3(8.0, 0.0, 88.0),
+		Vector3(-1.6, 0.0, 90.0),
+		Vector3(1.6, 0.0, 90.0),
 	]
 	for index in range(squad_positions.size()):
 		var unit = RTS_UNIT.new()
@@ -151,11 +149,9 @@ func _build_player_squad() -> void:
 
 func _build_enemy_test_squad() -> void:
 	var squad_positions := [
-		Vector3(-6.0, 0.0, -88.0),
-		Vector3(-3.0, 0.0, -88.0),
 		Vector3(0.0, 0.0, -88.0),
-		Vector3(3.0, 0.0, -88.0),
-		Vector3(6.0, 0.0, -88.0),
+		Vector3(-1.6, 0.0, -90.0),
+		Vector3(1.6, 0.0, -90.0),
 	]
 	for index in range(squad_positions.size()):
 		var unit = RTS_UNIT.new()
