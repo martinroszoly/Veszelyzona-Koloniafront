@@ -118,6 +118,7 @@ func _apply_external_faction_model() -> bool:
 	model.name = "FactionModel"
 	add_child(model)
 	_faction_model = model as Node3D
+	_apply_faction_material_style(_faction_model)
 	if unit_type == "infantry" and faction_id == "ember":
 		# The imported character is authored at a human scale. Keep it comparable
 		# to vehicles while preserving the original rig and skinning.
@@ -138,6 +139,29 @@ func _apply_external_faction_model() -> bool:
 		_health_background.position.y = 2.35
 		_health_fill.position.y = 2.35
 	return true
+
+
+func _apply_faction_material_style(root: Node) -> void:
+	# Tint imported textures without replacing their detail, then add restrained
+	# faction emissive accents so both uploaded models read clearly in the RTS.
+	var tint := Color(0.58, 0.72, 0.96) if faction_id == "ember" else Color(0.34, 0.20, 0.22)
+	var glow := Color(0.08, 0.35, 1.0) if faction_id == "ember" else Color(1.0, 0.035, 0.02)
+	for child in root.get_children():
+		if child is MeshInstance3D:
+			var mesh_node := child as MeshInstance3D
+			if mesh_node.mesh != null:
+				for surface in range(mesh_node.mesh.get_surface_count()):
+					var source := mesh_node.get_active_material(surface)
+					if source is BaseMaterial3D:
+						var styled := source.duplicate() as BaseMaterial3D
+						styled.albedo_color = styled.albedo_color * tint
+						styled.metallic = maxf(styled.metallic, 0.35)
+						styled.roughness = clampf(styled.roughness, 0.28, 0.78)
+						styled.emission_enabled = true
+						styled.emission = glow * 0.16
+						styled.emission_energy_multiplier = 0.7
+						mesh_node.set_surface_override_material(surface, styled)
+		_apply_faction_material_style(child)
 
 
 func _cache_animation_nodes() -> void:
