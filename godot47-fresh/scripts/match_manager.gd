@@ -1,7 +1,7 @@
 class_name MatchManager
 extends Node
 
-@export var target_victory_points: int = 250
+@export var target_victory_points: int = 500
 @export var tick_interval: float = 1.0
 
 var player_victory_points: int
