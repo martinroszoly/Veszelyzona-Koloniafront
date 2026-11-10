@@ -14,6 +14,7 @@ var _decision_timer := 0.7
 var _reinforcement_wave := 0
 var _production_remaining := 0.0
 var _production_queued := false
+var _queued_type := "infantry"
 @onready var economy_manager: Node = get_node_or_null("../EconomyManager")
 
 
@@ -22,7 +23,7 @@ func _physics_process(delta: float) -> void:
 		_production_remaining -= delta
 		if _production_remaining <= 0.0:
 			_production_queued = false
-			_spawn_reinforcements()
+			_spawn_reinforcements(_queued_type)
 	_decision_timer -= delta
 	if _decision_timer > 0.0:
 		return
@@ -101,22 +102,47 @@ func _try_call_in_reinforcements() -> void:
 	var population := 0
 	for node in get_tree().get_nodes_in_group("rts_units"):
 		if node.team_id == team_id:
-			population += 4 if node.is_vehicle else 1
-	if population + REINFORCEMENT_SIZE > POPULATION_CAP:
+			population += _unit_population(node.unit_type)
+	var options := [
+		{"type": "fighter", "cost": 650.0, "time": 28.0, "population": 8},
+		{"type": "helicopter", "cost": 500.0, "time": 24.0, "population": 7},
+		{"type": "tank", "cost": 420.0, "time": 20.0, "population": 6},
+		{"type": "vehicle", "cost": 260.0, "time": 14.0, "population": 4},
+		{"type": "infantry", "cost": REINFORCEMENT_COST, "time": REINFORCEMENT_TIME, "population": REINFORCEMENT_SIZE},
+	]
+	var choice = null
+	for option in options:
+		if population + int(option.population) <= POPULATION_CAP and economy_manager.can_afford(team_id, float(option.cost)):
+			choice = option
+			break
+	if choice == null:
 		return
-	if not economy_manager.spend_gas(team_id, REINFORCEMENT_COST):
+	if not economy_manager.spend_gas(team_id, float(choice.cost)):
 		return
 	_production_queued = true
-	_production_remaining = REINFORCEMENT_TIME
+	_queued_type = choice.type
+	_production_remaining = choice.time
 
-func _spawn_reinforcements() -> void:
+func _spawn_reinforcements(unit_type: String) -> void:
 	_reinforcement_wave += 1
-	for index in range(REINFORCEMENT_SIZE):
+	var unit_count := REINFORCEMENT_SIZE if unit_type == "infantry" else 1
+	for index in range(unit_count):
 		var unit = RTS_UNIT.new()
-		unit.name = "XenonAIReinforcement_%02d_%02d" % [_reinforcement_wave, index + 1]
+		unit.name = "Xenon_%s_%02d_%02d" % [unit_type, _reinforcement_wave, index + 1]
 		unit.team_id = team_id
-		unit.squad_id = "xenon_ai_erosites_%02d" % _reinforcement_wave
+		unit.squad_id = "xenon_%s_%02d" % [unit_type, _reinforcement_wave]
+		unit.unit_type = unit_type
+		unit.is_vehicle = unit_type != "infantry"
 		unit.collision_layer = 2
 		unit.collision_mask = 1 | 2
 		unit.position = Vector3(-2.4 + float(index) * 2.4, 0.0, -96.0)
 		get_tree().current_scene.add_child(unit)
+
+func _unit_population(unit_type: String) -> int:
+	if unit_type == "fighter":
+		return 8
+	if unit_type == "helicopter":
+		return 7
+	if unit_type == "tank":
+		return 6
+	return 4 if unit_type == "vehicle" else 1

@@ -151,7 +151,7 @@ anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -390.0
-offset_top = -242.0
+offset_top = -410.0
 offset_right = -24.0
 offset_bottom = -24.0
 
@@ -186,6 +186,24 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 16
 disabled = true
 text = "KÖNNYŰ PÁNCÉLOZOTT JÁRMŰ  ·  260 GÁZ"
+
+[node name="TankCallIn" type="Button" parent="HUD/BacklinePanel/Margin/BacklineContent"]
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 2
+disabled = true
+text = "TANK  ·  420 GÁZ"
+
+[node name="HelicopterCallIn" type="Button" parent="HUD/BacklinePanel/Margin/BacklineContent"]
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 2
+disabled = true
+text = "LÉGI TÁMOGATÓ EGYSÉG  ·  500 GÁZ"
+
+[node name="FighterCallIn" type="Button" parent="HUD/BacklinePanel/Margin/BacklineContent"]
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 2
+disabled = true
+text = "CSAPÁSMÉRŐ VADÁSZGÉP  ·  650 GÁZ"
 
 [node name="MatchPanel" type="PanelContainer" parent="HUD"]
 anchor_left = 0.5

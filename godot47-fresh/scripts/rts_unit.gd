@@ -14,6 +14,7 @@ const UNIT_PROJECTILE := preload("res://scripts/projectile.gd")
 @export var attack_cooldown: float = 1.15
 @export var is_vehicle: bool = false
 @export var sight_range: float = 32.0
+@export var unit_type: String = "infantry"
 @export var retreat_speed_multiplier: float = 1.65
 @export var base_healing_per_second: float = 14.0
 
@@ -43,7 +44,9 @@ func _ready() -> void:
 	add_to_group("rts_units")
 	if squad_id.is_empty():
 		squad_id = name
-	if is_vehicle:
+	if unit_type != "infantry":
+		is_vehicle = true
+	if unit_type == "vehicle":
 		max_health = 320.0
 		move_speed = 8.5
 		acceleration = 12.0
@@ -51,9 +54,34 @@ func _ready() -> void:
 		attack_damage = 32.0
 		attack_cooldown = 2.3
 		sight_range = 42.0
+	elif unit_type == "tank":
+		max_health = 560.0
+		move_speed = 5.8
+		attack_range = 31.0
+		attack_damage = 58.0
+		attack_cooldown = 2.8
+		sight_range = 38.0
+	elif unit_type == "helicopter":
+		max_health = 260.0
+		move_speed = 11.5
+		attack_range = 30.0
+		attack_damage = 25.0
+		attack_cooldown = 1.45
+		sight_range = 48.0
+	elif unit_type == "fighter":
+		max_health = 220.0
+		move_speed = 15.0
+		attack_range = 35.0
+		attack_damage = 42.0
+		attack_cooldown = 2.0
+		sight_range = 56.0
 	_build_visuals()
-	if is_vehicle:
+	if unit_type == "vehicle":
 		_convert_visuals_to_vehicle()
+	elif unit_type != "infantry":
+		_convert_visuals_to_graybox_unit()
+	else:
+		_decorate_infantry()
 	_health = max_health
 	_update_health_bar()
 	_destination = global_position
@@ -359,10 +387,20 @@ func _convert_visuals_to_vehicle() -> void:
 	vehicle_material.roughness = 0.62
 
 	var hull := MeshInstance3D.new()
-	var hull_mesh := BoxMesh.new()
-	hull_mesh.size = Vector3(1.72, 0.75, 2.85)
+	var hull_mesh: PrimitiveMesh
+	if team_id == 0:
+		var ember_hull := BoxMesh.new()
+		ember_hull.size = Vector3(1.72, 0.75, 2.85)
+		hull_mesh = ember_hull
+	else:
+		var xenon_hull := CapsuleMesh.new()
+		xenon_hull.radius = 0.72
+		xenon_hull.height = 2.85
+		hull_mesh = xenon_hull
 	hull.mesh = hull_mesh
 	hull.position.y = 0.56
+	if team_id == 1:
+		hull.rotation.x = PI * 0.5
 	hull.material_override = vehicle_material
 	add_child(hull)
 
@@ -386,7 +424,99 @@ func _convert_visuals_to_vehicle() -> void:
 	cannon_material.metallic = 0.7
 	cannon.material_override = cannon_material
 	add_child(cannon)
+	if team_id == 0:
+		for side in [-1.0, 1.0]:
+			var track := MeshInstance3D.new()
+			var track_mesh := BoxMesh.new()
+			track_mesh.size = Vector3(0.34, 0.42, 2.75)
+			track.mesh = track_mesh
+			track.position = Vector3(side * 0.92, 0.40, 0.0)
+			track.material_override = cannon_material
+			add_child(track)
+	else:
+		for side in [-1.0, 1.0]:
+			var pod := MeshInstance3D.new()
+			var pod_mesh := CapsuleMesh.new()
+			pod_mesh.radius = 0.26
+			pod_mesh.height = 2.35
+			pod.mesh = pod_mesh
+			pod.rotation.x = PI * 0.5
+			pod.position = Vector3(side * 0.82, 0.38, 0.12)
+			pod.material_override = vehicle_material
+			add_child(pod)
 
 	_selection_ring.scale = Vector3.ONE * 1.5
+
+
+func _decorate_infantry() -> void:
+	var armor := StandardMaterial3D.new()
+	armor.albedo_color = Color(0.12, 0.34, 0.58) if team_id == 0 else Color(0.62, 0.06, 0.09)
+	armor.metallic = 0.45
+	armor.roughness = 0.55
+	var helmet := MeshInstance3D.new()
+	var helmet_mesh := SphereMesh.new()
+	helmet_mesh.radius = 0.30 if team_id == 0 else 0.26
+	helmet_mesh.height = 0.42
+	helmet.mesh = helmet_mesh
+	helmet.position = Vector3(0.0, 1.45, 0.0)
+	helmet.material_override = armor
+	add_child(helmet)
+	for side in [-1.0, 1.0]:
+		var shoulder := MeshInstance3D.new()
+		var shoulder_mesh := BoxMesh.new()
+		shoulder_mesh.size = Vector3(0.22, 0.22, 0.34) if team_id == 0 else Vector3(0.16, 0.34, 0.20)
+		shoulder.mesh = shoulder_mesh
+		shoulder.position = Vector3(side * 0.39, 1.10, 0.0)
+		shoulder.rotation.z = side * (0.18 if team_id == 0 else 0.52)
+		shoulder.material_override = armor
+		add_child(shoulder)
+	if team_id == 0:
+		var backpack := MeshInstance3D.new()
+		var backpack_mesh := BoxMesh.new()
+		backpack_mesh.size = Vector3(0.48, 0.58, 0.24)
+		backpack.mesh = backpack_mesh
+		backpack.position = Vector3(0.0, 0.96, 0.32)
+		backpack.material_override = armor
+		add_child(backpack)
+	else:
+		for side in [-1.0, 1.0]:
+			var blade := MeshInstance3D.new()
+			var blade_mesh := PrismMesh.new()
+			blade_mesh.size = Vector3(0.12, 0.62, 0.30)
+			blade.mesh = blade_mesh
+			blade.position = Vector3(side * 0.22, 1.22, 0.30)
+			blade.rotation.z = side * 0.35
+			blade.material_override = armor
+			add_child(blade)
+
+
+func _convert_visuals_to_graybox_unit() -> void:
+	_body_visual.visible = false
+	_facing_visual.visible = false
+	var color := Color(0.18, 0.46, 0.72) if team_id == 0 else Color(0.72, 0.10, 0.12)
+	var material := StandardMaterial3D.new()
+	material.albedo_color = color
+	material.metallic = 0.35
+	var body := MeshInstance3D.new()
+	var mesh := BoxMesh.new()
+	if unit_type == "tank":
+		mesh.size = Vector3(2.3, 0.85, 3.4)
+		body.position.y = 0.58
+	elif unit_type == "helicopter":
+		mesh.size = Vector3(1.35, 0.75, 3.0)
+		body.position.y = 2.2
+	else:
+		mesh.size = Vector3(3.2, 0.42, 2.4)
+		body.position.y = 2.8
+	body.mesh = mesh
+	body.material_override = material
+	add_child(body)
+	var marker := Label3D.new()
+	marker.text = "TANK" if unit_type == "tank" else ("HELIKOPTER" if unit_type == "helicopter" else "VADÁSZGÉP")
+	marker.position = body.position + Vector3.UP * 1.0
+	marker.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	marker.font_size = 28
+	add_child(marker)
+	_selection_ring.scale = Vector3.ONE * 1.8
 	_health_background.position.y = 1.70
 	_health_fill.position.y = 1.70

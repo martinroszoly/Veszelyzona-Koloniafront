@@ -26,6 +26,12 @@ const INFANTRY_BUILD_TIME := 8.0
 const VEHICLE_BUILD_TIME := 14.0
 const POPULATION_CAP := 30
 const VEHICLE_POPULATION := 4
+const TANK_COST := 420.0
+const HELICOPTER_COST := 500.0
+const FIGHTER_COST := 650.0
+const TANK_BUILD_TIME := 20.0
+const HELICOPTER_BUILD_TIME := 24.0
+const FIGHTER_BUILD_TIME := 28.0
 
 var _capture_points: Array = []
 var _victory_points: Array = []
@@ -39,6 +45,9 @@ var _supply_links: Array = []
 @onready var infantry_call_in_button: Button = get_node_or_null("HUD/BacklinePanel/Margin/BacklineContent/InfantryCallIn")
 @onready var backline_status: Label = get_node_or_null("HUD/BacklinePanel/Margin/BacklineContent/BacklineStatus")
 @onready var vehicle_call_in_button: Button = get_node_or_null("HUD/BacklinePanel/Margin/BacklineContent/VehicleCallIn")
+@onready var tank_call_in_button: Button = get_node_or_null("HUD/BacklinePanel/Margin/BacklineContent/TankCallIn")
+@onready var helicopter_call_in_button: Button = get_node_or_null("HUD/BacklinePanel/Margin/BacklineContent/HelicopterCallIn")
+@onready var fighter_call_in_button: Button = get_node_or_null("HUD/BacklinePanel/Margin/BacklineContent/FighterCallIn")
 
 var _reinforcement_wave := 0
 var _production_type := ""
@@ -67,6 +76,12 @@ func _ready() -> void:
 		infantry_call_in_button.pressed.connect(_on_infantry_call_in_pressed)
 	if is_instance_valid(vehicle_call_in_button):
 		vehicle_call_in_button.pressed.connect(_on_vehicle_call_in_pressed)
+	if is_instance_valid(tank_call_in_button):
+		tank_call_in_button.pressed.connect(_queue_single_unit.bind("tank", TANK_COST, TANK_BUILD_TIME, 6))
+	if is_instance_valid(helicopter_call_in_button):
+		helicopter_call_in_button.pressed.connect(_queue_single_unit.bind("helicopter", HELICOPTER_COST, HELICOPTER_BUILD_TIME, 7))
+	if is_instance_valid(fighter_call_in_button):
+		fighter_call_in_button.pressed.connect(_queue_single_unit.bind("fighter", FIGHTER_COST, FIGHTER_BUILD_TIME, 8))
 
 func _process(delta: float) -> void:
 	_ui_refresh_timer -= delta
@@ -331,17 +346,28 @@ func _on_vehicle_call_in_pressed() -> void:
 	_start_production("vehicle", VEHICLE_BUILD_TIME)
 
 func _spawn_light_vehicle() -> void:
+	_spawn_single_unit("vehicle")
+
+func _queue_single_unit(unit_type: String, cost: float, duration: float, population_cost: int) -> void:
+	if not is_instance_valid(economy_manager) or not _production_type.is_empty():
+		return
+	if _get_team_population(0) + population_cost > POPULATION_CAP or not economy_manager.spend_gas(0, cost):
+		return
+	_start_production(unit_type, duration)
+
+func _spawn_single_unit(unit_type: String) -> void:
 	_reinforcement_wave += 1
 	var vehicle = RTS_UNIT.new()
-	vehicle.name = "EmberLightVehicle_%02d" % _reinforcement_wave
+	vehicle.name = "Ember_%s_%02d" % [unit_type, _reinforcement_wave]
 	vehicle.team_id = 0
-	vehicle.squad_id = "ember_jarmu_%02d" % _reinforcement_wave
+	vehicle.squad_id = "ember_%s_%02d" % [unit_type, _reinforcement_wave]
+	vehicle.unit_type = unit_type
 	vehicle.is_vehicle = true
 	vehicle.collision_layer = 2
 	vehicle.collision_mask = 1 | 2
 	vehicle.position = Vector3(8.0, 0.0, 96.0)
 	add_child(vehicle)
-	_set_backline_status("Könnyű páncélozott jármű megérkezett.")
+	_set_backline_status("%s megérkezett." % _unit_title(unit_type))
 
 func _start_production(unit_type: String, duration: float) -> void:
 	_production_type = unit_type
@@ -357,13 +383,15 @@ func _finish_production() -> void:
 		_spawn_infantry_squad()
 	elif completed_type == "vehicle":
 		_spawn_light_vehicle()
+	elif completed_type in ["tank", "helicopter", "fighter"]:
+		_spawn_single_unit(completed_type)
 	_refresh_backline_ui()
 
 func _get_team_population(team_id: int) -> int:
 	var population := 0
 	for node in get_tree().get_nodes_in_group("rts_units"):
 		if node.team_id == team_id:
-			population += VEHICLE_POPULATION if node.is_vehicle else 1
+			population += _unit_population(node.unit_type)
 	return population
 
 func _refresh_backline_ui() -> void:
@@ -375,14 +403,40 @@ func _refresh_backline_ui() -> void:
 		infantry_call_in_button.disabled = queue_busy or economy_manager.get_gas(0) < INFANTRY_SQUAD_COST or population + INFANTRY_SQUAD_SIZE > POPULATION_CAP
 	if is_instance_valid(vehicle_call_in_button):
 		vehicle_call_in_button.disabled = queue_busy or economy_manager.get_gas(0) < LIGHT_VEHICLE_COST or population + VEHICLE_POPULATION > POPULATION_CAP
+	if is_instance_valid(tank_call_in_button):
+		tank_call_in_button.disabled = queue_busy or economy_manager.get_gas(0) < TANK_COST or population + 6 > POPULATION_CAP
+	if is_instance_valid(helicopter_call_in_button):
+		helicopter_call_in_button.disabled = queue_busy or economy_manager.get_gas(0) < HELICOPTER_COST or population + 7 > POPULATION_CAP
+	if is_instance_valid(fighter_call_in_button):
+		fighter_call_in_button.disabled = queue_busy or economy_manager.get_gas(0) < FIGHTER_COST or population + 8 > POPULATION_CAP
 	if is_instance_valid(resource_status):
 		resource_status.text = "GÁZ: %d\nBEVÉTEL: +%.1f / mp\nLÉTSZÁM: %d / %d" % [floori(economy_manager.get_gas(0)), economy_manager.get_income_per_second(0), population, POPULATION_CAP]
 	if queue_busy:
-		var title := "GYALOGSÁGI RAJ" if _production_type == "infantry" else "KÖNNYŰ JÁRMŰ"
+		var title := _unit_title(_production_type)
 		var progress := 1.0 - _production_remaining / maxf(0.01, _production_duration)
 		_set_backline_status("GYÁRTÁS: %s  %d%%  (%.1f mp)" % [title, roundi(progress * 100.0), _production_remaining])
 	elif population >= POPULATION_CAP:
 		_set_backline_status("Elérted a %d fős létszámkorlátot." % POPULATION_CAP)
+
+func _unit_population(unit_type: String) -> int:
+	if unit_type == "tank":
+		return 6
+	if unit_type == "helicopter":
+		return 7
+	if unit_type == "fighter":
+		return 8
+	return VEHICLE_POPULATION if unit_type == "vehicle" else 1
+
+func _unit_title(unit_type: String) -> String:
+	if unit_type == "infantry":
+		return "GYALOGSÁGI RAJ"
+	if unit_type == "vehicle":
+		return "KÖNNYŰ PÁNCÉLOZOTT JÁRMŰ"
+	if unit_type == "tank":
+		return "TANK"
+	if unit_type == "helicopter":
+		return "LÉGI TÁMOGATÓ EGYSÉG"
+	return "CSAPÁSMÉRŐ VADÁSZGÉP"
 
 func _build_road_network() -> void:
 	_add_road(Vector3(0, 0.035, 0), Vector2(7.0, MAP_SIZE.y * 0.78), 0.0)
