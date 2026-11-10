@@ -127,7 +127,7 @@ func _apply_external_faction_model() -> bool:
 		_faction_model.scale = Vector3.ONE * 0.95
 		# Uploaded soldier and alien assets face +Z; RTSUnit uses -Z as forward.
 		_faction_model.rotation.y = PI
-	_cache_animation_nodes()
+		_cache_animation_nodes()
 	elif unit_type == "vehicle":
 		# Vehicles must dominate the silhouette of infantry on the battlefield.
 		_faction_model.scale = Vector3.ONE * 1.75
@@ -438,9 +438,9 @@ func _get_combat_spacing_vector() -> Vector3:
 		var ally = node as RTSUnit
 		if ally == null or ally == self or ally.team_id != team_id or ally.squad_id != squad_id:
 			continue
-		var delta := global_position - ally.global_position
+		var delta: Vector3 = global_position - ally.global_position
 		delta.y = 0.0
-		var distance := delta.length()
+		var distance: float = delta.length()
 		if distance > 0.02 and distance < 2.3:
 			separation += delta.normalized() * (1.0 - distance / 2.3)
 	return separation.limit_length(1.0)

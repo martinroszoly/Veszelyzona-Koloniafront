@@ -76,8 +76,8 @@ func _issue_squad_orders() -> void:
 				continue
 		if phase == 1:
 			# Stop short and scout before committing to the capture circle.
-			var staging_direction := (squad_center - objective.global_position).normalized()
-			var staging_position := objective.global_position + staging_direction * 8.0
+			var staging_direction: Vector3 = (squad_center - objective.global_position).normalized()
+			var staging_position: Vector3 = objective.global_position + staging_direction * 8.0
 			for member in members:
 				member.move_to(staging_position)
 			continue
@@ -107,7 +107,7 @@ func _find_staging_cover(from_position: Vector3, objective_position: Vector3):
 	var selected = null
 	var selected_score := INF
 	for cover in get_tree().get_nodes_in_group("cover_objects"):
-		var route_distance := from_position.distance_to(cover.global_position) + cover.global_position.distance_to(objective_position) * 0.28
+		var route_distance: float = from_position.distance_to(cover.global_position) + cover.global_position.distance_to(objective_position) * 0.28
 		if route_distance < selected_score and from_position.distance_to(cover.global_position) < 48.0:
 			selected_score = route_distance
 			selected = cover

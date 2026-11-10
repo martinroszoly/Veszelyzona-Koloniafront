@@ -90,7 +90,7 @@ func _build_attack_button() -> void:
 	_attack_button.size = Vector2(118, 38)
 	_attack_button.visible = false
 	_attack_button.add_theme_font_size_override("font_size", 17)
-	attack_button.pressed.connect(_attack_hovered_enemy)
+	_attack_button.pressed.connect(_attack_hovered_enemy)
 	get_node("../HUD").add_child(_attack_button)
 
 
