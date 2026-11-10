@@ -2,9 +2,9 @@ extends Node
 
 const RTS_UNIT := preload("res://scripts/rts_unit.gd")
 const REINFORCEMENT_COST := 120.0
-const REINFORCEMENT_SIZE := 3
+const REINFORCEMENT_SIZE := 5
 const REINFORCEMENT_TIME := 8.0
-const POPULATION_CAP := 30
+const POPULATION_CAP := 50
 
 @export var team_id: int = 1
 @export var decision_interval: float = 3.0
@@ -15,6 +15,7 @@ var _reinforcement_wave := 0
 var _production_remaining := 0.0
 var _production_queued := false
 var _queued_type := "infantry"
+var _squad_phase: Dictionary = {}
 @onready var economy_manager: Node = get_node_or_null("../EconomyManager")
 
 
@@ -56,8 +57,29 @@ func _issue_squad_orders() -> void:
 		if members[0].is_retreating():
 			continue
 		var squad_center: Vector3 = _get_squad_center(members)
+		var enemy = _find_nearest_enemy(squad_center, 72.0)
+		if enemy != null:
+			for member in members:
+				member.attack_target(enemy)
+			continue
 		var objective = _find_nearest_uncaptured_point(squad_center)
 		if objective == null:
+			continue
+		var phase := int(_squad_phase.get(squad_id, 0))
+		_squad_phase[squad_id] = (phase + 1) % 3
+		if phase == 0:
+			var staging_cover = _find_staging_cover(squad_center, objective.global_position)
+			if staging_cover != null:
+				var slots: Array = staging_cover.get_cover_slots(members.size(), objective.global_position)
+				for index in range(mini(members.size(), slots.size())):
+					members[index].move_to(slots[index], staging_cover.get_cover_facing(objective.global_position), int(staging_cover.strength))
+				continue
+		if phase == 1:
+			# Stop short and scout before committing to the capture circle.
+			var staging_direction := (squad_center - objective.global_position).normalized()
+			var staging_position := objective.global_position + staging_direction * 8.0
+			for member in members:
+				member.move_to(staging_position)
 			continue
 		var columns := ceili(sqrt(float(members.size())))
 		for index in range(members.size()):
@@ -66,6 +88,30 @@ func _issue_squad_orders() -> void:
 			var offset_x := (float(column) - float(columns - 1) * 0.5) * formation_spacing
 			var offset_z := float(row) * formation_spacing
 			members[index].move_to(objective.global_position + Vector3(offset_x, 0.0, offset_z))
+
+
+func _find_nearest_enemy(from_position: Vector3, maximum_distance: float):
+	var closest = null
+	var closest_distance := maximum_distance
+	for node in get_tree().get_nodes_in_group("rts_units"):
+		if node.team_id == team_id:
+			continue
+		var distance := from_position.distance_to(node.global_position)
+		if distance < closest_distance:
+			closest_distance = distance
+			closest = node
+	return closest
+
+
+func _find_staging_cover(from_position: Vector3, objective_position: Vector3):
+	var selected = null
+	var selected_score := INF
+	for cover in get_tree().get_nodes_in_group("cover_objects"):
+		var route_distance := from_position.distance_to(cover.global_position) + cover.global_position.distance_to(objective_position) * 0.28
+		if route_distance < selected_score and from_position.distance_to(cover.global_position) < 48.0:
+			selected_score = route_distance
+			selected = cover
+	return selected
 
 
 func _find_nearest_uncaptured_point(from_position: Vector3):
