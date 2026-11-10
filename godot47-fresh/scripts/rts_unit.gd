@@ -2,7 +2,6 @@ class_name RTSUnit
 extends CharacterBody3D
 
 const UNIT_PROJECTILE := preload("res://scripts/projectile.gd")
-const FACTION_ROSTER := preload("res://scripts/faction_roster.gd")
 
 @export var team_id: int = 0
 @export var squad_id: String = ""
@@ -99,8 +98,8 @@ func _apply_external_faction_model() -> bool:
 		return false
 	if _apply_detail_sprite():
 		return true
-	var role := "infantry" if unit_type == "infantry" else "carrier"
-	var model_path := FACTION_ROSTER.get_model_path(faction_id, role)
+	var role := "infantry" if unit_type == "infantry" else "vehicle"
+	var model_path := "res://assets/models/%s_%s.glb" % [faction_id, role]
 	var packed_model = load(model_path)
 	if packed_model == null:
 		return false
