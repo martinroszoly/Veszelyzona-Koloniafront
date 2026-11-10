@@ -8,6 +8,7 @@ signal supply_changed(point, supplied: bool)
 @export var capture_seconds: float = 12.0
 @export var capture_radius: float = 4.0
 @export var gas_income_per_second: float = 2.0
+@export var metal_income_per_second: float = 0.0
 @export var is_victory_point: bool = false
 
 var owner_team_id: int = -1
@@ -147,7 +148,8 @@ func _update_visuals() -> void:
 	var display_color := owner_color.lerp(active_color, ratio)
 
 	var ring_material := StandardMaterial3D.new()
-	ring_material.albedo_color = display_color
+	var point_color := Color(0.95, 0.72, 0.18) if is_victory_point else Color(0.25, 0.78, 0.95) if metal_income_per_second > 0.0 else display_color
+	ring_material.albedo_color = point_color if owner_team_id < 0 and _capturing_team_id < 0 else display_color
 	ring_material.emission_enabled = true
 	ring_material.emission = display_color * 0.55
 	ring_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -169,7 +171,12 @@ func _update_visuals() -> void:
 		_label.text = "★  %s GYŐZELMI PONT  ★\n%s" % [point_id, state_text]
 	else:
 		var effective_income := gas_income_per_second if supplied or owner_team_id < 0 else gas_income_per_second * 0.25
-		_label.text = "%s NYERSANYAG  +%.1f GÁZ/mp\n%s" % [point_id, effective_income, state_text]
+		if metal_income_per_second > 0.0:
+			_label.text = "%s FÉM  +%.1f/mp\n%s" % [point_id, metal_income_per_second, state_text]
+		elif gas_income_per_second > 0.0:
+			_label.text = "%s GÁZ  +%.1f/mp\n%s" % [point_id, effective_income, state_text]
+		else:
+			_label.text = "%s ÜRES\n%s" % [point_id, state_text]
 	_label.modulate = display_color.lightened(0.25)
 	if owner_team_id >= 0 and not supplied:
 		_label.modulate.a = 0.55

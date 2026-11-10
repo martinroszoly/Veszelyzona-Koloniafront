@@ -168,18 +168,24 @@ func _build_capture_points() -> void:
 		{"id": "V1", "position": Vector3(-156.0, 0.0, -36.0), "victory": true, "gas": 0.0},
 		{"id": "V2", "position": Vector3(0.0, 0.0, 0.0), "victory": true, "gas": 0.0},
 		{"id": "V3", "position": Vector3(156.0, 0.0, 36.0), "victory": true, "gas": 0.0},
-		{"id": "G1", "position": Vector3(-210.0, 0.0, -144.0), "victory": false, "gas": 1.5},
-		{"id": "G2", "position": Vector3(-188.0, 0.0, 116.0), "victory": false, "gas": 1.5},
-		{"id": "G3", "position": Vector3(-64.0, 0.0, 140.0), "victory": false, "gas": 1.5},
-		{"id": "G4", "position": Vector3(64.0, 0.0, -140.0), "victory": false, "gas": 1.5},
-		{"id": "G5", "position": Vector3(188.0, 0.0, -116.0), "victory": false, "gas": 1.5},
-		{"id": "G6", "position": Vector3(210.0, 0.0, 144.0), "victory": false, "gas": 1.5},
-		{"id": "G7", "position": Vector3(-250.0, 0.0, 20.0), "victory": false, "gas": 1.5},
-		{"id": "G8", "position": Vector3(-120.0, 0.0, -190.0), "victory": false, "gas": 1.5},
-		{"id": "G9", "position": Vector3(0.0, 0.0, 200.0), "victory": false, "gas": 1.5},
-		{"id": "G10", "position": Vector3(120.0, 0.0, 190.0), "victory": false, "gas": 1.5},
-		{"id": "G11", "position": Vector3(250.0, 0.0, -20.0), "victory": false, "gas": 1.5},
-		{"id": "G12", "position": Vector3(0.0, 0.0, -200.0), "victory": false, "gas": 1.5},
+		{"id": "G1", "position": Vector3(-210.0, 0.0, -144.0), "victory": false, "gas": 1.5, "metal": 0.0},
+		{"id": "G2", "position": Vector3(-188.0, 0.0, 116.0), "victory": false, "gas": 1.5, "metal": 0.0},
+		{"id": "G3", "position": Vector3(-64.0, 0.0, 140.0), "victory": false, "gas": 1.5, "metal": 0.0},
+		{"id": "G4", "position": Vector3(64.0, 0.0, -140.0), "victory": false, "gas": 1.5, "metal": 0.0},
+		{"id": "G5", "position": Vector3(188.0, 0.0, -116.0), "victory": false, "gas": 1.5, "metal": 0.0},
+		{"id": "G6", "position": Vector3(210.0, 0.0, 144.0), "victory": false, "gas": 1.5, "metal": 0.0},
+		{"id": "G7", "position": Vector3(-250.0, 0.0, 20.0), "victory": false, "gas": 1.5, "metal": 0.0},
+		{"id": "G8", "position": Vector3(250.0, 0.0, -20.0), "victory": false, "gas": 1.5, "metal": 0.0},
+		{"id": "M1", "position": Vector3(-120.0, 0.0, -190.0), "victory": false, "gas": 0.0, "metal": 1.2},
+		{"id": "M2", "position": Vector3(-100.0, 0.0, 190.0), "victory": false, "gas": 0.0, "metal": 1.2},
+		{"id": "M3", "position": Vector3(120.0, 0.0, 190.0), "victory": false, "gas": 0.0, "metal": 1.2},
+		{"id": "M4", "position": Vector3(100.0, 0.0, -190.0), "victory": false, "gas": 0.0, "metal": 1.2},
+		{"id": "E1", "position": Vector3(-260.0, 0.0, -80.0), "victory": false, "gas": 0.0, "metal": 0.0},
+		{"id": "E2", "position": Vector3(-230.0, 0.0, 190.0), "victory": false, "gas": 0.0, "metal": 0.0},
+		{"id": "E3", "position": Vector3(-20.0, 0.0, 170.0), "victory": false, "gas": 0.0, "metal": 0.0},
+		{"id": "E4", "position": Vector3(260.0, 0.0, 80.0), "victory": false, "gas": 0.0, "metal": 0.0},
+		{"id": "E5", "position": Vector3(230.0, 0.0, -190.0), "victory": false, "gas": 0.0, "metal": 0.0},
+		{"id": "E6", "position": Vector3(20.0, 0.0, -170.0), "victory": false, "gas": 0.0, "metal": 0.0},
 	]
 	for data in point_data:
 		var point = CAPTURE_POINT.new()
@@ -188,6 +194,7 @@ func _build_capture_points() -> void:
 		point.position = data.position
 		point.is_victory_point = data.victory
 		point.gas_income_per_second = data.gas
+		point.metal_income_per_second = float(data.get("metal", 0.0))
 		point.ownership_changed.connect(_on_capture_point_ownership_changed)
 		_capture_points.append(point)
 		if point.is_victory_point:
@@ -306,7 +313,7 @@ func _update_supply_link_visuals() -> void:
 func _on_resources_changed(team_id: int, gas: float, income_per_second: float) -> void:
 	if team_id != 0 or not is_instance_valid(resource_status):
 		return
-	resource_status.text = "GÁZ: %d\nBEVÉTEL: +%.1f / mp\nLÉTSZÁM: %d / %d" % [floori(gas), income_per_second, _get_team_population(0), POPULATION_CAP]
+	resource_status.text = "GÁZ: %d   FÉM: %d\nBEVÉTEL: +%.1f gáz / mp\nLÉTSZÁM: %d / %d" % [floori(gas), floori(economy_manager.get_metal(0)), income_per_second, _get_team_population(0), POPULATION_CAP]
 	_refresh_backline_ui()
 
 func _on_infantry_call_in_pressed() -> void:
@@ -342,7 +349,7 @@ func _on_vehicle_call_in_pressed() -> void:
 		return
 	if not _production_type.is_empty() or _get_team_population(0) + VEHICLE_POPULATION > POPULATION_CAP:
 		return
-	if not economy_manager.spend_gas(0, LIGHT_VEHICLE_COST):
+	if not economy_manager.spend_resources(0, LIGHT_VEHICLE_COST, 80.0):
 		_set_backline_status("Nincs elegendő gáz a jármű behívásához.")
 		return
 	_start_production("vehicle", VEHICLE_BUILD_TIME)
@@ -353,7 +360,8 @@ func _spawn_light_vehicle() -> void:
 func _queue_single_unit(unit_type: String, cost: float, duration: float, population_cost: int) -> void:
 	if not is_instance_valid(economy_manager) or not _production_type.is_empty():
 		return
-	if _get_team_population(0) + population_cost > POPULATION_CAP or not economy_manager.spend_gas(0, cost):
+	var metal_cost := 0.0 if unit_type == "infantry" else 120.0 if unit_type == "tank" else 95.0
+	if _get_team_population(0) + population_cost > POPULATION_CAP or not economy_manager.spend_resources(0, cost, metal_cost):
 		return
 	_start_production(unit_type, duration)
 
