@@ -97,6 +97,8 @@ func _ready() -> void:
 func _apply_external_faction_model() -> bool:
 	if unit_type != "infantry" and unit_type != "vehicle":
 		return false
+	if _apply_detail_sprite():
+		return true
 	var role := "infantry" if unit_type == "infantry" else "carrier"
 	var model_path := FACTION_ROSTER.get_model_path(faction_id, role)
 	var packed_model = load(model_path)
@@ -118,14 +120,47 @@ func _apply_external_faction_model() -> bool:
 	return true
 
 
+func _apply_detail_sprite() -> bool:
+	var sprite_role := "infantry" if unit_type == "infantry" else "carrier"
+	var image := Image.load_from_file("res://assets/sprites/%s_%s_detail.png" % [faction_id, sprite_role])
+	if image == null or image.is_empty():
+		return false
+	var texture := ImageTexture.create_from_image(image)
+
+	var visual := Sprite3D.new()
+	visual.name = "DetailSprite"
+	visual.texture = texture
+	visual.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	visual.no_depth_test = false
+	visual.shaded = false
+	visual.pixel_size = 0.00125 if unit_type == "infantry" else 0.00215
+	visual.position.y = 0.96 if unit_type == "infantry" else 1.12
+	add_child(visual)
+
+	_body_visual.visible = false
+	_facing_visual.visible = false
+	if unit_type == "vehicle":
+		var box_shape := BoxShape3D.new()
+		box_shape.size = Vector3(2.25, 1.45, 3.65)
+		_collision_shape.shape = box_shape
+		_collision_shape.position.y = 0.72
+		_selection_ring.scale = Vector3.ONE * 1.8
+		_health_background.position.y = 2.35
+		_health_fill.position.y = 2.35
+	return true
+
+
 func _update_hover_animation(delta: float) -> void:
 	if unit_type != "vehicle" or team_id != 1:
 		return
-	var model = get_node_or_null("FactionModel")
+	var model = get_node_or_null("DetailSprite")
+	if not is_instance_valid(model):
+		model = get_node_or_null("FactionModel")
 	if not is_instance_valid(model):
 		return
 	_hover_time += delta
-	model.position.y = 0.52 + sin(_hover_time * 2.4) * 0.07
+	var hover_height := 1.12 if model.name == "DetailSprite" else 0.52
+	model.position.y = hover_height + sin(_hover_time * 2.4) * 0.07
 	model.rotation.z = sin(_hover_time * 1.3) * 0.018
 
 
