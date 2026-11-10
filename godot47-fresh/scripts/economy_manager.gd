@@ -16,7 +16,7 @@ func _ready() -> void:
 	# The player starts with a large deployment reserve; the AI must capture
 	# territory before it can field reinforcements.
 	_gas_by_team[0] = 1000.0
-	_metal_by_team[0] = 0.0
+	_metal_by_team[0] = 500.0
 	_income_by_team[0] = 0.0
 	resources_changed.emit(0, get_gas(0), get_income_per_second(0))
 

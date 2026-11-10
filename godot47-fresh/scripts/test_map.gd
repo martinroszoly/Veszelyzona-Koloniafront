@@ -67,6 +67,10 @@ func _ready() -> void:
 	_build_supply_links()
 	_build_player_squad()
 	_build_enemy_test_squad()
+	_spawn_single_unit("vehicle")
+	_spawn_single_unit("tank")
+	_spawn_single_unit("helicopter")
+	_spawn_single_unit("fighter")
 	_update_objective_status()
 	_update_supply_network()
 	if is_instance_valid(economy_manager):

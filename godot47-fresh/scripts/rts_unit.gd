@@ -13,7 +13,7 @@ const UNIT_PROJECTILE := preload("res://scripts/projectile.gd")
 @export var attack_damage: float = 9.0
 @export var attack_cooldown: float = 0.78
 @export var is_vehicle: bool = false
-@export var sight_range: float = 96.0
+@export var sight_range: float = 48.0
 @export var unit_type: String = "infantry"
 @export var faction_id: String = ""
 @export var retreat_speed_multiplier: float = 1.65
@@ -67,31 +67,31 @@ func _ready() -> void:
 		max_health = 320.0
 		move_speed = 8.5
 		acceleration = 12.0
-		attack_range = 26.0
+		attack_range = 13.0
 		attack_damage = 32.0
 		attack_cooldown = 1.55
-		sight_range = 126.0
+		sight_range = 63.0
 	elif unit_type == "tank":
 		max_health = 560.0
 		move_speed = 5.8
-		attack_range = 31.0
+		attack_range = 16.0
 		attack_damage = 58.0
 		attack_cooldown = 2.1
-		sight_range = 114.0
+		sight_range = 57.0
 	elif unit_type == "helicopter":
 		max_health = 260.0
 		move_speed = 11.5
 		attack_range = 30.0
 		attack_damage = 25.0
 		attack_cooldown = 1.45
-		sight_range = 144.0
+		sight_range = 72.0
 	elif unit_type == "fighter":
 		max_health = 220.0
 		move_speed = 15.0
 		attack_range = 35.0
 		attack_damage = 42.0
 		attack_cooldown = 2.0
-		sight_range = 168.0
+		sight_range = 84.0
 	_build_visuals()
 	var has_external_model := _apply_external_faction_model()
 	if unit_type == "vehicle":
@@ -269,12 +269,31 @@ func _add_rifle_part(parent: Node3D, size: Vector3, local_position: Vector3, col
 func _set_model_animation(animation_name: String) -> void:
 	if not is_instance_valid(_model_animation_player):
 		return
-	if _active_model_animation == animation_name and _model_animation_player.is_playing():
+	var resolved := animation_name
+	if not _model_animation_player.has_animation(resolved):
+		resolved = _resolve_external_animation(animation_name)
+	if resolved.is_empty():
 		return
-	if not _model_animation_player.has_animation(animation_name):
+	if _active_model_animation == resolved and _model_animation_player.is_playing():
 		return
-	_model_animation_player.play(animation_name, 0.14)
-	_active_model_animation = animation_name
+	_model_animation_player.play(resolved, 0.14)
+	_active_model_animation = resolved
+
+
+func _resolve_external_animation(requested: String) -> String:
+	if not is_instance_valid(_model_animation_player):
+		return ""
+	var names := _model_animation_player.get_animation_list()
+	if requested == "idle":
+		for candidate in names:
+			var idle_name := candidate.to_lower()
+			if idle_name.contains("t-pose") or idle_name.contains("idle"):
+				return candidate
+	for candidate in names:
+		var lower := candidate.to_lower()
+		if requested == "run" and (lower.contains("run") or lower.contains("motion")):
+			return candidate
+	return names[0] if names.size() > 0 else ""
 
 
 func _process(delta: float) -> void:
