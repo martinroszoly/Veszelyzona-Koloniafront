@@ -163,7 +163,8 @@ func _update_visuals() -> void:
 		state_text = "ELLENSÉG · ELLÁTVA" if supplied else "ELLENSÉG · ELSZIGETELT"
 	if _capturing_team_id >= 0:
 		state_text = "FOGLALÁS %d%%" % roundi(ratio * 100.0)
-	_label.text = "%s PONT  +%.0f GÁZ/mp\n%s" % [point_id, gas_income_per_second, state_text]
+	var effective_income := gas_income_per_second if supplied or owner_team_id < 0 else gas_income_per_second * 0.25
+	_label.text = "%s PONT  +%.1f GÁZ/mp\n%s" % [point_id, effective_income, state_text]
 	_label.modulate = display_color.lightened(0.25)
 	if owner_team_id >= 0 and not supplied:
 		_label.modulate.a = 0.55

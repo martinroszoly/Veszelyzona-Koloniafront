@@ -32,6 +32,7 @@ var _collision_shape: CollisionShape3D
 var _avoidance_direction := Vector3.ZERO
 var _avoidance_time := 0.0
 var _stuck_time := 0.0
+var _waypoints: Array[Vector3] = []
 
 
 func _ready() -> void:
@@ -70,6 +71,9 @@ func _physics_process(delta: float) -> void:
 	var offset := _destination - global_position
 	offset.y = 0.0
 	if offset.length() <= arrival_distance:
+		if not _waypoints.is_empty():
+			_destination = _waypoints.pop_front()
+			return
 		_has_destination = false
 		velocity = Vector3.ZERO
 		if _final_facing.length_squared() > 0.01:
@@ -89,8 +93,18 @@ func _physics_process(delta: float) -> void:
 
 
 func move_to(world_position: Vector3, final_facing: Vector3 = Vector3.ZERO, cover_strength: int = -1) -> void:
-	_destination = world_position
-	_destination.y = global_position.y
+	_waypoints.clear()
+	var pathfinders := get_tree().get_nodes_in_group("pathfinding_manager")
+	if not pathfinders.is_empty():
+		var path: Array[Vector3] = pathfinders[0].get_world_path(global_position, world_position)
+		for point in path:
+			point.y = global_position.y
+			_waypoints.append(point)
+	if not _waypoints.is_empty():
+		_destination = _waypoints.pop_front()
+	else:
+		_destination = world_position
+		_destination.y = global_position.y
 	_final_facing = final_facing
 	_final_facing.y = 0.0
 	if _final_facing.length_squared() > 0.01:

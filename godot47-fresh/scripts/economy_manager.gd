@@ -84,9 +84,10 @@ func _recalculate_income() -> void:
 	for team_id in _income_by_team.keys():
 		_income_by_team[team_id] = 0.0
 	for point in _registered_points:
-		if not is_instance_valid(point) or point.owner_team_id < 0 or not point.is_supplied():
+		if not is_instance_valid(point) or point.owner_team_id < 0:
 			continue
 		_ensure_team(point.owner_team_id)
-		_income_by_team[point.owner_team_id] = get_income_per_second(point.owner_team_id) + point.gas_income_per_second
+		var supply_multiplier := 1.0 if point.is_supplied() else 0.25
+		_income_by_team[point.owner_team_id] = get_income_per_second(point.owner_team_id) + point.gas_income_per_second * supply_multiplier
 	for team_id in _income_by_team.keys():
 		resources_changed.emit(team_id, get_gas(team_id), get_income_per_second(team_id))

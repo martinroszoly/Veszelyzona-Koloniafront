@@ -172,7 +172,7 @@ func _on_capture_point_ownership_changed(_point, old_owner: int, new_owner: int)
 
 func _update_objective_status() -> void:
 	if is_instance_valid(objective_status):
-		objective_status.text = "STRATÉGIAI PONTOK: %d / %d  ·  ELLÁTVA: %d\nAz elszigetelt pont nem termel gázt." % [_owned_point_count, _capture_points.size(), _supplied_point_count]
+		objective_status.text = "STRATÉGIAI PONTOK: %d / %d  ·  ELLÁTVA: %d\nEllátott: +2,0 · elszigetelt: +0,5 gáz/mp." % [_owned_point_count, _capture_points.size(), _supplied_point_count]
 
 func _update_supply_network() -> void:
 	for point in _capture_points:
