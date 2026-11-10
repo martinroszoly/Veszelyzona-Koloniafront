@@ -472,7 +472,8 @@ func _build_forests() -> void:
 			var z: float = group.center.y + _rng.randf_range(-group.size.y * 0.5, group.size.y * 0.5)
 			if _is_near_road(Vector2(x, z)):
 				continue
-			_add_tree(Vector3(x, 0.0, z), _rng.randf_range(0.58, 0.90))
+			# Strategic-scale vegetation: trees stay clearly smaller than units.
+			_add_tree(Vector3(x, 0.0, z), _rng.randf_range(0.34, 0.52))
 
 func _add_tree(at: Vector3, scale_factor: float) -> void:
 	var tree := Node3D.new()

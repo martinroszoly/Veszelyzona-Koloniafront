@@ -125,8 +125,8 @@ func _apply_external_faction_model() -> bool:
 		# BAMEN's source character faces +Z; RTSUnit uses -Z as forward.
 		_faction_model.rotation.y = PI
 	_cache_animation_nodes()
-	if unit_type == "infantry" and faction_id == "ember":
-		_attach_ember_rifle()
+	if unit_type == "infantry":
+		_attach_faction_rifle()
 	_body_visual.visible = false
 	_facing_visual.visible = false
 	if unit_type == "vehicle":
@@ -188,7 +188,7 @@ func _find_skeleton(parent: Node) -> Skeleton3D:
 	return null
 
 
-func _attach_ember_rifle() -> void:
+func _attach_faction_rifle() -> void:
 	var skeleton := _find_skeleton(_faction_model)
 	if not is_instance_valid(skeleton):
 		return
@@ -197,15 +197,18 @@ func _attach_ember_rifle() -> void:
 	hand.bone_name = "mixamorig:RightHand"
 	skeleton.add_child(hand)
 	var rifle := Node3D.new()
-	rifle.name = "EmberRifle"
+	rifle.name = "FactionRifle"
 	rifle.position = Vector3(0.035, -0.045, -0.175)
 	rifle.rotation = Vector3(-0.12, 0.0, PI * 0.5)
 	hand.add_child(rifle)
-	_add_rifle_part(rifle, Vector3(0.075, 0.075, 0.56), Vector3(0.0, 0.0, -0.03), Color("1c2935"))
+	var armor_color := Color("1c2935") if faction_id == "ember" else Color("15171e")
+	var panel_color := Color("315f95") if faction_id == "ember" else Color("4a080e")
+	var glow_color := Color("55bbff") if faction_id == "ember" else Color("ff1a25")
+	_add_rifle_part(rifle, Vector3(0.075, 0.075, 0.56), Vector3(0.0, 0.0, -0.03), armor_color)
 	_add_rifle_part(rifle, Vector3(0.045, 0.045, 0.42), Vector3(0.0, 0.0, -0.47), Color("111820"), true)
-	_add_rifle_part(rifle, Vector3(0.10, 0.12, 0.16), Vector3(0.0, -0.055, 0.17), Color("314b63"))
-	_add_rifle_part(rifle, Vector3(0.06, 0.065, 0.19), Vector3(0.0, 0.10, -0.07), Color("315f95"))
-	_add_rifle_part(rifle, Vector3(0.035, 0.035, 0.09), Vector3(0.0, 0.15, 0.08), Color("55bbff"), false, true)
+	_add_rifle_part(rifle, Vector3(0.10, 0.12, 0.16), Vector3(0.0, -0.055, 0.17), panel_color)
+	_add_rifle_part(rifle, Vector3(0.06, 0.065, 0.19), Vector3(0.0, 0.10, -0.07), panel_color)
+	_add_rifle_part(rifle, Vector3(0.035, 0.035, 0.09), Vector3(0.0, 0.15, 0.08), glow_color, false, true)
 
 
 func _add_rifle_part(parent: Node3D, size: Vector3, local_position: Vector3, color: Color, barrel: bool = false, emissive: bool = false) -> void:
@@ -626,7 +629,7 @@ func _build_unit_role_marker() -> void:
 	# A restrained 3D squad badge: a dark lozenge with the faction's chevrons.
 	var marker := Node3D.new()
 	marker.name = "UnitRoleMarker"
-	marker.position.y = 2.18 if unit_type == "infantry" else 2.82
+	marker.position.y = 2.34 if unit_type == "infantry" else 2.92
 	add_child(marker)
 	var icon_color := Color(0.25, 0.78, 1.0) if team_id == 0 else Color(1.0, 0.20, 0.16)
 	var icon_material := StandardMaterial3D.new()
@@ -639,11 +642,22 @@ func _build_unit_role_marker() -> void:
 	dark_material.metallic = 0.6
 	var base := MeshInstance3D.new()
 	var base_mesh := BoxMesh.new()
-	base_mesh.size = Vector3(0.34, 0.045, 0.34)
+	base_mesh.size = Vector3(0.48, 0.055, 0.48)
 	base.mesh = base_mesh
 	base.rotation.y = PI * 0.25
 	base.material_override = dark_material
 	marker.add_child(base)
+	var badge := Label3D.new()
+	badge.name = "FactionBadge"
+	badge.text = "◆"
+	badge.font_size = 46
+	badge.outline_size = 10
+	badge.modulate = icon_color
+	badge.outline_modulate = Color(0.015, 0.02, 0.025, 0.95)
+	badge.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	badge.no_depth_test = false
+	badge.position.y = 0.045
+	marker.add_child(badge)
 	for rank in range(2):
 		for side in [-1.0, 1.0]:
 			var chevron := MeshInstance3D.new()
