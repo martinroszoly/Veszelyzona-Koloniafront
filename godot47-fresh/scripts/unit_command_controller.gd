@@ -4,7 +4,7 @@ const MOVE_COMMAND_MARKER := preload("res://scripts/move_command_marker.gd")
 const FACING_COMMAND_PREVIEW := preload("res://scripts/facing_command_preview.gd")
 
 @export var player_team_id: int = 0
-@export var formation_spacing: float = 2.2
+@export var formation_spacing: float = 2.8
 @export var ray_length: float = 1000.0
 @export var drag_threshold: float = 8.0
 @export var cover_search_distance: float = 6.0
@@ -114,6 +114,14 @@ func _finish_facing_command(screen_position: Vector2) -> void:
 	_right_dragging = false
 	if is_instance_valid(_facing_preview):
 		_facing_preview.queue_free()
+	var enemy_hit := _raycast(screen_position, 2)
+	var enemy = enemy_hit.get("collider")
+	if enemy != null and enemy.is_in_group("rts_units") and enemy.team_id != player_team_id:
+		for unit in _selected_units:
+			if is_instance_valid(unit):
+				unit.attack_target(enemy)
+		_update_status("TÁMADÁS: %d katona a kijelölt ellenségre tüzel." % _selected_units.size())
+		return
 	_issue_move_command_at(_right_command_position, _right_facing_direction)
 
 

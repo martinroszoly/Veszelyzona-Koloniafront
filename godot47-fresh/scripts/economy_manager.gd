@@ -11,7 +11,10 @@ var _registered_points: Array = []
 
 
 func _ready() -> void:
-	_ensure_team(0)
+	# The player starts with a large deployment reserve; the AI must capture
+	# territory before it can field reinforcements.
+	_gas_by_team[0] = 1000.0
+	_income_by_team[0] = 0.0
 	resources_changed.emit(0, get_gas(0), get_income_per_second(0))
 
 
@@ -63,7 +66,7 @@ func add_gas(team_id: int, amount: float) -> void:
 
 func _ensure_team(team_id: int) -> void:
 	if not _gas_by_team.has(team_id):
-		_gas_by_team[team_id] = starting_gas
+		_gas_by_team[team_id] = 0.0 if team_id == 1 else starting_gas
 	if not _income_by_team.has(team_id):
 		_income_by_team[team_id] = 0.0
 

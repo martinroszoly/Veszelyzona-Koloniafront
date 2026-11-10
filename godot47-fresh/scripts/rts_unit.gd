@@ -11,7 +11,7 @@ const UNIT_PROJECTILE := preload("res://scripts/projectile.gd")
 @export var max_health: float = 100.0
 @export var attack_range: float = 22.0
 @export var attack_damage: float = 9.0
-@export var attack_cooldown: float = 1.15
+@export var attack_cooldown: float = 0.78
 @export var is_vehicle: bool = false
 @export var sight_range: float = 32.0
 @export var unit_type: String = "infantry"
@@ -66,14 +66,14 @@ func _ready() -> void:
 		acceleration = 12.0
 		attack_range = 26.0
 		attack_damage = 32.0
-		attack_cooldown = 2.3
+		attack_cooldown = 1.55
 		sight_range = 42.0
 	elif unit_type == "tank":
 		max_health = 560.0
 		move_speed = 5.8
 		attack_range = 31.0
 		attack_damage = 58.0
-		attack_cooldown = 2.8
+		attack_cooldown = 2.1
 		sight_range = 38.0
 	elif unit_type == "helicopter":
 		max_health = 260.0
@@ -442,6 +442,15 @@ func retreat_to_home() -> void:
 	_retreating = true
 	var home_position := Vector3(0.0, global_position.y, 96.0 if team_id == 0 else -96.0)
 	_set_move_destination(home_position)
+
+
+func attack_target(target_unit: Node) -> void:
+	if target_unit == null or not target_unit.is_in_group("rts_units") or target_unit.team_id == team_id:
+		return
+	_target = target_unit
+	_has_destination = false
+	_final_facing = target_unit.global_position - global_position
+	_final_facing.y = 0.0
 
 
 func is_retreating() -> bool:

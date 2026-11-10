@@ -3,14 +3,14 @@ extends Node3D
 ## Ideiglenes, saját készítésű terep a projekt első indíthatósági mérföldkövéhez.
 ## Nem tartalmaz még játékmechanikát; a következő teszt után bővíthető a PDF alapján.
 
-const MAP_SIZE := Vector2(270.0, 210.0)
+const MAP_SIZE := Vector2(540.0, 420.0)
 const TREE_GROUPS := [
-	{"center": Vector2(-96, -54), "size": Vector2(48, 52), "count": 52},
-	{"center": Vector2(92, 55), "size": Vector2(52, 48), "count": 56},
-	{"center": Vector2(-92, 68), "size": Vector2(38, 31), "count": 30},
-	{"center": Vector2(95, -66), "size": Vector2(40, 34), "count": 32},
-	{"center": Vector2(-12, -76), "size": Vector2(50, 22), "count": 26},
-	{"center": Vector2(18, 78), "size": Vector2(52, 22), "count": 28},
+	{"center": Vector2(-192, -108), "size": Vector2(96, 104), "count": 84},
+	{"center": Vector2(184, 110), "size": Vector2(104, 96), "count": 88},
+	{"center": Vector2(-184, 136), "size": Vector2(76, 62), "count": 48},
+	{"center": Vector2(190, -132), "size": Vector2(80, 68), "count": 50},
+	{"center": Vector2(-24, -152), "size": Vector2(100, 44), "count": 42},
+	{"center": Vector2(36, 156), "size": Vector2(104, 44), "count": 44},
 ]
 
 var _rng := RandomNumberGenerator.new()
@@ -21,7 +21,7 @@ const COVER_OBJECT := preload("res://scripts/cover_object.gd")
 const INFANTRY_SQUAD_COST := 120.0
 const INFANTRY_SQUAD_SIZE := 3
 const LIGHT_VEHICLE_COST := 260.0
-const SUPPLY_LINK_DISTANCE := 145.0
+const SUPPLY_LINK_DISTANCE := 290.0
 const INFANTRY_BUILD_TIME := 8.0
 const VEHICLE_BUILD_TIME := 14.0
 const POPULATION_CAP := 30
@@ -165,15 +165,15 @@ func _build_enemy_test_squad() -> void:
 
 func _build_capture_points() -> void:
 	var point_data := [
-		{"id": "V1", "position": Vector3(-78.0, 0.0, -18.0), "victory": true, "gas": 0.0},
+		{"id": "V1", "position": Vector3(-156.0, 0.0, -36.0), "victory": true, "gas": 0.0},
 		{"id": "V2", "position": Vector3(0.0, 0.0, 0.0), "victory": true, "gas": 0.0},
-		{"id": "V3", "position": Vector3(78.0, 0.0, 18.0), "victory": true, "gas": 0.0},
-		{"id": "G1", "position": Vector3(-105.0, 0.0, -72.0), "victory": false, "gas": 2.0},
-		{"id": "G2", "position": Vector3(-94.0, 0.0, 58.0), "victory": false, "gas": 2.0},
-		{"id": "G3", "position": Vector3(-32.0, 0.0, 70.0), "victory": false, "gas": 2.0},
-		{"id": "G4", "position": Vector3(32.0, 0.0, -70.0), "victory": false, "gas": 2.0},
-		{"id": "G5", "position": Vector3(94.0, 0.0, -58.0), "victory": false, "gas": 2.0},
-		{"id": "G6", "position": Vector3(105.0, 0.0, 72.0), "victory": false, "gas": 2.0},
+		{"id": "V3", "position": Vector3(156.0, 0.0, 36.0), "victory": true, "gas": 0.0},
+		{"id": "G1", "position": Vector3(-210.0, 0.0, -144.0), "victory": false, "gas": 2.0},
+		{"id": "G2", "position": Vector3(-188.0, 0.0, 116.0), "victory": false, "gas": 2.0},
+		{"id": "G3", "position": Vector3(-64.0, 0.0, 140.0), "victory": false, "gas": 2.0},
+		{"id": "G4", "position": Vector3(64.0, 0.0, -140.0), "victory": false, "gas": 2.0},
+		{"id": "G5", "position": Vector3(188.0, 0.0, -116.0), "victory": false, "gas": 2.0},
+		{"id": "G6", "position": Vector3(210.0, 0.0, 144.0), "victory": false, "gas": 2.0},
 	]
 	for data in point_data:
 		var point = CAPTURE_POINT.new()
