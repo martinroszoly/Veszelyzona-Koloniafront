@@ -22,6 +22,10 @@ const INFANTRY_SQUAD_COST := 120.0
 const INFANTRY_SQUAD_SIZE := 3
 const LIGHT_VEHICLE_COST := 260.0
 const SUPPLY_LINK_DISTANCE := 145.0
+const INFANTRY_BUILD_TIME := 8.0
+const VEHICLE_BUILD_TIME := 14.0
+const POPULATION_CAP := 30
+const VEHICLE_POPULATION := 4
 
 var _capture_points: Array = []
 var _victory_points: Array = []
@@ -37,6 +41,10 @@ var _supply_links: Array = []
 @onready var vehicle_call_in_button: Button = get_node_or_null("HUD/BacklinePanel/Margin/BacklineContent/VehicleCallIn")
 
 var _reinforcement_wave := 0
+var _production_type := ""
+var _production_remaining := 0.0
+var _production_duration := 0.0
+var _ui_refresh_timer := 0.0
 
 func _ready() -> void:
 	_rng.seed = 4702
@@ -59,6 +67,16 @@ func _ready() -> void:
 		infantry_call_in_button.pressed.connect(_on_infantry_call_in_pressed)
 	if is_instance_valid(vehicle_call_in_button):
 		vehicle_call_in_button.pressed.connect(_on_vehicle_call_in_pressed)
+
+func _process(delta: float) -> void:
+	_ui_refresh_timer -= delta
+	if not _production_type.is_empty():
+		_production_remaining = maxf(0.0, _production_remaining - delta)
+		if _production_remaining <= 0.0:
+			_finish_production()
+	if _ui_refresh_timer <= 0.0:
+		_ui_refresh_timer = 0.2
+		_refresh_backline_ui()
 
 func _build_ground() -> void:
 	var ground := MeshInstance3D.new()
@@ -271,18 +289,20 @@ func _update_supply_link_visuals() -> void:
 func _on_resources_changed(team_id: int, gas: float, income_per_second: float) -> void:
 	if team_id != 0 or not is_instance_valid(resource_status):
 		return
-	resource_status.text = "GÁZ: %d\nBEVÉTEL: +%.1f / mp" % [floori(gas), income_per_second]
-	if is_instance_valid(infantry_call_in_button):
-		infantry_call_in_button.disabled = gas < INFANTRY_SQUAD_COST
-	if is_instance_valid(vehicle_call_in_button):
-		vehicle_call_in_button.disabled = gas < LIGHT_VEHICLE_COST
+	resource_status.text = "GÁZ: %d\nBEVÉTEL: +%.1f / mp\nLÉTSZÁM: %d / %d" % [floori(gas), income_per_second, _get_team_population(0), POPULATION_CAP]
+	_refresh_backline_ui()
 
 func _on_infantry_call_in_pressed() -> void:
 	if not is_instance_valid(economy_manager):
 		return
+	if not _production_type.is_empty() or _get_team_population(0) + INFANTRY_SQUAD_SIZE > POPULATION_CAP:
+		return
 	if not economy_manager.spend_gas(0, INFANTRY_SQUAD_COST):
 		_set_backline_status("Nincs elegendő gáz a behíváshoz.")
 		return
+	_start_production("infantry", INFANTRY_BUILD_TIME)
+
+func _spawn_infantry_squad() -> void:
 	_reinforcement_wave += 1
 	var wave_z := 94.0 + float((_reinforcement_wave - 1) % 3) * 2.4
 	for index in range(INFANTRY_SQUAD_SIZE):
@@ -294,7 +314,7 @@ func _on_infantry_call_in_pressed() -> void:
 		unit.collision_mask = 1 | 2
 		unit.position = Vector3(-2.4 + float(index) * 2.4, 0.0, wave_z)
 		add_child(unit)
-	_set_backline_status("Gyalogsági raj megérkezett: +%d egység." % INFANTRY_SQUAD_SIZE)
+	_set_backline_status("Gyalogsági raj megérkezett: +%d katona." % INFANTRY_SQUAD_SIZE)
 
 func _set_backline_status(message: String) -> void:
 	if is_instance_valid(backline_status):
@@ -303,9 +323,14 @@ func _set_backline_status(message: String) -> void:
 func _on_vehicle_call_in_pressed() -> void:
 	if not is_instance_valid(economy_manager):
 		return
+	if not _production_type.is_empty() or _get_team_population(0) + VEHICLE_POPULATION > POPULATION_CAP:
+		return
 	if not economy_manager.spend_gas(0, LIGHT_VEHICLE_COST):
 		_set_backline_status("Nincs elegendő gáz a jármű behívásához.")
 		return
+	_start_production("vehicle", VEHICLE_BUILD_TIME)
+
+func _spawn_light_vehicle() -> void:
 	_reinforcement_wave += 1
 	var vehicle = RTS_UNIT.new()
 	vehicle.name = "EmberLightVehicle_%02d" % _reinforcement_wave
@@ -317,6 +342,47 @@ func _on_vehicle_call_in_pressed() -> void:
 	vehicle.position = Vector3(8.0, 0.0, 96.0)
 	add_child(vehicle)
 	_set_backline_status("Könnyű páncélozott jármű megérkezett.")
+
+func _start_production(unit_type: String, duration: float) -> void:
+	_production_type = unit_type
+	_production_duration = duration
+	_production_remaining = duration
+	_refresh_backline_ui()
+
+func _finish_production() -> void:
+	var completed_type := _production_type
+	_production_type = ""
+	_production_remaining = 0.0
+	if completed_type == "infantry":
+		_spawn_infantry_squad()
+	elif completed_type == "vehicle":
+		_spawn_light_vehicle()
+	_refresh_backline_ui()
+
+func _get_team_population(team_id: int) -> int:
+	var population := 0
+	for node in get_tree().get_nodes_in_group("rts_units"):
+		if node.team_id == team_id:
+			population += VEHICLE_POPULATION if node.is_vehicle else 1
+	return population
+
+func _refresh_backline_ui() -> void:
+	if not is_instance_valid(economy_manager):
+		return
+	var population := _get_team_population(0)
+	var queue_busy := not _production_type.is_empty()
+	if is_instance_valid(infantry_call_in_button):
+		infantry_call_in_button.disabled = queue_busy or economy_manager.get_gas(0) < INFANTRY_SQUAD_COST or population + INFANTRY_SQUAD_SIZE > POPULATION_CAP
+	if is_instance_valid(vehicle_call_in_button):
+		vehicle_call_in_button.disabled = queue_busy or economy_manager.get_gas(0) < LIGHT_VEHICLE_COST or population + VEHICLE_POPULATION > POPULATION_CAP
+	if is_instance_valid(resource_status):
+		resource_status.text = "GÁZ: %d\nBEVÉTEL: +%.1f / mp\nLÉTSZÁM: %d / %d" % [floori(economy_manager.get_gas(0)), economy_manager.get_income_per_second(0), population, POPULATION_CAP]
+	if queue_busy:
+		var title := "GYALOGSÁGI RAJ" if _production_type == "infantry" else "KÖNNYŰ JÁRMŰ"
+		var progress := 1.0 - _production_remaining / maxf(0.01, _production_duration)
+		_set_backline_status("GYÁRTÁS: %s  %d%%  (%.1f mp)" % [title, roundi(progress * 100.0), _production_remaining])
+	elif population >= POPULATION_CAP:
+		_set_backline_status("Elérted a %d fős létszámkorlátot." % POPULATION_CAP)
 
 func _build_road_network() -> void:
 	_add_road(Vector3(0, 0.035, 0), Vector2(7.0, MAP_SIZE.y * 0.78), 0.0)

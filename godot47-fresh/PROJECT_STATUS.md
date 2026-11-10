@@ -50,6 +50,9 @@
 | Mérkőzés vége | Az első 250 összegyűjtött pontnál teljes képernyős eredmény és új mérkőzés gomb jelenik meg |
 | Egységesebb méretarány | Kisebb katonák, fák, kövek és talajfoltok; tágasabb harctéri összhatás |
 | Fedezék-előnézet | Kijelölt rajjal a fedezék fölé vitt egér már jobb kattintás előtt megmutatja a kisebb zöld/sárga érkezési helyeket |
+| Gyártási sor | A gyalogság 8, a könnyű jármű 14 másodperc alatt készül el; a folyamat a HÁTORSZÁG panelen látható |
+| Létszámkorlát | Mindkét oldal 30 pontos keretet használ; katona 1, könnyű jármű 4 pontot foglal |
+| AI-gyártás | Az ellenfél is kifizeti, kivárja és csak szabad létszámkeret esetén kapja meg az erősítést |
 
 ## Rögzített tesztvisszajelzések – későbbi javítás
 

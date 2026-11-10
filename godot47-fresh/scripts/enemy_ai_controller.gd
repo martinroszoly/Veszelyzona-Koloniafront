@@ -3,6 +3,8 @@ extends Node
 const RTS_UNIT := preload("res://scripts/rts_unit.gd")
 const REINFORCEMENT_COST := 120.0
 const REINFORCEMENT_SIZE := 3
+const REINFORCEMENT_TIME := 8.0
+const POPULATION_CAP := 30
 
 @export var team_id: int = 1
 @export var decision_interval: float = 3.0
@@ -10,10 +12,17 @@ const REINFORCEMENT_SIZE := 3
 
 var _decision_timer := 0.7
 var _reinforcement_wave := 0
+var _production_remaining := 0.0
+var _production_queued := false
 @onready var economy_manager: Node = get_node_or_null("../EconomyManager")
 
 
 func _physics_process(delta: float) -> void:
+	if _production_queued:
+		_production_remaining -= delta
+		if _production_remaining <= 0.0:
+			_production_queued = false
+			_spawn_reinforcements()
 	_decision_timer -= delta
 	if _decision_timer > 0.0:
 		return
@@ -77,10 +86,20 @@ func _prune_invalid_members(members: Array) -> void:
 
 
 func _try_call_in_reinforcements() -> void:
-	if not is_instance_valid(economy_manager):
+	if not is_instance_valid(economy_manager) or _production_queued:
+		return
+	var population := 0
+	for node in get_tree().get_nodes_in_group("rts_units"):
+		if node.team_id == team_id:
+			population += 4 if node.is_vehicle else 1
+	if population + REINFORCEMENT_SIZE > POPULATION_CAP:
 		return
 	if not economy_manager.spend_gas(team_id, REINFORCEMENT_COST):
 		return
+	_production_queued = true
+	_production_remaining = REINFORCEMENT_TIME
+
+func _spawn_reinforcements() -> void:
 	_reinforcement_wave += 1
 	for index in range(REINFORCEMENT_SIZE):
 		var unit = RTS_UNIT.new()
