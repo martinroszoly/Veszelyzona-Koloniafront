@@ -23,10 +23,13 @@ var _right_command_position := Vector3.ZERO
 var _right_facing_direction := Vector3.ZERO
 var _facing_preview = null
 var _hovered_cover = null
+var _hovered_enemy = null
+var _attack_button: Button
 
 
 func _ready() -> void:
 	_build_selection_box()
+	_build_attack_button()
 	_update_status("Bal klikk: kijelölés. Bal gomb húzása: keretes kijelölés.")
 
 
@@ -52,6 +55,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			_update_facing_command(event.position)
 		else:
 			_update_cover_hover(event.position)
+			_update_enemy_hover(event.position)
 
 
 func _retreat_selected_squads() -> void:
@@ -76,6 +80,42 @@ func _update_cover_hover(screen_position: Vector2) -> void:
 	_hovered_cover = next_cover
 	if is_instance_valid(_hovered_cover):
 		_hovered_cover.show_slot_preview(_selected_units.size(), hit.position)
+
+
+func _build_attack_button() -> void:
+	_attack_button = Button.new()
+	_attack_button.name = "AttackCommandButton"
+	_attack_button.text = "TÁMADÁS"
+	_attack_button.tooltip_text = "A kijelölt raj támadja ezt az egységet."
+	_attack_button.size = Vector2(118, 38)
+	_attack_button.visible = false
+	_attack_button.add_theme_font_size_override("font_size", 17)
+	attack_button.pressed.connect(_attack_hovered_enemy)
+	get_node("../HUD").add_child(_attack_button)
+
+
+func _update_enemy_hover(screen_position: Vector2) -> void:
+	if not is_instance_valid(_attack_button):
+		return
+	var hit := _raycast(screen_position, 2)
+	var candidate = hit.get("collider")
+	if candidate != null and candidate.is_in_group("rts_units") and candidate.team_id != player_team_id and not _selected_units.is_empty():
+		_hovered_enemy = candidate
+		_attack_button.position = screen_position + Vector2(18, -46)
+		_attack_button.visible = true
+	else:
+		_hovered_enemy = null
+		_attack_button.visible = false
+
+
+func _attack_hovered_enemy() -> void:
+	if not is_instance_valid(_hovered_enemy):
+		return
+	for unit in _selected_units:
+		if is_instance_valid(unit):
+			unit.attack_target(_hovered_enemy)
+	_attack_button.visible = false
+	_update_status("TÁMADÁS PARANCS KIADVA.")
 
 
 func _begin_facing_command(screen_position: Vector2) -> void:
