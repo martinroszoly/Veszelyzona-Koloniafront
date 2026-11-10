@@ -122,7 +122,11 @@ func _apply_external_faction_model() -> bool:
 		# The imported character is authored at a human scale. Keep it comparable
 		# to vehicles while preserving the original rig and skinning.
 		_faction_model.scale = Vector3.ONE * 0.95
+		# BAMEN's source character faces +Z; RTSUnit uses -Z as forward.
+		_faction_model.rotation.y = PI
 	_cache_animation_nodes()
+	if unit_type == "infantry" and faction_id == "ember":
+		_attach_ember_rifle()
 	_body_visual.visible = false
 	_facing_visual.visible = false
 	if unit_type == "vehicle":
@@ -174,6 +178,62 @@ func _find_animation_player(parent: Node) -> AnimationPlayer:
 	return null
 
 
+func _find_skeleton(parent: Node) -> Skeleton3D:
+	if parent is Skeleton3D:
+		return parent as Skeleton3D
+	for child in parent.get_children():
+		var found := _find_skeleton(child)
+		if found != null:
+			return found
+	return null
+
+
+func _attach_ember_rifle() -> void:
+	var skeleton := _find_skeleton(_faction_model)
+	if not is_instance_valid(skeleton):
+		return
+	var hand := BoneAttachment3D.new()
+	hand.name = "RifleHandMount"
+	hand.bone_name = "mixamorig:RightHand"
+	skeleton.add_child(hand)
+	var rifle := Node3D.new()
+	rifle.name = "EmberRifle"
+	rifle.position = Vector3(0.035, -0.045, -0.175)
+	rifle.rotation = Vector3(-0.12, 0.0, PI * 0.5)
+	hand.add_child(rifle)
+	_add_rifle_part(rifle, Vector3(0.075, 0.075, 0.56), Vector3(0.0, 0.0, -0.03), Color("1c2935"))
+	_add_rifle_part(rifle, Vector3(0.045, 0.045, 0.42), Vector3(0.0, 0.0, -0.47), Color("111820"), true)
+	_add_rifle_part(rifle, Vector3(0.10, 0.12, 0.16), Vector3(0.0, -0.055, 0.17), Color("314b63"))
+	_add_rifle_part(rifle, Vector3(0.06, 0.065, 0.19), Vector3(0.0, 0.10, -0.07), Color("315f95"))
+	_add_rifle_part(rifle, Vector3(0.035, 0.035, 0.09), Vector3(0.0, 0.15, 0.08), Color("55bbff"), false, true)
+
+
+func _add_rifle_part(parent: Node3D, size: Vector3, local_position: Vector3, color: Color, barrel: bool = false, emissive: bool = false) -> void:
+	var mesh_instance := MeshInstance3D.new()
+	if barrel:
+		var cylinder := CylinderMesh.new()
+		cylinder.top_radius = size.x
+		cylinder.bottom_radius = size.x
+		cylinder.height = size.z
+		mesh_instance.mesh = cylinder
+		mesh_instance.rotation.x = PI * 0.5
+	else:
+		var box := BoxMesh.new()
+		box.size = size
+		mesh_instance.mesh = box
+	var material := StandardMaterial3D.new()
+	material.albedo_color = color
+	material.metallic = 0.72
+	material.roughness = 0.3
+	if emissive:
+		material.emission_enabled = true
+		material.emission = color
+		material.emission_energy_multiplier = 2.8
+	mesh_instance.material_override = material
+	mesh_instance.position = local_position
+	parent.add_child(mesh_instance)
+
+
 func _set_model_animation(animation_name: String) -> void:
 	if not is_instance_valid(_model_animation_player):
 		return
@@ -196,12 +256,18 @@ func _update_infantry_animation(delta: float) -> void:
 		return
 	var running := _has_destination and velocity.length() > 0.25
 	if is_instance_valid(_model_animation_player):
-		if _fire_pose_time > 0.0:
-			_set_model_animation("shoot")
+		var aiming := is_instance_valid(_target)
+		if aiming and running:
+			_set_model_animation("aim_run")
+		elif aiming:
+			_set_model_animation("aim_idle")
 		elif running:
 			_set_model_animation("run")
 		else:
 			_set_model_animation("idle")
+		return
+	# Legacy hand-built units only: do not apply this motion to a skinned rig.
+	if not is_instance_valid(_left_leg_pivot) and not is_instance_valid(_right_leg_pivot):
 		return
 	var bob := 0.0
 	var roll := 0.0
