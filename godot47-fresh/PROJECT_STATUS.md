@@ -13,6 +13,9 @@
 | Biztonságos első renderelő | OpenGL 3 / Compatibility beállítva |
 | Windows build export | Nem része ennek az első ellenőrző szakasznak |
 | Régi játék/Main ág érintetlen | Külön ág; csak új `godot47-fresh/` fájlok kerülnek fel |
+| EMBER gyalogsági tesztegységek | 5 saját graybox egység létrehozva |
+| Egységkijelölés | Bal klikk és Shift+bal klikk elkészült; futtatás ellenőrizendő |
+| Mozgási parancs | Jobb klikkes csoportos alakzat elkészült; futtatás ellenőrizendő |
 
 ## A környezetben végzett ellenőrzés
 

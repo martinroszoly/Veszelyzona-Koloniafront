@@ -13,6 +13,8 @@ const TREE_GROUPS := [
 
 var _rng := RandomNumberGenerator.new()
 
+const RTS_UNIT := preload("res://scripts/rts_unit.gd")
+
 func _ready() -> void:
 	_rng.seed = 4702
 	_build_ground()
@@ -20,6 +22,7 @@ func _ready() -> void:
 	_build_forests()
 	_build_rocks()
 	_build_grass_patches()
+	_build_player_squad()
 
 func _build_ground() -> void:
 	var ground := MeshInstance3D.new()
@@ -46,6 +49,35 @@ func _build_ground() -> void:
 	earth.roughness = 1.0
 	edge_mesh.material_override = earth
 	add_child(edge_mesh)
+
+	var ground_body := StaticBody3D.new()
+	ground_body.name = "GroundCollision"
+	ground_body.collision_layer = 1
+	ground_body.collision_mask = 0
+	var collision := CollisionShape3D.new()
+	var ground_shape := BoxShape3D.new()
+	ground_shape.size = Vector3(MAP_SIZE.x, 0.4, MAP_SIZE.y)
+	collision.shape = ground_shape
+	collision.position.y = -0.2
+	ground_body.add_child(collision)
+	add_child(ground_body)
+
+func _build_player_squad() -> void:
+	var squad_positions := [
+		Vector3(-8.0, 0.0, 54.0),
+		Vector3(-4.0, 0.0, 54.0),
+		Vector3(0.0, 0.0, 54.0),
+		Vector3(4.0, 0.0, 54.0),
+		Vector3(8.0, 0.0, 54.0),
+	]
+	for index in range(squad_positions.size()):
+		var unit := RTS_UNIT.new() as RTSUnit
+		unit.name = "EmberInfantry_%02d" % (index + 1)
+		unit.team_id = 0
+		unit.collision_layer = 2
+		unit.collision_mask = 1 | 2
+		unit.position = squad_positions[index]
+		add_child(unit)
 
 func _build_road_network() -> void:
 	_add_road(Vector3(0, 0.035, 0), Vector2(7.0, MAP_SIZE.y * 0.78), 0.0)

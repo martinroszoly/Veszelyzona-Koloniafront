@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/test_map.gd" id="1_map"]
 [ext_resource type="Script" path="res://scripts/rts_camera.gd" id="2_camera"]
+[ext_resource type="Script" path="res://scripts/unit_command_controller.gd" id="3_controller"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMaterial_main"]
 sky_top_color = Color(0.15, 0.29, 0.39, 1)
@@ -39,11 +40,14 @@ fov = 55.0
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
+[node name="UnitCommandController" type="Node" parent="."]
+script = ExtResource("3_controller")
+
 [node name="Panel" type="PanelContainer" parent="HUD"]
 offset_left = 24.0
 offset_top = 24.0
 offset_right = 480.0
-offset_bottom = 140.0
+offset_bottom = 164.0
 
 [node name="Margin" type="MarginContainer" parent="HUD/Panel"]
 layout_mode = 2
@@ -56,4 +60,23 @@ theme_override_constants/margin_bottom = 12
 layout_mode = 2
 theme_override_colors/font_color = Color(0.87, 0.91, 0.88, 1)
 theme_override_font_sizes/font_size = 16
-text = "VESZÉLYZÓNA  /  KOLÓNIAFRONT\nWASD: kamera mozgatása    Középső egér: forgatás\nGörgő: nagyítás    Dőlésszög: rögzített"
+text = "VESZÉLYZÓNA  /  KOLÓNIAFRONT\nWASD: kamera    Középső egér: forgatás    Görgő: nagyítás\nBal klikk: kijelölés    Shift+bal klikk: több egység    Jobb klikk: mozgás"
+
+[node name="StatusPanel" type="PanelContainer" parent="HUD"]
+offset_left = 24.0
+offset_top = 176.0
+offset_right = 480.0
+offset_bottom = 226.0
+
+[node name="Margin" type="MarginContainer" parent="HUD/StatusPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 10
+
+[node name="Status" type="Label" parent="HUD/StatusPanel/Margin"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.95, 0.64, 1)
+theme_override_font_sizes/font_size = 15
+text = "Egységvezérlés betöltése..."
