@@ -391,8 +391,9 @@ func _physics_process(delta: float) -> void:
 	_attack_timer = maxf(0.0, _attack_timer - delta)
 	_avoidance_time = maxf(0.0, _avoidance_time - delta)
 	if _update_combat():
-		velocity.x = move_toward(velocity.x, 0.0, acceleration * delta)
-		velocity.z = move_toward(velocity.z, 0.0, acceleration * delta)
+		var combat_spacing := _get_combat_spacing_vector()
+		velocity.x = move_toward(velocity.x, combat_spacing.x * move_speed * 0.42, acceleration * delta)
+		velocity.z = move_toward(velocity.z, combat_spacing.z * move_speed * 0.42, acceleration * delta)
 		move_and_slide()
 		return
 	if not _has_destination:
@@ -427,6 +428,22 @@ func _physics_process(delta: float) -> void:
 	var position_before_move := global_position
 	move_and_slide()
 	_update_stuck_recovery(delta, position_before_move, offset.normalized())
+
+
+func _get_combat_spacing_vector() -> Vector3:
+	# Squads close ranks while travelling via formation destinations, then open
+	# a small firing gap once combat begins so members do not stack together.
+	var separation := Vector3.ZERO
+	for node in get_tree().get_nodes_in_group("rts_units"):
+		var ally = node as RTSUnit
+		if ally == null or ally == self or ally.team_id != team_id or ally.squad_id != squad_id:
+			continue
+		var delta := global_position - ally.global_position
+		delta.y = 0.0
+		var distance := delta.length()
+		if distance > 0.02 and distance < 2.3:
+			separation += delta.normalized() * (1.0 - distance / 2.3)
+	return separation.limit_length(1.0)
 
 
 func move_to(world_position: Vector3, final_facing: Vector3 = Vector3.ZERO, cover_strength: int = -1) -> void:
