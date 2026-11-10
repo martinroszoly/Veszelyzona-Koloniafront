@@ -18,6 +18,7 @@ const CAPTURE_POINT := preload("res://scripts/capture_point.gd")
 const COVER_OBJECT := preload("res://scripts/cover_object.gd")
 const INFANTRY_SQUAD_COST := 120.0
 const INFANTRY_SQUAD_SIZE := 3
+const LIGHT_VEHICLE_COST := 260.0
 
 var _capture_points: Array = []
 var _owned_point_count := 0
@@ -28,6 +29,7 @@ var _supply_links: Array = []
 @onready var resource_status: Label = get_node_or_null("HUD/ResourcePanel/Margin/ResourceStatus")
 @onready var infantry_call_in_button: Button = get_node_or_null("HUD/BacklinePanel/Margin/BacklineContent/InfantryCallIn")
 @onready var backline_status: Label = get_node_or_null("HUD/BacklinePanel/Margin/BacklineContent/BacklineStatus")
+@onready var vehicle_call_in_button: Button = get_node_or_null("HUD/BacklinePanel/Margin/BacklineContent/VehicleCallIn")
 
 var _reinforcement_wave := 0
 
@@ -50,6 +52,8 @@ func _ready() -> void:
 		_on_resources_changed(0, economy_manager.get_gas(0), economy_manager.get_income_per_second(0))
 	if is_instance_valid(infantry_call_in_button):
 		infantry_call_in_button.pressed.connect(_on_infantry_call_in_pressed)
+	if is_instance_valid(vehicle_call_in_button):
+		vehicle_call_in_button.pressed.connect(_on_vehicle_call_in_pressed)
 
 func _build_ground() -> void:
 	var ground := MeshInstance3D.new()
@@ -233,6 +237,8 @@ func _on_resources_changed(team_id: int, gas: float, income_per_second: float) -
 	resource_status.text = "GÁZ: %d\nBEVÉTEL: +%.1f / mp" % [floori(gas), income_per_second]
 	if is_instance_valid(infantry_call_in_button):
 		infantry_call_in_button.disabled = gas < INFANTRY_SQUAD_COST
+	if is_instance_valid(vehicle_call_in_button):
+		vehicle_call_in_button.disabled = gas < LIGHT_VEHICLE_COST
 
 func _on_infantry_call_in_pressed() -> void:
 	if not is_instance_valid(economy_manager):
@@ -256,6 +262,24 @@ func _on_infantry_call_in_pressed() -> void:
 func _set_backline_status(message: String) -> void:
 	if is_instance_valid(backline_status):
 		backline_status.text = message
+
+func _on_vehicle_call_in_pressed() -> void:
+	if not is_instance_valid(economy_manager):
+		return
+	if not economy_manager.spend_gas(0, LIGHT_VEHICLE_COST):
+		_set_backline_status("Nincs elegendő gáz a jármű behívásához.")
+		return
+	_reinforcement_wave += 1
+	var vehicle = RTS_UNIT.new()
+	vehicle.name = "EmberLightVehicle_%02d" % _reinforcement_wave
+	vehicle.team_id = 0
+	vehicle.squad_id = "ember_jarmu_%02d" % _reinforcement_wave
+	vehicle.is_vehicle = true
+	vehicle.collision_layer = 2
+	vehicle.collision_mask = 1 | 2
+	vehicle.position = Vector3(8.0, 0.0, 62.0)
+	add_child(vehicle)
+	_set_backline_status("Könnyű páncélozott jármű megérkezett.")
 
 func _build_road_network() -> void:
 	_add_road(Vector3(0, 0.035, 0), Vector2(7.0, MAP_SIZE.y * 0.78), 0.0)

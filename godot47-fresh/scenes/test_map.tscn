@@ -139,7 +139,7 @@ anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -390.0
-offset_top = -188.0
+offset_top = -242.0
 offset_right = -24.0
 offset_bottom = -24.0
 
@@ -167,6 +167,13 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 16
 disabled = true
 text = "EMBER GYALOGSÁGI RAJ  ·  120 GÁZ"
+
+[node name="VehicleCallIn" type="Button" parent="HUD/BacklinePanel/Margin/BacklineContent"]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+disabled = true
+text = "KÖNNYŰ PÁNCÉLOZOTT JÁRMŰ  ·  260 GÁZ"
 
 [node name="BacklineStatus" type="Label" parent="HUD/BacklinePanel/Margin/BacklineContent"]
 layout_mode = 2

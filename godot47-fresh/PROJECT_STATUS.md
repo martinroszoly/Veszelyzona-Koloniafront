@@ -39,6 +39,7 @@
 | Utánpótlási lánc | A–E pontlánc; EMBER ellátás E felől, AI ellátás A felől terjed |
 | Elszigetelt terület | Kapcsolat nélküli elfoglalt pont nem termel gázt és halvány jelzést kap |
 | Változó frontvonal | A pontok közti vonalak semleges, kék vagy vörös színnel mutatják az ellátott frontot |
+| Első katonai jármű | 260 gázért behívható könnyű páncélozott jármű, külön életerővel, sebességgel és fegyverrel |
 
 ## Rögzített tesztvisszajelzések – későbbi javítás
 
