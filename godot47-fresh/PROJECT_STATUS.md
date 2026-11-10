@@ -26,6 +26,8 @@
 | Mozgási céljelző | Jobb kattintáskor kék, animált parancsjelző jelenik meg |
 | Érkezési irány megadása | Jobb gombos húzásnál iránynyíl, érkezéskor a raj a megadott irányba fordul |
 | Company of Heroes-szerű fedezékalap | Homokzsákfal, automatikus rajszétosztás, zöld erős-fedezék helyek és irányba fordulás elkészült |
+| Egyszerű harcrendszer | Életerő, automatikus célkeresés, lőtáv, sebzés és vörös ellenséges tesztraj elkészült |
+| Fedezéki védelem | Erős fedezékből, megfelelő irányból érkező találatok sebzése 50%-kal csökken |
 
 ## Rögzített tesztvisszajelzések – későbbi javítás
 

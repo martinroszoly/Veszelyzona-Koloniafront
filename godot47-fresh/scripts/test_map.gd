@@ -39,6 +39,7 @@ func _ready() -> void:
 	_build_test_cover()
 	_build_capture_points()
 	_build_player_squad()
+	_build_enemy_test_squad()
 	_update_objective_status()
 	if is_instance_valid(economy_manager):
 		economy_manager.resources_changed.connect(_on_resources_changed)
@@ -97,6 +98,24 @@ func _build_player_squad() -> void:
 		unit.name = "EmberInfantry_%02d" % (index + 1)
 		unit.team_id = 0
 		unit.squad_id = "ember_kezdoraj"
+		unit.collision_layer = 2
+		unit.collision_mask = 1 | 2
+		unit.position = squad_positions[index]
+		add_child(unit)
+
+func _build_enemy_test_squad() -> void:
+	var squad_positions := [
+		Vector3(-6.0, 0.0, -55.0),
+		Vector3(-3.0, 0.0, -55.0),
+		Vector3(0.0, 0.0, -55.0),
+		Vector3(3.0, 0.0, -55.0),
+		Vector3(6.0, 0.0, -55.0),
+	]
+	for index in range(squad_positions.size()):
+		var unit := RTS_UNIT.new() as RTSUnit
+		unit.name = "XenonTestInfantry_%02d" % (index + 1)
+		unit.team_id = 1
+		unit.squad_id = "xenon_tesztraj"
 		unit.collision_layer = 2
 		unit.collision_mask = 1 | 2
 		unit.position = squad_positions[index]

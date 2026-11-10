@@ -191,7 +191,7 @@ func _issue_move_command_at(center: Vector3, facing_direction: Vector3) -> void:
 		if cover_facing.length_squared() < 0.01:
 			cover_facing = cover.get_cover_facing(center)
 		for index in range(mini(_selected_units.size(), slots.size())):
-			_selected_units[index].move_to(slots[index], cover_facing)
+			_selected_units[index].move_to(slots[index], cover_facing, int(cover.strength))
 		cover.show_slot_preview(_selected_units.size(), center)
 		_update_status("%d raj erős fedezékbe rendeződik." % _selected_squad_count())
 		return
@@ -201,7 +201,7 @@ func _issue_move_command_at(center: Vector3, facing_direction: Vector3) -> void:
 		var column := index % columns
 		var offset_x := (float(column) - float(columns - 1) * 0.5) * formation_spacing
 		var offset_z := float(row) * formation_spacing
-		_selected_units[index].move_to(center + Vector3(offset_x, 0.0, offset_z), facing_direction)
+		_selected_units[index].move_to(center + Vector3(offset_x, 0.0, offset_z), facing_direction, -1)
 	_update_status("Mozgási parancs kiadva %d rajnak." % _selected_squad_count())
 
 
