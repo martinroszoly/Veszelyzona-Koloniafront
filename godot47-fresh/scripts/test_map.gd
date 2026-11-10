@@ -15,12 +15,18 @@ var _rng := RandomNumberGenerator.new()
 
 const RTS_UNIT := preload("res://scripts/rts_unit.gd")
 const CAPTURE_POINT := preload("res://scripts/capture_point.gd")
+const INFANTRY_SQUAD_COST := 120.0
+const INFANTRY_SQUAD_SIZE := 3
 
 var _capture_points: Array[CapturePoint] = []
 var _owned_point_count := 0
 @onready var objective_status: Label = get_node_or_null("HUD/ObjectivePanel/Margin/ObjectiveStatus")
 @onready var economy_manager: EconomyManager = get_node_or_null("EconomyManager")
 @onready var resource_status: Label = get_node_or_null("HUD/ResourcePanel/Margin/ResourceStatus")
+@onready var infantry_call_in_button: Button = get_node_or_null("HUD/BacklinePanel/Margin/BacklineContent/InfantryCallIn")
+@onready var backline_status: Label = get_node_or_null("HUD/BacklinePanel/Margin/BacklineContent/BacklineStatus")
+
+var _reinforcement_wave := 0
 
 func _ready() -> void:
 	_rng.seed = 4702
@@ -35,6 +41,8 @@ func _ready() -> void:
 	if is_instance_valid(economy_manager):
 		economy_manager.resources_changed.connect(_on_resources_changed)
 		_on_resources_changed(0, economy_manager.get_gas(0), economy_manager.get_income_per_second(0))
+	if is_instance_valid(infantry_call_in_button):
+		infantry_call_in_button.pressed.connect(_on_infantry_call_in_pressed)
 
 func _build_ground() -> void:
 	var ground := MeshInstance3D.new()
@@ -125,6 +133,30 @@ func _on_resources_changed(team_id: int, gas: float, income_per_second: float) -
 	if team_id != 0 or not is_instance_valid(resource_status):
 		return
 	resource_status.text = "GÁZ: %d\nBEVÉTEL: +%.1f / mp" % [floori(gas), income_per_second]
+	if is_instance_valid(infantry_call_in_button):
+		infantry_call_in_button.disabled = gas < INFANTRY_SQUAD_COST
+
+func _on_infantry_call_in_pressed() -> void:
+	if not is_instance_valid(economy_manager):
+		return
+	if not economy_manager.spend_gas(0, INFANTRY_SQUAD_COST):
+		_set_backline_status("Nincs elegendő gáz a behíváshoz.")
+		return
+	_reinforcement_wave += 1
+	var wave_z := 61.0 + float((_reinforcement_wave - 1) % 3) * 2.4
+	for index in range(INFANTRY_SQUAD_SIZE):
+		var unit := RTS_UNIT.new() as RTSUnit
+		unit.name = "EmberReinforcement_%02d_%02d" % [_reinforcement_wave, index + 1]
+		unit.team_id = 0
+		unit.collision_layer = 2
+		unit.collision_mask = 1 | 2
+		unit.position = Vector3(-2.4 + float(index) * 2.4, 0.0, wave_z)
+		add_child(unit)
+	_set_backline_status("Gyalogsági raj megérkezett: +%d egység." % INFANTRY_SQUAD_SIZE)
+
+func _set_backline_status(message: String) -> void:
+	if is_instance_valid(backline_status):
+		backline_status.text = message
 
 func _build_road_network() -> void:
 	_add_road(Vector3(0, 0.035, 0), Vector2(7.0, MAP_SIZE.y * 0.78), 0.0)

@@ -128,3 +128,46 @@ theme_override_colors/font_color = Color(0.45, 0.85, 1, 1)
 theme_override_font_sizes/font_size = 17
 text = "GÁZ: 100\nBEVÉTEL: +0.0 / mp"
 horizontal_alignment = 2
+
+[node name="BacklinePanel" type="PanelContainer" parent="HUD"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -390.0
+offset_top = -188.0
+offset_right = -24.0
+offset_bottom = -24.0
+
+[node name="Margin" type="MarginContainer" parent="HUD/BacklinePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 12
+
+[node name="BacklineContent" type="VBoxContainer" parent="HUD/BacklinePanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="HUD/BacklinePanel/Margin/BacklineContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.88, 1, 1)
+theme_override_font_sizes/font_size = 19
+text = "HÁTORSZÁG"
+horizontal_alignment = 1
+
+[node name="InfantryCallIn" type="Button" parent="HUD/BacklinePanel/Margin/BacklineContent"]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+disabled = true
+text = "EMBER GYALOGSÁGI RAJ  ·  120 GÁZ"
+
+[node name="BacklineStatus" type="Label" parent="HUD/BacklinePanel/Margin/BacklineContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.68, 0.76, 0.72, 1)
+theme_override_font_sizes/font_size = 14
+text = "Foglalj pontot, majd gyűjts 120 gázt."
+horizontal_alignment = 1
+autowrap_mode = 2

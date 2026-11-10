@@ -21,6 +21,7 @@
 | Öt stratégiai pont | A–E pontok elhelyezve a tesztpályán |
 | Időzített pontfoglalás | Körön belüli, 6 másodperces foglalás és vizuális állapot elkészült |
 | Gázalapú gazdaság | 100 kezdőgáz, pontonként +2 gáz/mp és élő HUD-kijelzés elkészült |
+| HÁTORSZÁG alapváltozat | 120 gázért 3 fős EMBER gyalogsági raj behívható az indulási területre |
 
 ## Rögzített tesztvisszajelzések – későbbi javítás
 
