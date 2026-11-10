@@ -1,8 +1,8 @@
 class_name PathfindingManager
 extends Node
 
-@export var map_min := Vector2(-95.0, -75.0)
-@export var grid_size := Vector2i(96, 76)
+@export var map_min := Vector2(-135.0, -105.0)
+@export var grid_size := Vector2i(136, 106)
 @export var cell_size := 2.0
 @export var obstacle_padding := 1.45
 

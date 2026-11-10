@@ -50,13 +50,15 @@ func _issue_squad_orders() -> void:
 
 func _find_nearest_uncaptured_point(from_position: Vector3):
 	var closest = null
-	var closest_distance := INF
+	var closest_score := INF
 	for point in get_tree().get_nodes_in_group("capture_points"):
 		if point.owner_team_id == team_id:
 			continue
 		var distance: float = from_position.distance_to(point.global_position)
-		if distance < closest_distance:
-			closest_distance = distance
+		var priority_bonus := 28.0 if point.is_victory_point else 0.0
+		var score := distance - priority_bonus
+		if score < closest_score:
+			closest_score = score
 			closest = point
 	return closest
 
@@ -87,5 +89,5 @@ func _try_call_in_reinforcements() -> void:
 		unit.squad_id = "xenon_ai_erosites_%02d" % _reinforcement_wave
 		unit.collision_layer = 2
 		unit.collision_mask = 1 | 2
-		unit.position = Vector3(-2.4 + float(index) * 2.4, 0.0, -62.0)
+		unit.position = Vector3(-2.4 + float(index) * 2.4, 0.0, -96.0)
 		get_tree().current_scene.add_child(unit)

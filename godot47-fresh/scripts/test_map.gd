@@ -3,12 +3,14 @@ extends Node3D
 ## Ideiglenes, saját készítésű terep a projekt első indíthatósági mérföldkövéhez.
 ## Nem tartalmaz még játékmechanikát; a következő teszt után bővíthető a PDF alapján.
 
-const MAP_SIZE := Vector2(190.0, 150.0)
+const MAP_SIZE := Vector2(270.0, 210.0)
 const TREE_GROUPS := [
-	{"center": Vector2(-62, -35), "size": Vector2(42, 48), "count": 44},
-	{"center": Vector2(57, 35), "size": Vector2(48, 44), "count": 52},
-	{"center": Vector2(-64, 48), "size": Vector2(28, 24), "count": 22},
-	{"center": Vector2(63, -48), "size": Vector2(31, 25), "count": 25},
+	{"center": Vector2(-96, -54), "size": Vector2(48, 52), "count": 52},
+	{"center": Vector2(92, 55), "size": Vector2(52, 48), "count": 56},
+	{"center": Vector2(-92, 68), "size": Vector2(38, 31), "count": 30},
+	{"center": Vector2(95, -66), "size": Vector2(40, 34), "count": 32},
+	{"center": Vector2(-12, -76), "size": Vector2(50, 22), "count": 26},
+	{"center": Vector2(18, 78), "size": Vector2(52, 22), "count": 28},
 ]
 
 var _rng := RandomNumberGenerator.new()
@@ -19,8 +21,11 @@ const COVER_OBJECT := preload("res://scripts/cover_object.gd")
 const INFANTRY_SQUAD_COST := 120.0
 const INFANTRY_SQUAD_SIZE := 3
 const LIGHT_VEHICLE_COST := 260.0
+const SUPPLY_LINK_DISTANCE := 145.0
 
 var _capture_points: Array = []
+var _victory_points: Array = []
+var _resource_points: Array = []
 var _owned_point_count := 0
 var _supplied_point_count := 0
 var _supply_links: Array = []
@@ -95,11 +100,11 @@ func _build_ground() -> void:
 
 func _build_player_squad() -> void:
 	var squad_positions := [
-		Vector3(-8.0, 0.0, 54.0),
-		Vector3(-4.0, 0.0, 54.0),
-		Vector3(0.0, 0.0, 54.0),
-		Vector3(4.0, 0.0, 54.0),
-		Vector3(8.0, 0.0, 54.0),
+		Vector3(-8.0, 0.0, 88.0),
+		Vector3(-4.0, 0.0, 88.0),
+		Vector3(0.0, 0.0, 88.0),
+		Vector3(4.0, 0.0, 88.0),
+		Vector3(8.0, 0.0, 88.0),
 	]
 	for index in range(squad_positions.size()):
 		var unit = RTS_UNIT.new()
@@ -113,11 +118,11 @@ func _build_player_squad() -> void:
 
 func _build_enemy_test_squad() -> void:
 	var squad_positions := [
-		Vector3(-6.0, 0.0, -55.0),
-		Vector3(-3.0, 0.0, -55.0),
-		Vector3(0.0, 0.0, -55.0),
-		Vector3(3.0, 0.0, -55.0),
-		Vector3(6.0, 0.0, -55.0),
+		Vector3(-6.0, 0.0, -88.0),
+		Vector3(-3.0, 0.0, -88.0),
+		Vector3(0.0, 0.0, -88.0),
+		Vector3(3.0, 0.0, -88.0),
+		Vector3(6.0, 0.0, -88.0),
 	]
 	for index in range(squad_positions.size()):
 		var unit = RTS_UNIT.new()
@@ -131,19 +136,29 @@ func _build_enemy_test_squad() -> void:
 
 func _build_capture_points() -> void:
 	var point_data := [
-		{"id": "A", "position": Vector3(-58.0, 0.0, -42.0)},
-		{"id": "B", "position": Vector3(-34.0, 0.0, 4.0)},
-		{"id": "C", "position": Vector3(0.0, 0.0, 4.0)},
-		{"id": "D", "position": Vector3(34.0, 0.0, 4.0)},
-		{"id": "E", "position": Vector3(58.0, 0.0, 42.0)},
+		{"id": "V1", "position": Vector3(-78.0, 0.0, -18.0), "victory": true, "gas": 0.0},
+		{"id": "V2", "position": Vector3(0.0, 0.0, 0.0), "victory": true, "gas": 0.0},
+		{"id": "V3", "position": Vector3(78.0, 0.0, 18.0), "victory": true, "gas": 0.0},
+		{"id": "G1", "position": Vector3(-105.0, 0.0, -72.0), "victory": false, "gas": 2.0},
+		{"id": "G2", "position": Vector3(-94.0, 0.0, 58.0), "victory": false, "gas": 2.0},
+		{"id": "G3", "position": Vector3(-32.0, 0.0, 70.0), "victory": false, "gas": 2.0},
+		{"id": "G4", "position": Vector3(32.0, 0.0, -70.0), "victory": false, "gas": 2.0},
+		{"id": "G5", "position": Vector3(94.0, 0.0, -58.0), "victory": false, "gas": 2.0},
+		{"id": "G6", "position": Vector3(105.0, 0.0, 72.0), "victory": false, "gas": 2.0},
 	]
 	for data in point_data:
 		var point = CAPTURE_POINT.new()
 		point.name = "CapturePoint_%s" % data.id
 		point.point_id = data.id
 		point.position = data.position
+		point.is_victory_point = data.victory
+		point.gas_income_per_second = data.gas
 		point.ownership_changed.connect(_on_capture_point_ownership_changed)
 		_capture_points.append(point)
+		if point.is_victory_point:
+			_victory_points.append(point)
+		else:
+			_resource_points.append(point)
 		add_child(point)
 		if is_instance_valid(economy_manager):
 			economy_manager.register_capture_point(point)
@@ -153,6 +168,8 @@ func _build_test_cover() -> void:
 		{"name": "SandbagWall_Center", "position": Vector3(0.0, 0.0, -15.0), "rotation": 0.0, "length": 13.0},
 		{"name": "SandbagWall_West", "position": Vector3(-42.0, 0.0, 20.0), "rotation": 0.45, "length": 10.0},
 		{"name": "SandbagWall_East", "position": Vector3(43.0, 0.0, -22.0), "rotation": -0.52, "length": 11.0},
+		{"name": "SandbagWall_NorthWest", "position": Vector3(-82.0, 0.0, -46.0), "rotation": -0.28, "length": 12.0},
+		{"name": "SandbagWall_SouthEast", "position": Vector3(84.0, 0.0, 48.0), "rotation": 0.32, "length": 12.0},
 	]
 	for data in cover_data:
 		var cover = COVER_OBJECT.new()
@@ -172,53 +189,67 @@ func _on_capture_point_ownership_changed(_point, old_owner: int, new_owner: int)
 
 func _update_objective_status() -> void:
 	if is_instance_valid(objective_status):
-		objective_status.text = "STRATÉGIAI PONTOK: %d / %d  ·  ELLÁTVA: %d\nEllátott: +2,0 · elszigetelt: +0,5 gáz/mp." % [_owned_point_count, _capture_points.size(), _supplied_point_count]
+		var owned_victory := 0
+		var owned_resources := 0
+		for point in _victory_points:
+			if point.owner_team_id == 0:
+				owned_victory += 1
+		for point in _resource_points:
+			if point.owner_team_id == 0:
+				owned_resources += 1
+		objective_status.text = "★ GYŐZELMI PONT: %d / 3   ·   NYERSANYAG: %d / %d\nCél: elsőként 50 győzelmi pont." % [owned_victory, owned_resources, _resource_points.size()]
 
 func _update_supply_network() -> void:
 	for point in _capture_points:
 		point.set_supplied(false)
-	# A kis tesztpályán B–E közvetlen EMBER-hátországi kapcsolatot kap.
-	# Csak a bal felső A pont igényli a B ponton át vezető ellátást.
-	for index in range(1, _capture_points.size()):
-		var point = _capture_points[index]
-		if point.owner_team_id == 0:
+	for point in _victory_points:
+		if point.owner_team_id >= 0:
 			point.set_supplied(true)
-	var point_a = _capture_points[0]
-	var point_b = _capture_points[1]
-	if point_a.owner_team_id == 0 and point_b.owner_team_id == 0 and point_b.is_supplied():
-		point_a.set_supplied(true)
-
-	# Az AI számára az ellenkező oldal tükrözött: A–D közvetlen, E a D-n át ellátott.
-	for index in range(0, _capture_points.size() - 1):
-		var point = _capture_points[index]
-		if point.owner_team_id == 1:
+	for point in _resource_points:
+		if point.owner_team_id == 0 and point.point_id == "G3":
 			point.set_supplied(true)
-	var point_d = _capture_points[_capture_points.size() - 2]
-	var point_e = _capture_points[_capture_points.size() - 1]
-	if point_e.owner_team_id == 1 and point_d.owner_team_id == 1 and point_d.is_supplied():
-		point_e.set_supplied(true)
+		elif point.owner_team_id == 1 and point.point_id == "G4":
+			point.set_supplied(true)
+	for _pass in range(_resource_points.size()):
+		var changed := false
+		for point in _resource_points:
+			if point.owner_team_id < 0 or point.is_supplied():
+				continue
+			for neighbour in _resource_points:
+				if neighbour.owner_team_id == point.owner_team_id and neighbour.is_supplied() and point.global_position.distance_to(neighbour.global_position) <= SUPPLY_LINK_DISTANCE:
+					point.set_supplied(true)
+					changed = true
+					break
+		if not changed:
+			break
 	_supplied_point_count = 0
-	for point in _capture_points:
+	for point in _resource_points:
 		if point.owner_team_id == 0 and point.is_supplied():
 			_supplied_point_count += 1
 	_update_supply_link_visuals()
 	_update_objective_status()
 
 func _build_supply_links() -> void:
-	for index in range(_capture_points.size() - 1):
-		var left_point = _capture_points[index]
-		var right_point = _capture_points[index + 1]
-		var link := MeshInstance3D.new()
-		link.name = "SupplyLink_%s_%s" % [left_point.point_id, right_point.point_id]
-		var mesh := BoxMesh.new()
-		var distance: float = left_point.global_position.distance_to(right_point.global_position)
-		mesh.size = Vector3(0.32, 0.04, distance)
-		link.mesh = mesh
-		link.position = (left_point.position + right_point.position) * 0.5 + Vector3.UP * 0.07
-		link.look_at(right_point.global_position + Vector3.UP * 0.07, Vector3.UP)
-		add_child(link)
-		_supply_links.append({"mesh": link, "left": left_point, "right": right_point})
+	for left_index in range(_resource_points.size()):
+		for right_index in range(left_index + 1, _resource_points.size()):
+			var left_point = _resource_points[left_index]
+			var right_point = _resource_points[right_index]
+			if left_point.global_position.distance_to(right_point.global_position) > SUPPLY_LINK_DISTANCE:
+				continue
+			_create_supply_link(left_point, right_point)
 	_update_supply_link_visuals()
+
+func _create_supply_link(left_point, right_point) -> void:
+	var link := MeshInstance3D.new()
+	link.name = "SupplyLink_%s_%s" % [left_point.point_id, right_point.point_id]
+	var mesh := BoxMesh.new()
+	var distance: float = left_point.global_position.distance_to(right_point.global_position)
+	mesh.size = Vector3(0.32, 0.04, distance)
+	link.mesh = mesh
+	add_child(link)
+	link.position = (left_point.position + right_point.position) * 0.5 + Vector3.UP * 0.07
+	link.look_at(right_point.global_position + Vector3.UP * 0.07, Vector3.UP)
+	_supply_links.append({"mesh": link, "left": left_point, "right": right_point})
 
 func _update_supply_link_visuals() -> void:
 	for data in _supply_links:
@@ -253,7 +284,7 @@ func _on_infantry_call_in_pressed() -> void:
 		_set_backline_status("Nincs elegendő gáz a behíváshoz.")
 		return
 	_reinforcement_wave += 1
-	var wave_z := 61.0 + float((_reinforcement_wave - 1) % 3) * 2.4
+	var wave_z := 94.0 + float((_reinforcement_wave - 1) % 3) * 2.4
 	for index in range(INFANTRY_SQUAD_SIZE):
 		var unit = RTS_UNIT.new()
 		unit.name = "EmberReinforcement_%02d_%02d" % [_reinforcement_wave, index + 1]
@@ -283,7 +314,7 @@ func _on_vehicle_call_in_pressed() -> void:
 	vehicle.is_vehicle = true
 	vehicle.collision_layer = 2
 	vehicle.collision_mask = 1 | 2
-	vehicle.position = Vector3(8.0, 0.0, 62.0)
+	vehicle.position = Vector3(8.0, 0.0, 96.0)
 	add_child(vehicle)
 	_set_backline_status("Könnyű páncélozott jármű megérkezett.")
 

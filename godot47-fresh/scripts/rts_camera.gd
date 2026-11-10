@@ -10,8 +10,8 @@ extends Node3D
 @export var max_zoom: float = 1.42
 @export var edge_scroll_enabled: bool = true
 @export var edge_scroll_margin: float = 64.0
-@export var map_limit_x: float = 86.0
-@export var map_limit_z: float = 66.0
+@export var map_limit_x: float = 126.0
+@export var map_limit_z: float = 96.0
 
 @onready var camera: Camera3D = $Camera3D
 

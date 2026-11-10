@@ -8,6 +8,7 @@ signal supply_changed(point, supplied: bool)
 @export var capture_seconds: float = 6.0
 @export var capture_radius: float = 5.5
 @export var gas_income_per_second: float = 2.0
+@export var is_victory_point: bool = false
 
 var owner_team_id: int = -1
 var supplied := false
@@ -24,6 +25,7 @@ const ENEMY_COLOR := Color(0.90, 0.18, 0.12)
 
 func _ready() -> void:
 	add_to_group("capture_points")
+	add_to_group("victory_points" if is_victory_point else "resource_points")
 	collision_layer = 4
 	collision_mask = 2
 	monitoring = true
@@ -163,8 +165,11 @@ func _update_visuals() -> void:
 		state_text = "ELLENSÉG · ELLÁTVA" if supplied else "ELLENSÉG · ELSZIGETELT"
 	if _capturing_team_id >= 0:
 		state_text = "FOGLALÁS %d%%" % roundi(ratio * 100.0)
-	var effective_income := gas_income_per_second if supplied or owner_team_id < 0 else gas_income_per_second * 0.25
-	_label.text = "%s PONT  +%.1f GÁZ/mp\n%s" % [point_id, effective_income, state_text]
+	if is_victory_point:
+		_label.text = "★  %s GYŐZELMI PONT  ★\n%s" % [point_id, state_text]
+	else:
+		var effective_income := gas_income_per_second if supplied or owner_team_id < 0 else gas_income_per_second * 0.25
+		_label.text = "%s NYERSANYAG  +%.1f GÁZ/mp\n%s" % [point_id, effective_income, state_text]
 	_label.modulate = display_color.lightened(0.25)
 	if owner_team_id >= 0 and not supplied:
 		_label.modulate.a = 0.55

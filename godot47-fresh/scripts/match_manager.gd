@@ -1,7 +1,7 @@
 class_name MatchManager
 extends Node
 
-@export var starting_victory_points: int = 250
+@export var target_victory_points: int = 50
 @export var tick_interval: float = 1.0
 
 var player_victory_points: int
@@ -15,8 +15,8 @@ var _match_over := false
 
 
 func _ready() -> void:
-	player_victory_points = starting_victory_points
-	enemy_victory_points = starting_victory_points
+	player_victory_points = 0
+	enemy_victory_points = 0
 	if is_instance_valid(result_panel):
 		result_panel.visible = false
 	_update_hud()
@@ -35,25 +35,23 @@ func _process(delta: float) -> void:
 func _apply_victory_point_tick() -> void:
 	var player_points := 0
 	var enemy_points := 0
-	for point in get_tree().get_nodes_in_group("capture_points"):
+	for point in get_tree().get_nodes_in_group("victory_points"):
 		if point.owner_team_id == 0:
 			player_points += 1
 		elif point.owner_team_id == 1:
 			enemy_points += 1
-	if player_points > enemy_points:
-		enemy_victory_points = maxi(0, enemy_victory_points - (player_points - enemy_points))
-	elif enemy_points > player_points:
-		player_victory_points = maxi(0, player_victory_points - (enemy_points - player_points))
+	player_victory_points = mini(target_victory_points, player_victory_points + player_points)
+	enemy_victory_points = mini(target_victory_points, enemy_victory_points + enemy_points)
 	_update_hud()
-	if player_victory_points <= 0:
-		_finish_match(false)
-	elif enemy_victory_points <= 0:
+	if player_victory_points >= target_victory_points:
 		_finish_match(true)
+	elif enemy_victory_points >= target_victory_points:
+		_finish_match(false)
 
 
 func _update_hud() -> void:
 	if is_instance_valid(victory_status):
-		victory_status.text = "EMBER  %03d     GYŐZELMI PONT     %03d  ELLENSÉG" % [player_victory_points, enemy_victory_points]
+		victory_status.text = "EMBER  %02d / %02d     ★     %02d / %02d  ELLENSÉG" % [player_victory_points, target_victory_points, enemy_victory_points, target_victory_points]
 
 
 func _finish_match(player_won: bool) -> void:

@@ -18,7 +18,9 @@
 | Keretes egységkijelölés | Bal gombos húzás, látható kijelölőkeret és Shift-hozzáadás elkészült |
 | Mozgási parancs | Jobb klikkes csoportos alakzat elkészült; futtatás ellenőrizendő |
 | Földhöz kötött RTS-kamera | Pályahatár, simítás és képernyőszéli görgetés elkészült |
-| Öt stratégiai pont | A–E pontok elhelyezve a tesztpályán |
+| Nagyobb hadszíntér | 270 × 210 méteres pálya, kibővített kamera- és útvonaltervezési határokkal |
+| Három csillagos célpont | V1–V3 kizárólag győzelmi pontot termel; nem ad gázt |
+| Hat nyersanyagpont | G1–G6 gázt termel és az utánpótlási hálózat része |
 | Időzített pontfoglalás | Körön belüli, 6 másodperces foglalás és vizuális állapot elkészült |
 | Gázalapú gazdaság | 100 kezdőgáz, pontonként +2 gáz/mp és élő HUD-kijelzés elkészült |
 | HÁTORSZÁG alapváltozat | 120 gázért 3 fős EMBER gyalogsági raj behívható az indulási területre |
@@ -36,16 +38,16 @@
 | AI erősítés | Az AI a saját gázkészletéből 120 gázért háromfős rajokat hív be |
 | Stabilabb akadálykerülés | Az egység 1,1 másodpercig megtartja a választott kerülési oldalt |
 | Elakadás-feloldás | 0,45 másodperces elakadás után az egység kényszerített oldalirányú kerülést végez |
-| Utánpótlási lánc | A–E pontlánc; EMBER ellátás E felől, AI ellátás A felől terjed |
+| Utánpótlási lánc | A saját hátország felőli nyersanyagpontokról a közeli, összefüggő saját pontokra terjed |
 | Elszigetelt terület | Kapcsolat nélküli pont csökkentett +0,5 gáz/mp bevételt és halvány jelzést kap |
 | Változó frontvonal | A pontok közti vonalak semleges, kék vagy vörös színnel mutatják az ellátott frontot |
 | Első katonai jármű | 260 gázért behívható könnyű páncélozott jármű, külön életerővel, sebességgel és fegyverrel |
 | Rácsalapú útvonaltervezés | A* útvonal készül a homokzsákfalak körül, helyi kerüléssel és elakadás-feloldással kiegészítve |
-| Tesztpálya hátországi kapcsolat | EMBER: B–E közvetlenül ellátott, A a B-n át; AI: A–D közvetlenül ellátott, E a D-n át |
+| Tesztpálya hátországi kapcsolat | EMBER a déli G3, az AI az északi G4 ponton keresztül kapcsolódik a nyersanyag-hálózathoz |
 | Fog of War – első réteg | Az ellenséges egységek csak saját látótávon és tiszta látóvonal mellett jelennek meg |
 | Felderítési távolság | Gyalogság 32 méter, könnyű jármű 42 méter |
-| Győzelmi pontok | Mindkét oldal 250 ponttal indul; a többségi területbirtoklás fogyasztja az ellenfél pontjait |
-| Mérkőzés vége | Nulla győzelmi pontnál győzelem vagy vereség kijelzés jelenik meg |
+| Győzelmi pontok | Mindkét oldal 0-ról indul; minden birtokolt csillagos pont másodpercenként 1 pontot ad |
+| Mérkőzés vége | Az első 50 összegyűjtött győzelmi pontnál győzelem vagy vereség jelenik meg |
 
 ## Rögzített tesztvisszajelzések – későbbi javítás
 
