@@ -30,6 +30,8 @@
 | Fedezéki védelem | Erős fedezékből, megfelelő irányból érkező találatok sebzése 50%-kal csökken |
 | Harci észlelés | 22 méteres teszt-lőtáv és fizikai látóvonal-ellenőrzés |
 | Akadálykerülés | Előre irányuló érzékelés és homokzsákfal melletti oldalirányú kerülés alapja elkészült |
+| Látható lövedékek | Kék és vörös világító lövedékek célkövetéssel és becsapódáskori sebzéssel |
+| Első ellenséges AI | A vörös raj önállóan kiválasztja és elfoglalja a hozzá legközelebbi stratégiai pontokat |
 
 ## Rögzített tesztvisszajelzések – későbbi javítás
 

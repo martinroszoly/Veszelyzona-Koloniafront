@@ -1,6 +1,8 @@
 class_name RTSUnit
 extends CharacterBody3D
 
+const UNIT_PROJECTILE := preload("res://scripts/projectile.gd")
+
 @export var team_id: int = 0
 @export var squad_id: String = ""
 @export var move_speed: float = 7.0
@@ -103,8 +105,17 @@ func _update_combat() -> void:
 	if direction.length_squared() > 0.01:
 		look_at(global_position + direction, Vector3.UP)
 	if _attack_timer <= 0.0:
-		_target.take_damage(attack_damage, global_position)
+		_fire_projectile(_target)
 		_attack_timer = attack_cooldown
+
+
+func _fire_projectile(projectile_target) -> void:
+	if not is_instance_valid(projectile_target):
+		return
+	var projectile = UNIT_PROJECTILE.new()
+	projectile.initialize(projectile_target, attack_damage, global_position, team_id)
+	projectile.position = global_position + Vector3.UP * 1.35 - global_basis.z * 0.55
+	get_tree().current_scene.add_child(projectile)
 
 
 func _find_nearest_enemy():

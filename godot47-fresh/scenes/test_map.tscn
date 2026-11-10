@@ -1,9 +1,10 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/test_map.gd" id="1_map"]
 [ext_resource type="Script" path="res://scripts/rts_camera.gd" id="2_camera"]
 [ext_resource type="Script" path="res://scripts/unit_command_controller.gd" id="3_controller"]
 [ext_resource type="Script" path="res://scripts/economy_manager.gd" id="4_economy"]
+[ext_resource type="Script" path="res://scripts/enemy_ai_controller.gd" id="5_enemy_ai"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMaterial_main"]
 sky_top_color = Color(0.15, 0.29, 0.39, 1)
@@ -46,6 +47,9 @@ script = ExtResource("3_controller")
 
 [node name="EconomyManager" type="Node" parent="."]
 script = ExtResource("4_economy")
+
+[node name="EnemyAIController" type="Node" parent="."]
+script = ExtResource("5_enemy_ai")
 
 [node name="Panel" type="PanelContainer" parent="HUD"]
 offset_left = 24.0

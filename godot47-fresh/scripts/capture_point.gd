@@ -21,6 +21,7 @@ const ENEMY_COLOR := Color(0.90, 0.18, 0.12)
 
 
 func _ready() -> void:
+	add_to_group("capture_points")
 	collision_layer = 4
 	collision_mask = 2
 	monitoring = true
