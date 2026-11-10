@@ -42,6 +42,10 @@
 | Első katonai jármű | 260 gázért behívható könnyű páncélozott jármű, külön életerővel, sebességgel és fegyverrel |
 | Rácsalapú útvonaltervezés | A* útvonal készül a homokzsákfalak körül, helyi kerüléssel és elakadás-feloldással kiegészítve |
 | Tesztpálya hátországi kapcsolat | EMBER: B–E közvetlenül ellátott, A a B-n át; AI: A–D közvetlenül ellátott, E a D-n át |
+| Fog of War – első réteg | Az ellenséges egységek csak saját látótávon és tiszta látóvonal mellett jelennek meg |
+| Felderítési távolság | Gyalogság 32 méter, könnyű jármű 42 méter |
+| Győzelmi pontok | Mindkét oldal 250 ponttal indul; a többségi területbirtoklás fogyasztja az ellenfél pontjait |
+| Mérkőzés vége | Nulla győzelmi pontnál győzelem vagy vereség kijelzés jelenik meg |
 
 ## Rögzített tesztvisszajelzések – későbbi javítás
 

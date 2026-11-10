@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/test_map.gd" id="1_map"]
 [ext_resource type="Script" path="res://scripts/rts_camera.gd" id="2_camera"]
@@ -6,6 +6,8 @@
 [ext_resource type="Script" path="res://scripts/economy_manager.gd" id="4_economy"]
 [ext_resource type="Script" path="res://scripts/enemy_ai_controller.gd" id="5_enemy_ai"]
 [ext_resource type="Script" path="res://scripts/pathfinding_manager.gd" id="6_pathfinding"]
+[ext_resource type="Script" path="res://scripts/visibility_manager.gd" id="7_visibility"]
+[ext_resource type="Script" path="res://scripts/match_manager.gd" id="8_match"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMaterial_main"]
 sky_top_color = Color(0.15, 0.29, 0.39, 1)
@@ -54,6 +56,12 @@ script = ExtResource("5_enemy_ai")
 
 [node name="PathfindingManager" type="Node" parent="."]
 script = ExtResource("6_pathfinding")
+
+[node name="VisibilityManager" type="Node" parent="."]
+script = ExtResource("7_visibility")
+
+[node name="MatchManager" type="Node" parent="."]
+script = ExtResource("8_match")
 
 [node name="Panel" type="PanelContainer" parent="HUD"]
 offset_left = 24.0
@@ -178,6 +186,52 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 16
 disabled = true
 text = "KÖNNYŰ PÁNCÉLOZOTT JÁRMŰ  ·  260 GÁZ"
+
+[node name="MatchPanel" type="PanelContainer" parent="HUD"]
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -250.0
+offset_top = 18.0
+offset_right = 250.0
+offset_bottom = 64.0
+
+[node name="Margin" type="MarginContainer" parent="HUD/MatchPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 8
+
+[node name="VictoryStatus" type="Label" parent="HUD/MatchPanel/Margin"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.91, 0.86, 1)
+theme_override_font_sizes/font_size = 17
+text = "EMBER  250     GYŐZELMI PONT     250  ELLENSÉG"
+horizontal_alignment = 1
+
+[node name="ResultPanel" type="PanelContainer" parent="HUD"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -230.0
+offset_top = -82.0
+offset_right = 230.0
+offset_bottom = 82.0
+
+[node name="Margin" type="MarginContainer" parent="HUD/ResultPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="ResultLabel" type="Label" parent="HUD/ResultPanel/Margin"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+text = "GYŐZELEM"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="BacklineStatus" type="Label" parent="HUD/BacklinePanel/Margin/BacklineContent"]
 layout_mode = 2

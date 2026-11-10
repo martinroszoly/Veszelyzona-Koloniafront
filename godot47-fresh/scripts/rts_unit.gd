@@ -13,6 +13,7 @@ const UNIT_PROJECTILE := preload("res://scripts/projectile.gd")
 @export var attack_damage: float = 9.0
 @export var attack_cooldown: float = 1.15
 @export var is_vehicle: bool = false
+@export var sight_range: float = 32.0
 
 var _destination := Vector3.ZERO
 var _has_destination := false
@@ -46,6 +47,7 @@ func _ready() -> void:
 		attack_range = 26.0
 		attack_damage = 32.0
 		attack_cooldown = 2.3
+		sight_range = 42.0
 	_build_visuals()
 	if is_vehicle:
 		_convert_visuals_to_vehicle()
