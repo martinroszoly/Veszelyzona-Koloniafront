@@ -479,7 +479,7 @@ func take_damage(amount: float, attacker_position: Vector3) -> void:
 	var final_damage := amount
 	# Incoming fire can make infantry duck briefly, especially while occupying cover.
 	if _crouch_cooldown <= 0.0 and randf() < (0.65 if _cover_strength >= 0 else 0.35):
-		_crouch_time = randf_range(0.8, 1.7)
+		_crouch_time = randf_range(0.8, 5.0)
 		_crouch_cooldown = randf_range(1.4, 2.8)
 	if _cover_strength >= 0:
 		var incoming_direction := attacker_position - global_position
@@ -508,6 +508,10 @@ func _update_combat() -> bool:
 		_target = _find_nearest_enemy()
 	if not is_instance_valid(_target):
 		return false
+	# Keep the soldier's head down while crouching in cover; resume fire only
+	# after the crouch timer expires and the model stands up again.
+	if _cover_strength >= 0 and _crouch_time > 0.0:
+		return true
 	var direction: Vector3 = _target.global_position - global_position
 	direction.y = 0.0
 	if direction.length_squared() > 0.01:
