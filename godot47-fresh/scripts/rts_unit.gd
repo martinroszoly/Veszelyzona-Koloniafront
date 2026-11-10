@@ -42,6 +42,8 @@ var _retreating := false
 var _hover_time := 0.0
 var _animation_time := 0.0
 var _fire_pose_time := 0.0
+var _crouch_time := 0.0
+var _crouch_cooldown := 0.0
 var _faction_model: Node3D
 var _left_leg_pivot: Node3D
 var _right_leg_pivot: Node3D
@@ -282,6 +284,10 @@ func _update_infantry_animation(delta: float) -> void:
 	if unit_type != "infantry" or not is_instance_valid(_faction_model):
 		return
 	var running := _has_destination and velocity.length() > 0.25
+	_crouch_time = maxf(0.0, _crouch_time - delta)
+	_crouch_cooldown = maxf(0.0, _crouch_cooldown - delta)
+	var crouch_offset := -0.22 if _crouch_time > 0.0 and not running else 0.0
+	_faction_model.position.y = move_toward(_faction_model.position.y, crouch_offset, delta * 3.5)
 	if is_instance_valid(_model_animation_player):
 		var aiming := is_instance_valid(_target)
 		if aiming and running:
@@ -313,7 +319,7 @@ func _update_infantry_animation(delta: float) -> void:
 		if is_instance_valid(_right_leg_pivot): _right_leg_pivot.rotation.x = move_toward(_right_leg_pivot.rotation.x, 0.0, delta * 5.0)
 		if is_instance_valid(_left_arm_pivot): _left_arm_pivot.rotation.x = move_toward(_left_arm_pivot.rotation.x, 0.0, delta * 5.0)
 		if is_instance_valid(_right_arm_pivot): _right_arm_pivot.rotation.x = move_toward(_right_arm_pivot.rotation.x, 0.0, delta * 5.0)
-	_faction_model.position.y = move_toward(_faction_model.position.y, bob, delta * 1.5)
+	_faction_model.position.y = move_toward(_faction_model.position.y, bob + crouch_offset, delta * 3.5)
 	var firing_pitch := -0.16 if _fire_pose_time > 0.0 else 0.0
 	_faction_model.rotation.x = move_toward(_faction_model.rotation.x, firing_pitch, delta * 4.8)
 	_faction_model.rotation.z = move_toward(_faction_model.rotation.z, roll, delta * 5.5)
@@ -471,6 +477,10 @@ func _update_base_healing(delta: float) -> void:
 
 func take_damage(amount: float, attacker_position: Vector3) -> void:
 	var final_damage := amount
+	# Incoming fire can make infantry duck briefly, especially while occupying cover.
+	if _crouch_cooldown <= 0.0 and randf() < (0.65 if _cover_strength >= 0 else 0.35):
+		_crouch_time = randf_range(0.8, 1.7)
+		_crouch_cooldown = randf_range(1.4, 2.8)
 	if _cover_strength >= 0:
 		var incoming_direction := attacker_position - global_position
 		incoming_direction.y = 0.0
@@ -478,6 +488,8 @@ func take_damage(amount: float, attacker_position: Vector3) -> void:
 		forward.y = 0.0
 		if incoming_direction.length_squared() > 0.01 and forward.normalized().dot(incoming_direction.normalized()) > 0.15:
 			final_damage *= 0.5 if _cover_strength == 1 else 0.75
+	if _crouch_time > 0.0:
+		final_damage *= 0.82
 	_health = maxf(0.0, _health - final_damage)
 	_update_health_bar()
 	if _health <= 0.0:
