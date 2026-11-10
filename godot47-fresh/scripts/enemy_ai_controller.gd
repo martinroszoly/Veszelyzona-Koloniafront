@@ -44,6 +44,16 @@ func _issue_squad_orders() -> void:
 		_prune_invalid_members(members)
 		if members.is_empty():
 			continue
+		var average_health := 0.0
+		for member in members:
+			average_health += member.get_health_ratio()
+		average_health /= float(members.size())
+		if average_health < 0.35:
+			for member in members:
+				member.retreat_to_home()
+			continue
+		if members[0].is_retreating():
+			continue
 		var squad_center: Vector3 = _get_squad_center(members)
 		var objective = _find_nearest_uncaptured_point(squad_center)
 		if objective == null:

@@ -14,6 +14,8 @@ const UNIT_PROJECTILE := preload("res://scripts/projectile.gd")
 @export var attack_cooldown: float = 1.15
 @export var is_vehicle: bool = false
 @export var sight_range: float = 32.0
+@export var retreat_speed_multiplier: float = 1.65
+@export var base_healing_per_second: float = 14.0
 
 var _destination := Vector3.ZERO
 var _has_destination := false
@@ -34,6 +36,7 @@ var _avoidance_direction := Vector3.ZERO
 var _avoidance_time := 0.0
 var _stuck_time := 0.0
 var _waypoints: Array[Vector3] = []
+var _retreating := false
 
 
 func _ready() -> void:
@@ -57,6 +60,7 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	_update_base_healing(delta)
 	_attack_timer = maxf(0.0, _attack_timer - delta)
 	_avoidance_time = maxf(0.0, _avoidance_time - delta)
 	if _update_combat():
@@ -86,8 +90,9 @@ func _physics_process(delta: float) -> void:
 		return
 
 	var direction := _apply_obstacle_avoidance(offset.normalized())
-	velocity.x = move_toward(velocity.x, direction.x * move_speed, acceleration * delta)
-	velocity.z = move_toward(velocity.z, direction.z * move_speed, acceleration * delta)
+	var active_speed := move_speed * retreat_speed_multiplier if _retreating else move_speed
+	velocity.x = move_toward(velocity.x, direction.x * active_speed, acceleration * delta)
+	velocity.z = move_toward(velocity.z, direction.z * active_speed, acceleration * delta)
 	look_at(global_position + direction, Vector3.UP)
 	var position_before_move := global_position
 	move_and_slide()
@@ -95,6 +100,12 @@ func _physics_process(delta: float) -> void:
 
 
 func move_to(world_position: Vector3, final_facing: Vector3 = Vector3.ZERO, cover_strength: int = -1) -> void:
+	if _retreating:
+		return
+	_set_move_destination(world_position, final_facing, cover_strength)
+
+
+func _set_move_destination(world_position: Vector3, final_facing: Vector3 = Vector3.ZERO, cover_strength: int = -1) -> void:
 	_waypoints.clear()
 	var pathfinders := get_tree().get_nodes_in_group("pathfinding_manager")
 	if not pathfinders.is_empty():
@@ -114,6 +125,31 @@ func move_to(world_position: Vector3, final_facing: Vector3 = Vector3.ZERO, cove
 	_cover_strength = -1
 	_pending_cover_strength = cover_strength
 	_has_destination = true
+
+
+func retreat_to_home() -> void:
+	_target = null
+	_cover_strength = -1
+	_pending_cover_strength = -1
+	_retreating = true
+	var home_position := Vector3(0.0, global_position.y, 96.0 if team_id == 0 else -96.0)
+	_set_move_destination(home_position)
+
+
+func is_retreating() -> bool:
+	return _retreating
+
+
+func _update_base_healing(delta: float) -> void:
+	var home_z := 96.0 if team_id == 0 else -96.0
+	var distance_to_home := Vector2(global_position.x, global_position.z).distance_to(Vector2(0.0, home_z))
+	if distance_to_home > 14.0:
+		return
+	if _health < max_health:
+		_health = minf(max_health, _health + base_healing_per_second * delta)
+		_update_health_bar()
+	if _retreating and _health >= max_health * 0.85:
+		_retreating = false
 
 
 func take_damage(amount: float, attacker_position: Vector3) -> void:
@@ -136,6 +172,9 @@ func get_health_ratio() -> float:
 
 
 func _update_combat() -> bool:
+	if _retreating:
+		_target = null
+		return false
 	if not is_instance_valid(_target) or _target.team_id == team_id or global_position.distance_to(_target.global_position) > attack_range:
 		_target = _find_nearest_enemy()
 	if not is_instance_valid(_target):

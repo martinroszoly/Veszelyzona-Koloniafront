@@ -53,6 +53,9 @@
 | Gyártási sor | A gyalogság 8, a könnyű jármű 14 másodperc alatt készül el; a folyamat a HÁTORSZÁG panelen látható |
 | Létszámkorlát | Mindkét oldal 30 pontos keretet használ; katona 1, könnyű jármű 4 pontot foglal |
 | AI-gyártás | Az ellenfél is kifizeti, kivárja és csak szabad létszámkeret esetén kapja meg az erősítést |
+| Raj-visszavonulás | `R` parancsra a kijelölt raj megszakítja a harcot és 65%-os sebességbónusszal a saját hátországába fut |
+| Hátországi gyógyulás | A bázis 14 méteres körzetében másodpercenként 14 életerő töltődik; a visszavonult raj 85%-nál válik újra bevethetővé |
+| AI önvédelem | A 35% alatti átlagos életerejű ellenséges raj automatikusan visszavonul és regenerálódik |
 
 ## Rögzített tesztvisszajelzések – későbbi javítás
 

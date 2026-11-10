@@ -80,7 +80,7 @@ theme_override_constants/margin_bottom = 12
 layout_mode = 2
 theme_override_colors/font_color = Color(0.87, 0.91, 0.88, 1)
 theme_override_font_sizes/font_size = 16
-text = "VESZÉLYZÓNA  /  KOLÓNIAFRONT\nWASD/képernyőszél: kamera    Középső egér: forgatás    Görgő: nagyítás\nBal klikk/húzás: kijelölés    Jobb klikk: mozgás    Jobb húzás: érkezési irány"
+text = "VESZÉLYZÓNA  /  KOLÓNIAFRONT\nWASD/képernyőszél: kamera    Középső egér: forgatás    Görgő: nagyítás\nBal klikk/húzás: kijelölés    Jobb klikk: mozgás    Jobb húzás: érkezési irány    R: visszavonulás"
 
 [node name="StatusPanel" type="PanelContainer" parent="HUD"]
 offset_left = 24.0

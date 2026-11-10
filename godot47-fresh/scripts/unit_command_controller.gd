@@ -31,7 +31,9 @@ func _ready() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton:
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_R:
+		_retreat_selected_squads()
+	elif event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
 				_begin_selection_drag(event.position)
@@ -50,6 +52,17 @@ func _unhandled_input(event: InputEvent) -> void:
 			_update_facing_command(event.position)
 		else:
 			_update_cover_hover(event.position)
+
+
+func _retreat_selected_squads() -> void:
+	_prune_selected_units()
+	if _selected_units.is_empty():
+		_update_status("Nincs kijelölt raj a visszavonuláshoz.")
+		return
+	var squad_count := _selected_squad_count()
+	for unit in _selected_units:
+		unit.retreat_to_home()
+	_update_status("VISSZAVONULÁS: %d raj a hátországba tart és ott gyógyul." % squad_count)
 
 
 func _update_cover_hover(screen_position: Vector2) -> void:
