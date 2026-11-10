@@ -17,6 +17,7 @@
 | Egységkijelölés | Bal klikk és Shift+bal klikk elkészült; futtatás ellenőrizendő |
 | Keretes egységkijelölés | Bal gombos húzás, látható kijelölőkeret és Shift-hozzáadás elkészült |
 | Mozgási parancs | Jobb klikkes csoportos alakzat elkészült; futtatás ellenőrizendő |
+| Földhöz kötött RTS-kamera | Pályahatár, simítás és képernyőszéli görgetés elkészült |
 
 ## A környezetben végzett ellenőrzés
 
