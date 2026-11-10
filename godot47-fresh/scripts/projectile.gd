@@ -48,11 +48,11 @@ func _process(delta: float) -> void:
 		queue_free()
 		return
 	var target_position: Vector3 = target.global_position + Vector3.UP * 1.15
-	var offset := target_position - global_position
+	var offset: Vector3 = target_position - global_position
 	if offset.length() <= hit_distance:
 		target.take_damage(damage, attacker_position)
 		queue_free()
 		return
-	var direction := offset.normalized()
+	var direction: Vector3 = offset.normalized()
 	global_position += direction * minf(speed * delta, offset.length())
 	look_at(global_position + direction, Vector3.UP)

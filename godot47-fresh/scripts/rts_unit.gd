@@ -100,7 +100,7 @@ func _update_combat() -> void:
 		_target = _find_nearest_enemy()
 	if not is_instance_valid(_target):
 		return
-	var direction := _target.global_position - global_position
+	var direction: Vector3 = _target.global_position - global_position
 	direction.y = 0.0
 	if direction.length_squared() > 0.01:
 		look_at(global_position + direction, Vector3.UP)
@@ -125,7 +125,7 @@ func _find_nearest_enemy():
 		var candidate = node
 		if candidate == null or candidate == self or candidate.team_id == team_id:
 			continue
-		var distance := global_position.distance_to(candidate.global_position)
+		var distance: float = global_position.distance_to(candidate.global_position)
 		if distance <= closest_distance and _has_line_of_sight(candidate):
 			closest_distance = distance
 			closest = candidate

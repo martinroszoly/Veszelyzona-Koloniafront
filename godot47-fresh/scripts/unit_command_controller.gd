@@ -190,9 +190,9 @@ func _issue_move_command_at(center: Vector3, facing_direction: Vector3) -> void:
 		_update_status("A kijelölt rajnak nem maradt bevethető katonája.")
 		return
 	_show_move_command_marker(center)
-	var cover := _find_nearby_cover(center)
+	var cover = _find_nearby_cover(center)
 	if cover != null:
-		var slots := cover.get_cover_slots(_selected_units.size(), center)
+		var slots: Array = cover.get_cover_slots(_selected_units.size(), center)
 		var cover_facing := facing_direction
 		if cover_facing.length_squared() < 0.01:
 			cover_facing = cover.get_cover_facing(center)
@@ -218,7 +218,7 @@ func _find_nearby_cover(world_position: Vector3):
 		var cover = node
 		if cover == null:
 			continue
-		var distance := cover.distance_to_cover(world_position)
+		var distance: float = cover.distance_to_cover(world_position)
 		if distance <= closest_distance and distance <= cover.snap_distance:
 			closest_distance = distance
 			closest_cover = cover
@@ -237,7 +237,7 @@ func _select_squad(squad_id: String) -> void:
 
 func _deselect_squad(squad_id: String) -> void:
 	for index in range(_selected_units.size() - 1, -1, -1):
-		var unit := _selected_units[index]
+		var unit = _selected_units[index]
 		if is_instance_valid(unit) and unit.squad_id == squad_id:
 			unit.set_selected(false)
 			_selected_units.remove_at(index)

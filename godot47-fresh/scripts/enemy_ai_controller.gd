@@ -28,7 +28,7 @@ func _issue_squad_orders() -> void:
 		_prune_invalid_members(members)
 		if members.is_empty():
 			continue
-		var squad_center := _get_squad_center(members)
+		var squad_center: Vector3 = _get_squad_center(members)
 		var objective = _find_nearest_uncaptured_point(squad_center)
 		if objective == null:
 			continue
@@ -47,7 +47,7 @@ func _find_nearest_uncaptured_point(from_position: Vector3):
 	for point in get_tree().get_nodes_in_group("capture_points"):
 		if point.owner_team_id == team_id:
 			continue
-		var distance := from_position.distance_to(point.global_position)
+		var distance: float = from_position.distance_to(point.global_position)
 		if distance < closest_distance:
 			closest_distance = distance
 			closest = point
