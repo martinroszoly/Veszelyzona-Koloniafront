@@ -14,6 +14,11 @@ const TREE_GROUPS := [
 var _rng := RandomNumberGenerator.new()
 
 const RTS_UNIT := preload("res://scripts/rts_unit.gd")
+const CAPTURE_POINT := preload("res://scripts/capture_point.gd")
+
+var _capture_points: Array[CapturePoint] = []
+var _owned_point_count := 0
+@onready var objective_status: Label = get_node_or_null("HUD/ObjectivePanel/Margin/ObjectiveStatus")
 
 func _ready() -> void:
 	_rng.seed = 4702
@@ -22,7 +27,9 @@ func _ready() -> void:
 	_build_forests()
 	_build_rocks()
 	_build_grass_patches()
+	_build_capture_points()
 	_build_player_squad()
+	_update_objective_status()
 
 func _build_ground() -> void:
 	var ground := MeshInstance3D.new()
@@ -78,6 +85,34 @@ func _build_player_squad() -> void:
 		unit.collision_mask = 1 | 2
 		unit.position = squad_positions[index]
 		add_child(unit)
+
+func _build_capture_points() -> void:
+	var point_data := [
+		{"id": "A", "position": Vector3(-58.0, 0.0, -42.0)},
+		{"id": "B", "position": Vector3(-34.0, 0.0, 4.0)},
+		{"id": "C", "position": Vector3(0.0, 0.0, 4.0)},
+		{"id": "D", "position": Vector3(34.0, 0.0, 4.0)},
+		{"id": "E", "position": Vector3(58.0, 0.0, 42.0)},
+	]
+	for data in point_data:
+		var point := CAPTURE_POINT.new() as CapturePoint
+		point.name = "CapturePoint_%s" % data.id
+		point.point_id = data.id
+		point.position = data.position
+		point.ownership_changed.connect(_on_capture_point_ownership_changed)
+		_capture_points.append(point)
+		add_child(point)
+
+func _on_capture_point_ownership_changed(_point: CapturePoint, old_owner: int, new_owner: int) -> void:
+	if old_owner == 0:
+		_owned_point_count -= 1
+	if new_owner == 0:
+		_owned_point_count += 1
+	_update_objective_status()
+
+func _update_objective_status() -> void:
+	if is_instance_valid(objective_status):
+		objective_status.text = "STRATÉGIAI PONTOK: %d / %d\nÁllj a körön belül 6 másodpercig a foglaláshoz." % [_owned_point_count, _capture_points.size()]
 
 func _build_road_network() -> void:
 	_add_road(Vector3(0, 0.035, 0), Vector2(7.0, MAP_SIZE.y * 0.78), 0.0)

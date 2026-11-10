@@ -18,6 +18,8 @@
 | Keretes egységkijelölés | Bal gombos húzás, látható kijelölőkeret és Shift-hozzáadás elkészült |
 | Mozgási parancs | Jobb klikkes csoportos alakzat elkészült; futtatás ellenőrizendő |
 | Földhöz kötött RTS-kamera | Pályahatár, simítás és képernyőszéli görgetés elkészült |
+| Öt stratégiai pont | A–E pontok elhelyezve a tesztpályán |
+| Időzített pontfoglalás | Körön belüli, 6 másodperces foglalás és vizuális állapot elkészült |
 
 ## A környezetben végzett ellenőrzés
 

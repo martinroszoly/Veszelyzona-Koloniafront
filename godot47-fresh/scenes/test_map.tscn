@@ -80,3 +80,25 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.55, 0.95, 0.64, 1)
 theme_override_font_sizes/font_size = 15
 text = "Egységvezérlés betöltése..."
+
+[node name="ObjectivePanel" type="PanelContainer" parent="HUD"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -410.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = 98.0
+
+[node name="Margin" type="MarginContainer" parent="HUD/ObjectivePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 10
+
+[node name="ObjectiveStatus" type="Label" parent="HUD/ObjectivePanel/Margin"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.83, 0.90, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "STRATÉGIAI PONTOK: 0 / 5"
+horizontal_alignment = 1
