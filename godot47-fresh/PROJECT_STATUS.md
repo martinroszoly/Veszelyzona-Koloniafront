@@ -32,6 +32,10 @@
 | Akadálykerülés | Előre irányuló érzékelés és homokzsákfal melletti oldalirányú kerülés alapja elkészült |
 | Látható lövedékek | Kék és vörös világító lövedékek célkövetéssel és becsapódáskori sebzéssel |
 | Első ellenséges AI | A vörös raj önállóan kiválasztja és elfoglalja a hozzá legközelebbi stratégiai pontokat |
+| AI harci prioritás | Lőtávon belüli ellenfélnél megáll, céloz és visszalő, majd folytatja a korábbi útját |
+| AI erősítés | Az AI a saját gázkészletéből 120 gázért háromfős rajokat hív be |
+| Stabilabb akadálykerülés | Az egység 1,1 másodpercig megtartja a választott kerülési oldalt |
+| Elakadás-feloldás | 0,45 másodperces elakadás után az egység kényszerített oldalirányú kerülést végez |
 
 ## Rögzített tesztvisszajelzések – későbbi javítás
 

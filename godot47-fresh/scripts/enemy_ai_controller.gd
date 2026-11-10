@@ -1,10 +1,16 @@
 extends Node
 
+const RTS_UNIT := preload("res://scripts/rts_unit.gd")
+const REINFORCEMENT_COST := 120.0
+const REINFORCEMENT_SIZE := 3
+
 @export var team_id: int = 1
 @export var decision_interval: float = 3.0
 @export var formation_spacing: float = 2.0
 
 var _decision_timer := 0.7
+var _reinforcement_wave := 0
+@onready var economy_manager: Node = get_node_or_null("../EconomyManager")
 
 
 func _physics_process(delta: float) -> void:
@@ -12,6 +18,7 @@ func _physics_process(delta: float) -> void:
 	if _decision_timer > 0.0:
 		return
 	_decision_timer = decision_interval
+	_try_call_in_reinforcements()
 	_issue_squad_orders()
 
 
@@ -65,3 +72,20 @@ func _prune_invalid_members(members: Array) -> void:
 	for index in range(members.size() - 1, -1, -1):
 		if not is_instance_valid(members[index]):
 			members.remove_at(index)
+
+
+func _try_call_in_reinforcements() -> void:
+	if not is_instance_valid(economy_manager):
+		return
+	if not economy_manager.spend_gas(team_id, REINFORCEMENT_COST):
+		return
+	_reinforcement_wave += 1
+	for index in range(REINFORCEMENT_SIZE):
+		var unit = RTS_UNIT.new()
+		unit.name = "XenonAIReinforcement_%02d_%02d" % [_reinforcement_wave, index + 1]
+		unit.team_id = team_id
+		unit.squad_id = "xenon_ai_erosites_%02d" % _reinforcement_wave
+		unit.collision_layer = 2
+		unit.collision_mask = 1 | 2
+		unit.position = Vector3(-2.4 + float(index) * 2.4, 0.0, -62.0)
+		get_tree().current_scene.add_child(unit)

@@ -24,6 +24,9 @@ var _health := 100.0
 var _attack_timer := 0.0
 var _target = null
 var _health_fill: MeshInstance3D
+var _avoidance_direction := Vector3.ZERO
+var _avoidance_time := 0.0
+var _stuck_time := 0.0
 
 
 func _ready() -> void:
@@ -38,11 +41,16 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	_attack_timer = maxf(0.0, _attack_timer - delta)
+	_avoidance_time = maxf(0.0, _avoidance_time - delta)
+	if _update_combat():
+		velocity.x = move_toward(velocity.x, 0.0, acceleration * delta)
+		velocity.z = move_toward(velocity.z, 0.0, acceleration * delta)
+		move_and_slide()
+		return
 	if not _has_destination:
 		velocity.x = move_toward(velocity.x, 0.0, acceleration * delta)
 		velocity.z = move_toward(velocity.z, 0.0, acceleration * delta)
 		move_and_slide()
-		_update_combat()
 		return
 
 	var offset := _destination - global_position
@@ -61,7 +69,9 @@ func _physics_process(delta: float) -> void:
 	velocity.x = move_toward(velocity.x, direction.x * move_speed, acceleration * delta)
 	velocity.z = move_toward(velocity.z, direction.z * move_speed, acceleration * delta)
 	look_at(global_position + direction, Vector3.UP)
+	var position_before_move := global_position
 	move_and_slide()
+	_update_stuck_recovery(delta, position_before_move, offset.normalized())
 
 
 func move_to(world_position: Vector3, final_facing: Vector3 = Vector3.ZERO, cover_strength: int = -1) -> void:
@@ -95,11 +105,11 @@ func get_health_ratio() -> float:
 	return clampf(_health / max_health, 0.0, 1.0)
 
 
-func _update_combat() -> void:
+func _update_combat() -> bool:
 	if not is_instance_valid(_target) or _target.team_id == team_id or global_position.distance_to(_target.global_position) > attack_range:
 		_target = _find_nearest_enemy()
 	if not is_instance_valid(_target):
-		return
+		return false
 	var direction: Vector3 = _target.global_position - global_position
 	direction.y = 0.0
 	if direction.length_squared() > 0.01:
@@ -107,6 +117,7 @@ func _update_combat() -> void:
 	if _attack_timer <= 0.0:
 		_fire_projectile(_target)
 		_attack_timer = attack_cooldown
+	return true
 
 
 func _fire_projectile(projectile_target) -> void:
@@ -141,6 +152,8 @@ func _has_line_of_sight(candidate) -> bool:
 
 
 func _apply_obstacle_avoidance(desired_direction: Vector3) -> Vector3:
+	if _avoidance_time > 0.0 and _avoidance_direction.length_squared() > 0.01:
+		return (_avoidance_direction * 0.88 + desired_direction * 0.12).normalized()
 	var origin := global_position + Vector3.UP * 0.65
 	var target := origin + desired_direction * 2.4
 	var query := PhysicsRayQueryParameters3D.create(origin, target, 1)
@@ -159,7 +172,23 @@ func _apply_obstacle_avoidance(desired_direction: Vector3) -> Vector3:
 		tangent = -tangent
 	elif absf(tangent.dot(destination_offset)) < 0.05 and get_instance_id() % 2 == 0:
 		tangent = -tangent
+	_avoidance_direction = tangent
+	_avoidance_time = 1.1
 	return (tangent * 0.92 + desired_direction * 0.08).normalized()
+
+
+func _update_stuck_recovery(delta: float, position_before_move: Vector3, desired_direction: Vector3) -> void:
+	var moved_distance := global_position.distance_to(position_before_move)
+	if moved_distance > 0.015:
+		_stuck_time = 0.0
+		return
+	_stuck_time += delta
+	if _stuck_time < 0.45:
+		return
+	var side := 1.0 if get_instance_id() % 2 == 0 else -1.0
+	_avoidance_direction = desired_direction.rotated(Vector3.UP, side * PI * 0.5).normalized()
+	_avoidance_time = 1.6
+	_stuck_time = 0.0
 
 
 func set_selected(value: bool) -> void:
