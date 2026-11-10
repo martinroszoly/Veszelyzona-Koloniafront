@@ -121,11 +121,11 @@ func _apply_external_faction_model() -> bool:
 	add_child(model)
 	_faction_model = model as Node3D
 	_apply_faction_material_style(_faction_model)
-	if unit_type == "infantry" and faction_id == "ember":
+	if unit_type == "infantry":
 		# The imported character is authored at a human scale. Keep it comparable
 		# to vehicles while preserving the original rig and skinning.
 		_faction_model.scale = Vector3.ONE * 0.95
-		# BAMEN's source character faces +Z; RTSUnit uses -Z as forward.
+		# Uploaded soldier and alien assets face +Z; RTSUnit uses -Z as forward.
 		_faction_model.rotation.y = PI
 	_cache_animation_nodes()
 	if unit_type == "infantry":
@@ -218,9 +218,18 @@ func _attach_faction_rifle() -> void:
 	var skeleton := _find_skeleton(_faction_model)
 	if not is_instance_valid(skeleton):
 		return
+	var hand_bone := ""
+	for bone_index in range(skeleton.get_bone_count()):
+		var bone_name := skeleton.get_bone_name(bone_index)
+		var normalized := bone_name.to_lower().replace(":", "").replace("_", "")
+		if normalized.contains("righthand") or normalized.contains("handr") or normalized.contains("handrgt"):
+			hand_bone = bone_name
+			break
+	if hand_bone.is_empty():
+		return
 	var hand := BoneAttachment3D.new()
 	hand.name = "RifleHandMount"
-	hand.bone_name = "mixamorig:RightHand"
+	hand.bone_name = hand_bone
 	skeleton.add_child(hand)
 	var rifle := Node3D.new()
 	rifle.name = "FactionRifle"
@@ -407,7 +416,10 @@ func _physics_process(delta: float) -> void:
 	var active_speed := move_speed * retreat_speed_multiplier if _retreating else move_speed
 	velocity.x = move_toward(velocity.x, direction.x * active_speed, acceleration * delta)
 	velocity.z = move_toward(velocity.z, direction.z * active_speed, acceleration * delta)
-	look_at(global_position + direction, Vector3.UP)
+	var desired_yaw := atan2(-direction.x, -direction.z)
+	rotation.y = lerp_angle(rotation.y, desired_yaw, minf(1.0, delta * 12.0))
+	rotation.x = 0.0
+	rotation.z = 0.0
 	var position_before_move := global_position
 	move_and_slide()
 	_update_stuck_recovery(delta, position_before_move, offset.normalized())
@@ -515,7 +527,8 @@ func _update_combat() -> bool:
 	var direction: Vector3 = _target.global_position - global_position
 	direction.y = 0.0
 	if direction.length_squared() > 0.01:
-		look_at(global_position + direction, Vector3.UP)
+		var desired_yaw := atan2(-direction.x, -direction.z)
+		rotation.y = lerp_angle(rotation.y, desired_yaw, 0.22)
 	if _attack_timer <= 0.0:
 		_fire_projectile(_target)
 		_attack_timer = attack_cooldown
