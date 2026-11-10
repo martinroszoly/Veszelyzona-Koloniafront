@@ -56,8 +56,8 @@
 | Raj-visszavonulás | `R` parancsra a kijelölt raj megszakítja a harcot és 65%-os sebességbónusszal a saját hátországába fut |
 | Hátországi gyógyulás | A bázis 14 méteres körzetében másodpercenként 14 életerő töltődik; a visszavonult raj 85%-nál válik újra bevethetővé |
 | AI önvédelem | A 35% alatti átlagos életerejű ellenséges raj automatikusan visszavonul és regenerálódik |
-| EMBER/XENON gyalogsági külső | A küldött látványterv alapján kék, felszereléses emberi páncélzat és vörös, tüskés-organikus XENON sziluett |
-| Két könnyű jármű külső | EMBER lánctalpas, szögletes szállító; XENON vörös, organikus páncéltest a küldött terv alapján |
+| EMBER/XENON gyalogsági külső | Külön Blenderben épített és GLB-be exportált modellek: kék felszereléses emberi páncélzat, illetve vörös tüskés-organikus XENON test |
+| Két könnyű jármű külső | Külön GLB assetek: részletesebb EMBER lánctalpas szállító és többvégtagú, organikus XENON páncéltest |
 | Teljes 5–5 egységsor | Gyalogság, könnyű páncélozott jármű, tank, légi támogató egység és csapásmérő vadászgép mindkét oldalon |
 | Új egységek állapota | A tank, helikopter és vadászgép működő, külön statisztikájú graybox prototípus; végleges látvány később készül |
 

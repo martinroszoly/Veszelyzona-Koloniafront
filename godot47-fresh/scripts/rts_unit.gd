@@ -76,15 +76,42 @@ func _ready() -> void:
 		attack_cooldown = 2.0
 		sight_range = 56.0
 	_build_visuals()
+	var has_external_model := _apply_external_faction_model()
 	if unit_type == "vehicle":
-		_convert_visuals_to_vehicle()
+		if not has_external_model:
+			_convert_visuals_to_vehicle()
 	elif unit_type != "infantry":
 		_convert_visuals_to_graybox_unit()
-	else:
+	elif not has_external_model:
 		_decorate_infantry()
 	_health = max_health
 	_update_health_bar()
 	_destination = global_position
+
+
+func _apply_external_faction_model() -> bool:
+	if unit_type != "infantry" and unit_type != "vehicle":
+		return false
+	var faction := "ember" if team_id == 0 else "xenon"
+	var role := "infantry" if unit_type == "infantry" else "vehicle"
+	var model_path := "res://assets/models/%s_%s.glb" % [faction, role]
+	var packed_model = load(model_path)
+	if packed_model == null:
+		return false
+	var model = packed_model.instantiate()
+	model.name = "FactionModel"
+	add_child(model)
+	_body_visual.visible = false
+	_facing_visual.visible = false
+	if unit_type == "vehicle":
+		var box_shape := BoxShape3D.new()
+		box_shape.size = Vector3(2.25, 1.45, 3.65)
+		_collision_shape.shape = box_shape
+		_collision_shape.position.y = 0.72
+		_selection_ring.scale = Vector3.ONE * 1.8
+		_health_background.position.y = 2.35
+		_health_fill.position.y = 2.35
+	return true
 
 
 func _physics_process(delta: float) -> void:
