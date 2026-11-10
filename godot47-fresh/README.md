@@ -29,4 +29,4 @@ Ha a Project Manager egy korábbi, hibásan eltárolt példányt mutat, távolí
 
 ## Licenc és eszközök
 
-A terep és a látványelemek futás közben alap Godot mesh primitívekből jönnek létre. Külső játékassetet vagy fizetős szolgáltatást nem használ a projekt.
+A terep és több látványelem futás közben alap Godot mesh primitívekből jön létre. A részletes Ember gyalogos modell külső, CC BY 4.0 licencű asset; pontos attribúció: [CREDITS.md](CREDITS.md).

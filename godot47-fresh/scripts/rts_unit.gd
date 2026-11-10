@@ -48,6 +48,8 @@ var _right_leg_pivot: Node3D
 var _left_arm_pivot: Node3D
 var _right_arm_pivot: Node3D
 var _weapon_pivot: Node3D
+var _model_animation_player: AnimationPlayer
+var _active_model_animation := ""
 
 
 func _ready() -> void:
@@ -116,6 +118,10 @@ func _apply_external_faction_model() -> bool:
 	model.name = "FactionModel"
 	add_child(model)
 	_faction_model = model as Node3D
+	if unit_type == "infantry" and faction_id == "ember":
+		# The imported character is authored at a human scale. Keep it comparable
+		# to vehicles while preserving the original rig and skinning.
+		_faction_model.scale = Vector3.ONE * 0.95
 	_cache_animation_nodes()
 	_body_visual.visible = false
 	_facing_visual.visible = false
@@ -138,6 +144,9 @@ func _cache_animation_nodes() -> void:
 	_left_arm_pivot = _find_model_node("LeftArmPivot")
 	_right_arm_pivot = _find_model_node("RightArmPivot")
 	_weapon_pivot = _find_model_node("WeaponPivot")
+	_model_animation_player = _find_animation_player(_faction_model)
+	if is_instance_valid(_model_animation_player):
+		_set_model_animation("idle")
 
 
 func _find_model_node(node_name: String) -> Node3D:
@@ -155,6 +164,27 @@ func _find_node_recursive(parent: Node, node_name: String) -> Node:
 	return null
 
 
+func _find_animation_player(parent: Node) -> AnimationPlayer:
+	if parent is AnimationPlayer:
+		return parent as AnimationPlayer
+	for child in parent.get_children():
+		var found := _find_animation_player(child)
+		if found != null:
+			return found
+	return null
+
+
+func _set_model_animation(animation_name: String) -> void:
+	if not is_instance_valid(_model_animation_player):
+		return
+	if _active_model_animation == animation_name and _model_animation_player.is_playing():
+		return
+	if not _model_animation_player.has_animation(animation_name):
+		return
+	_model_animation_player.play(animation_name, 0.14)
+	_active_model_animation = animation_name
+
+
 func _process(delta: float) -> void:
 	_animation_time += delta
 	_fire_pose_time = maxf(0.0, _fire_pose_time - delta)
@@ -165,6 +195,14 @@ func _update_infantry_animation(delta: float) -> void:
 	if unit_type != "infantry" or not is_instance_valid(_faction_model):
 		return
 	var running := _has_destination and velocity.length() > 0.25
+	if is_instance_valid(_model_animation_player):
+		if _fire_pose_time > 0.0:
+			_set_model_animation("shoot")
+		elif running:
+			_set_model_animation("run")
+		else:
+			_set_model_animation("idle")
+		return
 	var bob := 0.0
 	var roll := 0.0
 	if running:
