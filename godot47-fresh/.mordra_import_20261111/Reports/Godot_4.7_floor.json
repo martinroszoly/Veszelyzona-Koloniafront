@@ -1,0 +1,156 @@
+{
+  "brute": {
+    "attack_bite": {
+      "min_y_m": 0.004997250624001026,
+      "last_frame_min_y_m": 0.004998659715056419,
+      "sampled_poses": 145,
+      "vertices": 281717
+    },
+    "attack_stomp": {
+      "min_y_m": 0.004998389631509781,
+      "last_frame_min_y_m": 0.004998659715056419,
+      "sampled_poses": 205,
+      "vertices": 281717
+    },
+    "death": {
+      "min_y_m": 0.004999037366360426,
+      "last_frame_min_y_m": 0.008000671863555908,
+      "sampled_poses": 193,
+      "vertices": 281717
+    },
+    "hit_heavy": {
+      "min_y_m": 0.004998359829187393,
+      "last_frame_min_y_m": 0.004998659715056419,
+      "sampled_poses": 67,
+      "vertices": 281717
+    },
+    "hit_light": {
+      "min_y_m": 0.004998482763767242,
+      "last_frame_min_y_m": 0.004998659715056419,
+      "sampled_poses": 37,
+      "vertices": 281717
+    },
+    "idle": {
+      "min_y_m": 0.00499795563519001,
+      "last_frame_min_y_m": 0.004998659715056419,
+      "sampled_poses": 241,
+      "vertices": 281717
+    },
+    "taunt": {
+      "min_y_m": 0.004998659715056419,
+      "last_frame_min_y_m": 0.004998659715056419,
+      "sampled_poses": 217,
+      "vertices": 281717
+    },
+    "turn_left": {
+      "min_y_m": 0.004997971002012491,
+      "last_frame_min_y_m": 0.00499830674380064,
+      "sampled_poses": 385,
+      "vertices": 281717
+    },
+    "turn_left_45": {
+      "min_y_m": 0.004997702315449715,
+      "last_frame_min_y_m": 0.004999356810003519,
+      "sampled_poses": 217,
+      "vertices": 281717
+    },
+    "turn_left_90": {
+      "min_y_m": 0.004997971002012491,
+      "last_frame_min_y_m": 0.00499830674380064,
+      "sampled_poses": 385,
+      "vertices": 281717
+    },
+    "turn_right": {
+      "min_y_m": 0.004997916053980589,
+      "last_frame_min_y_m": 0.004998962394893169,
+      "sampled_poses": 385,
+      "vertices": 281717
+    },
+    "turn_right_45": {
+      "min_y_m": 0.004997567739337683,
+      "last_frame_min_y_m": 0.004998877178877592,
+      "sampled_poses": 217,
+      "vertices": 281717
+    },
+    "turn_right_90": {
+      "min_y_m": 0.004997916053980589,
+      "last_frame_min_y_m": 0.004998962394893169,
+      "sampled_poses": 385,
+      "vertices": 281717
+    },
+    "walk": {
+      "min_y_m": 0.004998556803911924,
+      "last_frame_min_y_m": 0.004999000113457441,
+      "sampled_poses": 121,
+      "vertices": 281717
+    }
+  },
+  "infantry": {
+    "attack_tentacle_double": {
+      "min_y_m": 0.0049997312016785145,
+      "last_frame_min_y_m": 0.004999969154596329,
+      "sampled_poses": 61,
+      "vertices": 5552
+    },
+    "attack_tentacle_left": {
+      "min_y_m": 0.004999789875000715,
+      "last_frame_min_y_m": 0.004999969154596329,
+      "sampled_poses": 43,
+      "vertices": 5552
+    },
+    "attack_tentacle_right": {
+      "min_y_m": 0.0049997903406620026,
+      "last_frame_min_y_m": 0.004999969154596329,
+      "sampled_poses": 49,
+      "vertices": 5552
+    },
+    "death": {
+      "min_y_m": 0.004999996162950993,
+      "last_frame_min_y_m": 0.007999986410140991,
+      "sampled_poses": 109,
+      "vertices": 5552
+    },
+    "hit_front": {
+      "min_y_m": 0.004999850410968065,
+      "last_frame_min_y_m": 0.004999969154596329,
+      "sampled_poses": 28,
+      "vertices": 5552
+    },
+    "hit_side": {
+      "min_y_m": 0.00499982014298439,
+      "last_frame_min_y_m": 0.004999969154596329,
+      "sampled_poses": 34,
+      "vertices": 5552
+    },
+    "idle": {
+      "min_y_m": 0.004999880213290453,
+      "last_frame_min_y_m": 0.004999969154596329,
+      "sampled_poses": 241,
+      "vertices": 5552
+    },
+    "run": {
+      "min_y_m": 0.004999850410968065,
+      "last_frame_min_y_m": 0.004999953787773848,
+      "sampled_poses": 23,
+      "vertices": 5552
+    },
+    "turn_left": {
+      "min_y_m": 0.0049997903406620026,
+      "last_frame_min_y_m": 0.004999879747629166,
+      "sampled_poses": 97,
+      "vertices": 5552
+    },
+    "turn_right": {
+      "min_y_m": 0.004999761004000902,
+      "last_frame_min_y_m": 0.004999909084290266,
+      "sampled_poses": 97,
+      "vertices": 5552
+    },
+    "walk": {
+      "min_y_m": 0.004999805707484484,
+      "last_frame_min_y_m": 0.004999939352273941,
+      "sampled_poses": 61,
+      "vertices": 5552
+    }
+  }
+}

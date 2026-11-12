@@ -1,0 +1,46 @@
+{
+  "brute": [
+    {
+      "completed": true,
+      "max_reach_violation_m": 0.0,
+      "turn_degrees": 20.0
+    },
+    {
+      "completed": true,
+      "max_reach_violation_m": 0.0,
+      "turn_degrees": -45.0
+    },
+    {
+      "completed": true,
+      "max_reach_violation_m": 0.0,
+      "turn_degrees": 90.0
+    },
+    {
+      "completed": true,
+      "max_reach_violation_m": 0.0,
+      "turn_degrees": 180.0
+    }
+  ],
+  "infantry": [
+    {
+      "completed": true,
+      "max_reach_violation_m": 0.0,
+      "turn_degrees": 20.0
+    },
+    {
+      "completed": true,
+      "max_reach_violation_m": 0.0,
+      "turn_degrees": -45.0
+    },
+    {
+      "completed": true,
+      "max_reach_violation_m": 0.0,
+      "turn_degrees": 90.0
+    },
+    {
+      "completed": true,
+      "max_reach_violation_m": 0.0,
+      "turn_degrees": 180.0
+    }
+  ]
+}

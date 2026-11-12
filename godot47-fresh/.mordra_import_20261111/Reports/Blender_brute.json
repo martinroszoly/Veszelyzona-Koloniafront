@@ -1,0 +1,86 @@
+{
+  "idle": {
+    "min_z": 0.004998364020138979,
+    "max_ik_error_m": 1.5093633248925924e-06,
+    "max_contact_step_drift_m": 1.224799310447843e-06,
+    "root_translation_m": 0
+  },
+  "walk": {
+    "min_z": 0.004999781493097544,
+    "max_ik_error_m": 8.49235466049612e-07,
+    "max_contact_step_drift_m": 8.696248423502246e-07,
+    "root_translation_m": 0
+  },
+  "turn_left_45": {
+    "min_z": 0.004998298361897469,
+    "max_ik_error_m": 1.9082797281243946e-06,
+    "max_contact_step_drift_m": 2.0870138883604524e-06,
+    "root_translation_m": 0
+  },
+  "turn_right_45": {
+    "min_z": 0.004998298361897469,
+    "max_ik_error_m": 1.584926059952602e-06,
+    "max_contact_step_drift_m": 2.231047715447706e-06,
+    "root_translation_m": 0
+  },
+  "turn_left_90": {
+    "min_z": 0.0049986219964921474,
+    "max_ik_error_m": 1.6713231674206201e-06,
+    "max_contact_step_drift_m": 2.3306864256879273e-06,
+    "root_translation_m": 0
+  },
+  "turn_right_90": {
+    "min_z": 0.004998696036636829,
+    "max_ik_error_m": 1.5645509658344612e-06,
+    "max_contact_step_drift_m": 2.3053979403750557e-06,
+    "root_translation_m": 0
+  },
+  "turn_left": {
+    "min_z": 0.0049986219964921474,
+    "max_ik_error_m": 1.6713231674206201e-06,
+    "max_contact_step_drift_m": 2.3306864256879273e-06,
+    "root_translation_m": 0
+  },
+  "turn_right": {
+    "min_z": 0.004998696036636829,
+    "max_ik_error_m": 1.5645509658344612e-06,
+    "max_contact_step_drift_m": 2.3053979403750557e-06,
+    "root_translation_m": 0
+  },
+  "attack_bite": {
+    "min_z": 0.004997708834707737,
+    "max_ik_error_m": 2.6881628713082506e-06,
+    "max_contact_step_drift_m": 1.6118070224511575e-06,
+    "root_translation_m": 0
+  },
+  "attack_stomp": {
+    "min_z": 0.004998506046831608,
+    "max_ik_error_m": 1.7418431277516433e-06,
+    "max_contact_step_drift_m": 1.491307735824204e-06,
+    "root_translation_m": 0
+  },
+  "taunt": {
+    "min_z": 0.004998420365154743,
+    "max_ik_error_m": 1.346062396840598e-06,
+    "max_contact_step_drift_m": 1.1924653663481805e-06,
+    "root_translation_m": 0
+  },
+  "hit_light": {
+    "min_z": 0.004998690914362669,
+    "max_ik_error_m": 1.196925975562525e-06,
+    "max_contact_step_drift_m": 2.1932565561502096e-06,
+    "root_translation_m": 0
+  },
+  "hit_heavy": {
+    "min_z": 0.004998811986297369,
+    "max_ik_error_m": 1.228781230931777e-06,
+    "max_contact_step_drift_m": 2.0518200967381605e-06,
+    "root_translation_m": 0
+  },
+  "death": {
+    "min_z": 0.004998689983040094,
+    "max_ik_error_m": 2.4994893486811825e-06,
+    "max_contact_step_drift_m": 0,
+    "root_translation_m": 0
+  }
+}

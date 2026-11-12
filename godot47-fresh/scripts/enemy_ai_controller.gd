@@ -7,8 +7,9 @@ const REINFORCEMENT_TIME := 8.0
 const POPULATION_CAP := 50
 
 @export var team_id: int = 1
+@export var faction_id: String = "mordra"
 @export var decision_interval: float = 3.0
-@export var formation_spacing: float = 2.0
+@export var formation_spacing: float = 1.70
 
 var _decision_timer := 0.7
 var _reinforcement_wave := 0
@@ -161,12 +162,15 @@ func _try_call_in_reinforcements() -> void:
 		if node.team_id == team_id:
 			population += _unit_population(node.unit_type)
 	var options := [
-		{"type": "fighter", "cost": 650.0, "time": 28.0, "population": 8},
-		{"type": "helicopter", "cost": 500.0, "time": 24.0, "population": 7},
-		{"type": "tank", "cost": 420.0, "time": 20.0, "population": 6},
+		{"type": "brute", "cost": 360.0, "time": 20.0, "population": 6},
 		{"type": "vehicle", "cost": 260.0, "time": 14.0, "population": 4},
 		{"type": "infantry", "cost": REINFORCEMENT_COST, "time": REINFORCEMENT_TIME, "population": REINFORCEMENT_SIZE},
 	]
+	# Each faction currently has exactly two test units.
+	if faction_id == "ember":
+		options = [options[1], options[2]]
+	else:
+		options = [options[0], options[2]]
 	var choice = null
 	for option in options:
 		if population + int(option.population) <= POPULATION_CAP and economy_manager.can_afford(team_id, float(option.cost)):
@@ -182,24 +186,21 @@ func _try_call_in_reinforcements() -> void:
 
 func _spawn_reinforcements(unit_type: String) -> void:
 	_reinforcement_wave += 1
-	var unit_count := REINFORCEMENT_SIZE if unit_type == "infantry" else 1
+	var unit_count := (10 if faction_id == "mordra" else REINFORCEMENT_SIZE) if unit_type == "infantry" else 1
 	for index in range(unit_count):
 		var unit = RTS_UNIT.new()
-		unit.name = "Xenon_%s_%02d_%02d" % [unit_type, _reinforcement_wave, index + 1]
+		unit.name = "%s_%s_%02d_%02d" % [faction_id.capitalize(), unit_type, _reinforcement_wave, index + 1]
 		unit.team_id = team_id
-		unit.squad_id = "xenon_%s_%02d" % [unit_type, _reinforcement_wave]
+		unit.faction_id = faction_id
+		unit.squad_id = "%s_%s_%02d" % [faction_id, unit_type, _reinforcement_wave]
 		unit.unit_type = unit_type
-		unit.is_vehicle = unit_type != "infantry"
+		unit.is_vehicle = unit_type == "vehicle"
 		unit.collision_layer = 2
 		unit.collision_mask = 1 | 2
 		unit.position = Vector3(-2.4 + float(index) * 2.4, 0.0, -96.0)
 		get_tree().current_scene.add_child(unit)
 
 func _unit_population(unit_type: String) -> int:
-	if unit_type == "fighter":
-		return 8
-	if unit_type == "helicopter":
-		return 7
-	if unit_type == "tank":
+	if unit_type == "brute":
 		return 6
 	return 4 if unit_type == "vehicle" else 1

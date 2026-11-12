@@ -1,0 +1,84 @@
+{
+  "brute": [
+    {
+      "completed": true,
+      "error_degrees": 0.000000581814157478638,
+      "requested_degrees": 20.0,
+      "result_degrees": 19.9999994181858,
+      "root_position": "(0.0, 0.0, 0.0)"
+    },
+    {
+      "completed": true,
+      "error_degrees": 0.00000125223908363271,
+      "requested_degrees": -45.0,
+      "result_degrees": -45.0000012522391,
+      "root_position": "(0.0, 0.0, 0.0)"
+    },
+    {
+      "completed": true,
+      "error_degrees": 0.00000250447816726542,
+      "requested_degrees": 90.0,
+      "result_degrees": 90.0000025044782,
+      "root_position": "(0.0, 0.0, 0.0)"
+    },
+    {
+      "completed": true,
+      "error_degrees": 0.00000865142200549467,
+      "requested_degrees": 180.0,
+      "result_degrees": -179.999991348578,
+      "root_position": "(0.0, 0.0, 0.0)"
+    },
+    {
+      "distance_m": 1.03143382072449,
+      "heading_degrees": 19.9999960030913,
+      "planted_frame_drift_m": 0.000000492415153985348,
+      "reach_violation_m": 0.0,
+      "small_steering_state": "move"
+    },
+    {
+      "attack_completed": true,
+      "attack_heading_drift_degrees": 0.0
+    }
+  ],
+  "infantry": [
+    {
+      "completed": true,
+      "error_degrees": 0.000000581814157478638,
+      "requested_degrees": 20.0,
+      "result_degrees": 19.9999994181858,
+      "root_position": "(0.0, 0.0, 0.0)"
+    },
+    {
+      "completed": true,
+      "error_degrees": 0.00000125223908363271,
+      "requested_degrees": -45.0,
+      "result_degrees": -45.0000012522391,
+      "root_position": "(0.0, 0.0, 0.0)"
+    },
+    {
+      "completed": true,
+      "error_degrees": 0.00000250447816726542,
+      "requested_degrees": 90.0,
+      "result_degrees": 90.0000025044782,
+      "root_position": "(0.0, 0.0, 0.0)"
+    },
+    {
+      "completed": true,
+      "error_degrees": 0.00000865142200549467,
+      "requested_degrees": 180.0,
+      "result_degrees": -179.999991348578,
+      "root_position": "(0.0, 0.0, 0.0)"
+    },
+    {
+      "distance_m": 0.834935486316681,
+      "heading_degrees": 19.9999960030913,
+      "planted_frame_drift_m": 0.000000237017474091772,
+      "reach_violation_m": 0.0,
+      "small_steering_state": "move"
+    },
+    {
+      "attack_completed": true,
+      "attack_heading_drift_degrees": 0.0
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+
+
+KISEBB MORDRA ROVAR
+GLB: Godot/assets/mordra_infantry.glb
+Blender: mordra_infantry.blend
+
+idle                         4.000 s   LOOP
+walk                         1.000 s   LOOP
+run                          0.367 s   LOOP
+turn_left                    1.600 s   EGYSZERI / végén tartás
+turn_right                   1.600 s   EGYSZERI / végén tartás
+attack_tentacle_left         0.700 s   EGYSZERI / végén tartás
+attack_tentacle_right        0.800 s   EGYSZERI / végén tartás
+attack_tentacle_double       1.000 s   EGYSZERI / végén tartás
+hit_front                    0.450 s   EGYSZERI / végén tartás
+hit_side                     0.550 s   EGYSZERI / végén tartás
+death                        1.800 s   EGYSZERI / végén tartás
+
+A GLB nyers klipnevében a ciklikus klipeknél -loop utótag van.
+Godot ezt eltávolítja: az AnimationPlayerben a fenti pontos nevek látszanak.
+A Blender Action neve utótag nélküli; az NLA-sáv neve tartalmazza a -loop jelölést.
+turn_left / turn_right: 45 fokos, egyenként átlépő lábakkal végrehajtott fordulás.
+
+NAGY MORDRA LÉNY
+GLB: Godot/assets/mordra_brute.glb
+Blender: mordra_brute.blend
+
+idle                         4.000 s   LOOP
+walk                         2.000 s   LOOP
+turn_left_45                 3.600 s   EGYSZERI / végén tartás
+turn_right_45                3.600 s   EGYSZERI / végén tartás
+turn_left_90                 6.400 s   EGYSZERI / végén tartás
+turn_right_90                6.400 s   EGYSZERI / végén tartás
+turn_left                    6.400 s   EGYSZERI / végén tartás
+turn_right                   6.400 s   EGYSZERI / végén tartás
+attack_bite                  2.400 s   EGYSZERI / végén tartás
+attack_stomp                 3.400 s   EGYSZERI / végén tartás
+taunt                        3.600 s   EGYSZERI / végén tartás
+hit_light                    0.600 s   EGYSZERI / végén tartás
+hit_heavy                    1.100 s   EGYSZERI / végén tartás
+death                        3.200 s   EGYSZERI / végén tartás
+
+A GLB nyers klipnevében a ciklikus klipeknél -loop utótag van.
+Godot ezt eltávolítja: az AnimationPlayerben a fenti pontos nevek látszanak.
+A Blender Action neve utótag nélküli; az NLA-sáv neve tartalmazza a -loop jelölést.
+turn_left / turn_right: a 90 fokos klip név szerinti megfelelője.
+A 180 fokos megfordulás két egymást követő 90 fokos lépéssorozat.

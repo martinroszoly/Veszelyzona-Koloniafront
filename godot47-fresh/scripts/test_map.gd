@@ -20,6 +20,7 @@ const CAPTURE_POINT := preload("res://scripts/capture_point.gd")
 const COVER_OBJECT := preload("res://scripts/cover_object.gd")
 const INFANTRY_SQUAD_COST := 120.0
 const INFANTRY_SQUAD_SIZE := 5
+const MORDRA_SWARM_SIZE := 10
 const LIGHT_VEHICLE_COST := 260.0
 const SUPPLY_LINK_DISTANCE := 290.0
 const INFANTRY_BUILD_TIME := 8.0
@@ -54,8 +55,84 @@ var _production_type := ""
 var _production_remaining := 0.0
 var _production_duration := 0.0
 var _ui_refresh_timer := 0.0
+var _player_faction_id := "ember"
+var _enemy_faction_id := "mordra"
+var _match_started := false
 
 func _ready() -> void:
+	_show_faction_selection()
+
+func _show_faction_selection() -> void:
+	get_tree().paused = true
+	var layer := CanvasLayer.new()
+	layer.name = "FactionSelection"
+	layer.layer = 100
+	layer.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(layer)
+
+	var dim := ColorRect.new()
+	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	dim.color = Color(0.015, 0.02, 0.025, 0.96)
+	dim.mouse_filter = Control.MOUSE_FILTER_STOP
+	layer.add_child(dim)
+
+	var panel := PanelContainer.new()
+	panel.set_anchors_preset(Control.PRESET_CENTER)
+	panel.position = Vector2(-330.0, -205.0)
+	panel.size = Vector2(660.0, 410.0)
+	dim.add_child(panel)
+
+	var margin := MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 34)
+	margin.add_theme_constant_override("margin_top", 28)
+	margin.add_theme_constant_override("margin_right", 34)
+	margin.add_theme_constant_override("margin_bottom", 28)
+	panel.add_child(margin)
+
+	var content := VBoxContainer.new()
+	content.add_theme_constant_override("separation", 18)
+	margin.add_child(content)
+
+	var title := Label.new()
+	title.text = "VÁLASSZ FRAKCIÓT"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 30)
+	content.add_child(title)
+
+	var subtitle := Label.new()
+	subtitle.text = "A másik frakciót az AI irányítja."
+	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	subtitle.add_theme_color_override("font_color", Color(0.72, 0.76, 0.80))
+	content.add_child(subtitle)
+
+	var ember_button := Button.new()
+	ember_button.custom_minimum_size = Vector2(0.0, 92.0)
+	ember_button.text = "EMBER\nRugalmas, felszerelés-alapú expedíciós haderő"
+	ember_button.add_theme_font_size_override("font_size", 19)
+	ember_button.pressed.connect(_start_test_match.bind("ember", layer))
+	content.add_child(ember_button)
+
+	var mordra_button := Button.new()
+	mordra_button.custom_minimum_size = Vector2(0.0, 92.0)
+	mordra_button.text = "MORDRA\nFöld alól kitörő, petékkel terjeszkedő organikus kolónia"
+	mordra_button.add_theme_font_size_override("font_size", 19)
+	mordra_button.pressed.connect(_start_test_match.bind("mordra", layer))
+	content.add_child(mordra_button)
+
+func _start_test_match(selected_faction: String, selection_layer: CanvasLayer) -> void:
+	if _match_started:
+		return
+	_match_started = true
+	_player_faction_id = selected_faction
+	_enemy_faction_id = "mordra" if selected_faction == "ember" else "ember"
+	selection_layer.queue_free()
+	get_tree().paused = false
+	var enemy_ai := get_node_or_null("EnemyAIController")
+	if is_instance_valid(enemy_ai):
+		enemy_ai.faction_id = _enemy_faction_id
+	var instructions: Label = get_node_or_null("HUD/Panel/Margin/Instructions")
+	if is_instance_valid(instructions):
+		instructions.text = "VESZÉLYZÓNA / KOLÓNIAFRONT    FRAKCIÓ: %s\nWASD/képernyőszél: kamera    Középső egér: forgatás    Görgő: nagyítás\nBal klikk/húzás: kijelölés    Jobb klikk: mozgás    Jobb húzás: érkezési irány    R: visszavonulás" % _player_faction_id.to_upper()
 	_rng.seed = 4702
 	_build_ground()
 	_build_road_network()
@@ -67,10 +144,7 @@ func _ready() -> void:
 	_build_supply_links()
 	_build_player_squad()
 	_build_enemy_test_squad()
-	_spawn_single_unit("vehicle")
-	_spawn_single_unit("tank")
-	_spawn_single_unit("helicopter")
-	_spawn_single_unit("fighter")
+	_spawn_single_unit(_secondary_unit_type(_player_faction_id))
 	_update_objective_status()
 	_update_supply_network()
 	if is_instance_valid(economy_manager):
@@ -80,12 +154,7 @@ func _ready() -> void:
 		infantry_call_in_button.pressed.connect(_on_infantry_call_in_pressed)
 	if is_instance_valid(vehicle_call_in_button):
 		vehicle_call_in_button.pressed.connect(_on_vehicle_call_in_pressed)
-	if is_instance_valid(tank_call_in_button):
-		tank_call_in_button.pressed.connect(_queue_single_unit.bind("tank", TANK_COST, TANK_BUILD_TIME, 6))
-	if is_instance_valid(helicopter_call_in_button):
-		helicopter_call_in_button.pressed.connect(_queue_single_unit.bind("helicopter", HELICOPTER_COST, HELICOPTER_BUILD_TIME, 7))
-	if is_instance_valid(fighter_call_in_button):
-		fighter_call_in_button.pressed.connect(_queue_single_unit.bind("fighter", FIGHTER_COST, FIGHTER_BUILD_TIME, 8))
+	_configure_faction_unit_buttons()
 
 func _process(delta: float) -> void:
 	_ui_refresh_timer -= delta
@@ -136,40 +205,55 @@ func _build_ground() -> void:
 	add_child(ground_body)
 
 func _build_player_squad() -> void:
-	var squad_positions := [
-		Vector3(0.0, 0.0, 88.0),
-		Vector3(-1.6, 0.0, 90.0),
-		Vector3(1.6, 0.0, 90.0),
-		Vector3(-3.2, 0.0, 92.0),
-		Vector3(3.2, 0.0, 92.0),
-	]
+	var squad_positions := _make_squad_positions(_infantry_size(_player_faction_id), 90.0)
 	for index in range(squad_positions.size()):
 		var unit = RTS_UNIT.new()
 		unit.name = "EmberInfantry_%02d" % (index + 1)
 		unit.team_id = 0
-		unit.squad_id = "ember_kezdoraj"
+		unit.faction_id = _player_faction_id
+		unit.squad_id = "%s_kezdoraj" % _player_faction_id
 		unit.collision_layer = 2
 		unit.collision_mask = 1 | 2
 		unit.position = squad_positions[index]
 		add_child(unit)
 
 func _build_enemy_test_squad() -> void:
-	var squad_positions := [
-		Vector3(0.0, 0.0, -88.0),
-		Vector3(-1.6, 0.0, -90.0),
-		Vector3(1.6, 0.0, -90.0),
-		Vector3(-3.2, 0.0, -92.0),
-		Vector3(3.2, 0.0, -92.0),
-	]
+	var squad_positions := _make_squad_positions(_infantry_size(_enemy_faction_id), -90.0)
 	for index in range(squad_positions.size()):
 		var unit = RTS_UNIT.new()
-		unit.name = "XenonTestInfantry_%02d" % (index + 1)
+		unit.name = "%sTestInfantry_%02d" % [_enemy_faction_id.capitalize(), index + 1]
 		unit.team_id = 1
-		unit.squad_id = "xenon_tesztraj"
+		unit.faction_id = _enemy_faction_id
+		unit.squad_id = "%s_tesztraj" % _enemy_faction_id
 		unit.collision_layer = 2
 		unit.collision_mask = 1 | 2
 		unit.position = squad_positions[index]
 		add_child(unit)
+
+func _make_squad_positions(member_count: int, base_z: float) -> Array[Vector3]:
+	var positions: Array[Vector3] = []
+	var columns := 5 if member_count >= 10 else 3
+	for index in range(member_count):
+		var row := index / columns
+		var column := index % columns
+		var width := mini(columns, member_count - row * columns)
+		positions.append(Vector3((float(column) - float(width - 1) * 0.5) * 1.65, 0.0, base_z + float(row) * signf(base_z) * 1.8))
+	return positions
+
+func _infantry_size(faction: String) -> int:
+	return MORDRA_SWARM_SIZE if faction == "mordra" else INFANTRY_SQUAD_SIZE
+
+func _secondary_unit_type(faction: String) -> String:
+	return "brute" if faction == "mordra" else "vehicle"
+
+func _configure_faction_unit_buttons() -> void:
+	if is_instance_valid(infantry_call_in_button):
+		infantry_call_in_button.text = ("MORDRA ROVARRAJ (10)" if _player_faction_id == "mordra" else "EMBER GYALOGSÁGI RAJ (5)") + "  ·  120 GÁZ"
+	if is_instance_valid(vehicle_call_in_button):
+		vehicle_call_in_button.text = ("MORDRA OSTROMLÉNY" if _player_faction_id == "mordra" else "EMBER PÁNCÉLOZOTT SZÁLLÍTÓ") + "  ·  %d GÁZ" % (360 if _player_faction_id == "mordra" else 260)
+	for unused_button in [tank_call_in_button, helicopter_call_in_button, fighter_call_in_button]:
+		if is_instance_valid(unused_button):
+			unused_button.visible = false
 
 func _build_capture_points() -> void:
 	var point_data := [
@@ -328,7 +412,7 @@ func _on_resources_changed(team_id: int, gas: float, income_per_second: float) -
 func _on_infantry_call_in_pressed() -> void:
 	if not is_instance_valid(economy_manager):
 		return
-	if not _production_type.is_empty() or _get_team_population(0) + INFANTRY_SQUAD_SIZE > POPULATION_CAP:
+	if not _production_type.is_empty() or _get_team_population(0) + _infantry_size(_player_faction_id) > POPULATION_CAP:
 		return
 	if not economy_manager.spend_gas(0, INFANTRY_SQUAD_COST):
 		_set_backline_status("Nincs elegendő gáz a behíváshoz.")
@@ -338,16 +422,18 @@ func _on_infantry_call_in_pressed() -> void:
 func _spawn_infantry_squad() -> void:
 	_reinforcement_wave += 1
 	var wave_z := 94.0 + float((_reinforcement_wave - 1) % 3) * 2.4
-	for index in range(INFANTRY_SQUAD_SIZE):
+	var squad_size := _infantry_size(_player_faction_id)
+	for index in range(squad_size):
 		var unit = RTS_UNIT.new()
-		unit.name = "EmberReinforcement_%02d_%02d" % [_reinforcement_wave, index + 1]
+		unit.name = "%sReinforcement_%02d_%02d" % [_player_faction_id.capitalize(), _reinforcement_wave, index + 1]
 		unit.team_id = 0
-		unit.squad_id = "ember_erosites_%02d" % _reinforcement_wave
+		unit.faction_id = _player_faction_id
+		unit.squad_id = "%s_erosites_%02d" % [_player_faction_id, _reinforcement_wave]
 		unit.collision_layer = 2
 		unit.collision_mask = 1 | 2
 		unit.position = Vector3(-2.4 + float(index) * 2.4, 0.0, wave_z)
 		add_child(unit)
-	_set_backline_status("Gyalogsági raj megérkezett: +%d katona." % INFANTRY_SQUAD_SIZE)
+	_set_backline_status("Raj megérkezett: +%d egység." % squad_size)
 
 func _set_backline_status(message: String) -> void:
 	if is_instance_valid(backline_status):
@@ -358,13 +444,16 @@ func _on_vehicle_call_in_pressed() -> void:
 		return
 	if not _production_type.is_empty() or _get_team_population(0) + VEHICLE_POPULATION > POPULATION_CAP:
 		return
-	if not economy_manager.spend_resources(0, LIGHT_VEHICLE_COST, 80.0):
+	var secondary_type := _secondary_unit_type(_player_faction_id)
+	var gas_cost := 360.0 if secondary_type == "brute" else LIGHT_VEHICLE_COST
+	var metal_cost := 0.0 if secondary_type == "brute" else 80.0
+	if not economy_manager.spend_resources(0, gas_cost, metal_cost):
 		_set_backline_status("Nincs elegendő gáz a jármű behívásához.")
 		return
-	_start_production("vehicle", VEHICLE_BUILD_TIME)
+	_start_production(secondary_type, 20.0 if secondary_type == "brute" else VEHICLE_BUILD_TIME)
 
 func _spawn_light_vehicle() -> void:
-	_spawn_single_unit("vehicle")
+	_spawn_single_unit(_secondary_unit_type(_player_faction_id))
 
 func _queue_single_unit(unit_type: String, cost: float, duration: float, population_cost: int) -> void:
 	if not is_instance_valid(economy_manager) or not _production_type.is_empty():
@@ -377,11 +466,12 @@ func _queue_single_unit(unit_type: String, cost: float, duration: float, populat
 func _spawn_single_unit(unit_type: String) -> void:
 	_reinforcement_wave += 1
 	var vehicle = RTS_UNIT.new()
-	vehicle.name = "Ember_%s_%02d" % [unit_type, _reinforcement_wave]
+	vehicle.name = "%s_%s_%02d" % [_player_faction_id.capitalize(), unit_type, _reinforcement_wave]
 	vehicle.team_id = 0
-	vehicle.squad_id = "ember_%s_%02d" % [unit_type, _reinforcement_wave]
+	vehicle.faction_id = _player_faction_id
+	vehicle.squad_id = "%s_%s_%02d" % [_player_faction_id, unit_type, _reinforcement_wave]
 	vehicle.unit_type = unit_type
-	vehicle.is_vehicle = true
+	vehicle.is_vehicle = unit_type == "vehicle"
 	vehicle.collision_layer = 2
 	vehicle.collision_mask = 1 | 2
 	vehicle.position = Vector3(8.0, 0.0, 96.0)
@@ -400,10 +490,8 @@ func _finish_production() -> void:
 	_production_remaining = 0.0
 	if completed_type == "infantry":
 		_spawn_infantry_squad()
-	elif completed_type == "vehicle":
+	elif completed_type in ["vehicle", "brute"]:
 		_spawn_light_vehicle()
-	elif completed_type in ["tank", "helicopter", "fighter"]:
-		_spawn_single_unit(completed_type)
 	_refresh_backline_ui()
 
 func _get_team_population(team_id: int) -> int:
@@ -419,15 +507,10 @@ func _refresh_backline_ui() -> void:
 	var population := _get_team_population(0)
 	var queue_busy := not _production_type.is_empty()
 	if is_instance_valid(infantry_call_in_button):
-		infantry_call_in_button.disabled = queue_busy or economy_manager.get_gas(0) < INFANTRY_SQUAD_COST or population + INFANTRY_SQUAD_SIZE > POPULATION_CAP
+		infantry_call_in_button.disabled = queue_busy or economy_manager.get_gas(0) < INFANTRY_SQUAD_COST or population + _infantry_size(_player_faction_id) > POPULATION_CAP
 	if is_instance_valid(vehicle_call_in_button):
-		vehicle_call_in_button.disabled = queue_busy or economy_manager.get_gas(0) < LIGHT_VEHICLE_COST or population + VEHICLE_POPULATION > POPULATION_CAP
-	if is_instance_valid(tank_call_in_button):
-		tank_call_in_button.disabled = queue_busy or economy_manager.get_gas(0) < TANK_COST or population + 6 > POPULATION_CAP
-	if is_instance_valid(helicopter_call_in_button):
-		helicopter_call_in_button.disabled = queue_busy or economy_manager.get_gas(0) < HELICOPTER_COST or population + 7 > POPULATION_CAP
-	if is_instance_valid(fighter_call_in_button):
-		fighter_call_in_button.disabled = queue_busy or economy_manager.get_gas(0) < FIGHTER_COST or population + 8 > POPULATION_CAP
+		var secondary_cost := 360.0 if _player_faction_id == "mordra" else LIGHT_VEHICLE_COST
+		vehicle_call_in_button.disabled = queue_busy or economy_manager.get_gas(0) < secondary_cost or population + _unit_population(_secondary_unit_type(_player_faction_id)) > POPULATION_CAP
 	if is_instance_valid(resource_status):
 		resource_status.text = "GÁZ: %d\nBEVÉTEL: +%.1f / mp\nLÉTSZÁM: %d / %d" % [floori(economy_manager.get_gas(0)), economy_manager.get_income_per_second(0), population, POPULATION_CAP]
 	if queue_busy:
@@ -438,24 +521,16 @@ func _refresh_backline_ui() -> void:
 		_set_backline_status("Elérted a %d fős létszámkorlátot." % POPULATION_CAP)
 
 func _unit_population(unit_type: String) -> int:
-	if unit_type == "tank":
+	if unit_type == "brute":
 		return 6
-	if unit_type == "helicopter":
-		return 7
-	if unit_type == "fighter":
-		return 8
 	return VEHICLE_POPULATION if unit_type == "vehicle" else 1
 
 func _unit_title(unit_type: String) -> String:
 	if unit_type == "infantry":
 		return "GYALOGSÁGI RAJ"
 	if unit_type == "vehicle":
-		return "KÖNNYŰ PÁNCÉLOZOTT JÁRMŰ"
-	if unit_type == "tank":
-		return "TANK"
-	if unit_type == "helicopter":
-		return "LÉGI TÁMOGATÓ EGYSÉG"
-	return "CSAPÁSMÉRŐ VADÁSZGÉP"
+		return "PÁNCÉLOZOTT SZÁLLÍTÓ"
+	return "MORDRA OSTROMLÉNY"
 
 func _build_road_network() -> void:
 	_add_road(Vector3(0, 0.035, 0), Vector2(7.0, MAP_SIZE.y * 0.78), 0.0)

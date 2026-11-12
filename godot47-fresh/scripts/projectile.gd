@@ -10,13 +10,18 @@ var damage: float = 0.0
 var attacker_position := Vector3.ZERO
 var team_id: int = 0
 var _age := 0.0
+var _aim_position := Vector3.ZERO
+var _has_fixed_aim := false
 
 
-func initialize(projectile_target, projectile_damage: float, source_position: Vector3, source_team_id: int) -> void:
+func initialize(projectile_target, projectile_damage: float, source_position: Vector3, source_team_id: int, fixed_aim_position: Vector3 = Vector3.ZERO) -> void:
 	target = projectile_target
 	damage = projectile_damage
 	attacker_position = source_position
 	team_id = source_team_id
+	if fixed_aim_position != Vector3.ZERO:
+		_aim_position = fixed_aim_position
+		_has_fixed_aim = true
 
 
 func _ready() -> void:
@@ -44,13 +49,19 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_age += delta
-	if _age >= maximum_lifetime or not is_instance_valid(target):
+	if _age >= maximum_lifetime:
 		queue_free()
 		return
-	var target_position: Vector3 = target.global_position + Vector3.UP * 1.15
+	if not _has_fixed_aim and not is_instance_valid(target):
+		queue_free()
+		return
+	var target_position: Vector3 = _aim_position if _has_fixed_aim else target.global_position + Vector3.UP * 1.15
 	var offset: Vector3 = target_position - global_position
 	if offset.length() <= hit_distance:
-		target.take_damage(damage, attacker_position)
+		if is_instance_valid(target):
+			var target_center: Vector3 = target.global_position + Vector3.UP * 1.15
+			if not _has_fixed_aim or target_center.distance_to(_aim_position) <= 0.72:
+				target.take_damage(damage, attacker_position)
 		queue_free()
 		return
 	var direction: Vector3 = offset.normalized()

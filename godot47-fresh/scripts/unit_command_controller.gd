@@ -4,7 +4,7 @@ const MOVE_COMMAND_MARKER := preload("res://scripts/move_command_marker.gd")
 const FACING_COMMAND_PREVIEW := preload("res://scripts/facing_command_preview.gd")
 
 @export var player_team_id: int = 0
-@export var formation_spacing: float = 1.65
+@export var formation_spacing: float = 1.40
 @export var ray_length: float = 1000.0
 @export var drag_threshold: float = 8.0
 @export var cover_search_distance: float = 6.0
@@ -25,12 +25,21 @@ var _facing_preview = null
 var _hovered_cover = null
 var _hovered_enemy = null
 var _attack_button: Button
+var _spread_button: Button
 
 
 func _ready() -> void:
+	add_to_group("unit_command_controller")
 	_build_selection_box()
 	_build_attack_button()
+	_build_spread_button()
 	_update_status("Bal klikk: kijelölés. Bal gomb húzása: keretes kijelölés.")
+
+
+func select_squad_from_badge(squad_id_to_select: String) -> void:
+	_clear_selection()
+	_select_squad(squad_id_to_select)
+	_update_selection_status("Raj kijelölve")
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -92,6 +101,25 @@ func _build_attack_button() -> void:
 	_attack_button.add_theme_font_size_override("font_size", 17)
 	_attack_button.pressed.connect(_attack_hovered_enemy)
 	get_node("../HUD").add_child(_attack_button)
+
+
+func _build_spread_button() -> void:
+	_spread_button = Button.new()
+	_spread_button.name = "SquadSpreadButton"
+	_spread_button.text = "SZÉTSZÓRÓDÁS"
+	_spread_button.tooltip_text = "A kijelölt raj laza alakzatban mozogjon."
+	_spread_button.size = Vector2(168, 38)
+	_spread_button.position = Vector2(18, 520)
+	_spread_button.visible = false
+	_spread_button.add_theme_font_size_override("font_size", 15)
+	_spread_button.pressed.connect(_toggle_squad_spacing)
+	get_node("../HUD").add_child(_spread_button)
+
+
+func _toggle_squad_spacing() -> void:
+	formation_spacing = 3.2 if formation_spacing < 2.0 else 1.40
+	_spread_button.text = "ÖSSZEZÁRÁS" if formation_spacing > 2.0 else "SZÉTSZÓRÓDÁS"
+	_update_status("A kijelölt raj alakzata frissítve.")
 
 
 func _update_enemy_hover(screen_position: Vector2) -> void:
@@ -279,31 +307,52 @@ func _issue_move_command_at(center: Vector3, facing_direction: Vector3) -> void:
 		cover.show_slot_preview(_selected_units.size(), center)
 		_update_status("%d raj erős fedezékbe rendeződik." % _selected_squad_count())
 		return
-	var columns := ceili(sqrt(float(_selected_units.size())))
-	if _selected_units.size() <= 5:
-		var forward := facing_direction
-		if forward.length_squared() < 0.01:
-			forward = Vector3.FORWARD
-		forward = forward.normalized()
-		var side := Vector3(forward.z, 0.0, -forward.x)
-		var triangle_offsets := [
-			-forward * formation_spacing * 0.7,
-			-forward * formation_spacing * 0.15 - side * formation_spacing * 0.62,
-			-forward * formation_spacing * 0.15 + side * formation_spacing * 0.62,
-			forward * formation_spacing * 0.52 - side * formation_spacing * 0.95,
-			forward * formation_spacing * 0.52 + side * formation_spacing * 0.95,
-		]
-		for index in range(_selected_units.size()):
-			_selected_units[index].move_to(center + triangle_offsets[index], facing_direction, -1)
-		_update_status("A raj zárt ék alakzatban mozog.")
-		return
-	for index in range(_selected_units.size()):
-		var row := index / columns
-		var column := index % columns
-		var offset_x := (float(column) - float(columns - 1) * 0.5) * formation_spacing
-		var offset_z := float(row) * formation_spacing
-		_selected_units[index].move_to(center + Vector3(offset_x, 0.0, offset_z), facing_direction, -1)
+	var squads := _selected_units_by_squad()
+	var squad_ids: Array = squads.keys()
+	squad_ids.sort()
+	var command_forward := facing_direction
+	if command_forward.length_squared() < 0.01:
+		command_forward = Vector3.FORWARD
+	command_forward = command_forward.normalized()
+	var command_side := Vector3(command_forward.z, 0.0, -command_forward.x)
+	for squad_index in range(squad_ids.size()):
+		var lateral_index := float(squad_index) - float(squad_ids.size() - 1) * 0.5
+		var squad_center := center + command_side * lateral_index * formation_spacing * 3.2
+		_issue_squad_formation(squads[squad_ids[squad_index]], squad_center, command_forward, facing_direction)
 	_update_status("Mozgási parancs kiadva %d rajnak." % _selected_squad_count())
+
+
+func _selected_units_by_squad() -> Dictionary:
+	var squads := {}
+	for unit in _selected_units:
+		if not is_instance_valid(unit):
+			continue
+		if not squads.has(unit.squad_id):
+			squads[unit.squad_id] = []
+		squads[unit.squad_id].append(unit)
+	for members in squads.values():
+		members.sort_custom(func(a, b): return a.get_instance_id() < b.get_instance_id())
+	return squads
+
+
+func _issue_squad_formation(members: Array, center: Vector3, forward: Vector3, facing_direction: Vector3) -> void:
+	var side := Vector3(forward.z, 0.0, -forward.x)
+	var offsets := [
+		-forward * formation_spacing * 0.72,
+		-forward * formation_spacing * 0.14 - side * formation_spacing * 0.62,
+		-forward * formation_spacing * 0.14 + side * formation_spacing * 0.62,
+		forward * formation_spacing * 0.55 - side * formation_spacing * 0.92,
+		forward * formation_spacing * 0.55 + side * formation_spacing * 0.92,
+	]
+	if members.size() > 5:
+		offsets.clear()
+		var columns := ceili(sqrt(float(members.size())))
+		for index in range(members.size()):
+			var row := index / columns
+			var column := index % columns
+			offsets.append(side * (float(column) - float(columns - 1) * 0.5) * formation_spacing + forward * float(row) * formation_spacing)
+	for index in range(members.size()):
+		members[index].move_to(center + offsets[index], facing_direction, -1)
 
 
 func _find_nearby_cover(world_position: Vector3):
@@ -353,6 +402,8 @@ func _prune_selected_units() -> void:
 
 
 func _update_selection_status(prefix: String) -> void:
+	if is_instance_valid(_spread_button):
+		_spread_button.visible = not _selected_units.is_empty()
 	_update_status("%s: %d raj / %d katona" % [prefix, _selected_squad_count(), _selected_units.size()])
 
 
@@ -382,6 +433,8 @@ func _clear_selection() -> void:
 		if is_instance_valid(unit):
 			unit.set_selected(false)
 	_selected_units.clear()
+	if is_instance_valid(_spread_button):
+		_spread_button.visible = false
 
 
 func _update_status(message: String) -> void:

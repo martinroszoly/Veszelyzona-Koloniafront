@@ -1,0 +1,69 @@
+MORDRA – KÉT ANIMÁLT EGYSÉG / GODOT 4.7
+
+INDÍTÁS
+1. Csomagold ki a teljes ZIP-et.
+2. Godot 4.7-ben importáld a Godot/project.godot fájlt.
+3. Várd meg az importot, majd F6/F5: egység- és animációválasztó.
+4. Jobb egér: kamera; görgő: közelítés. A fokgombok a játékbeli lépéses fordulást mutatják.
+
+A KÉT ÖNÁLLÓ MODELL
+Godot/assets/mordra_infantry.glb – eredeti rovargeometria, 36 csont, 11 klip.
+Godot/assets/mordra_brute.glb – eredeti Diabolus Rex geometria, 44 csont, 14 klip.
+A GLB-k önállóan is használhatók: háló, rig, animációk és három beágyazott 2K PBR-térkép.
+Godot irány: -Z előre, Y felfelé; 1 egység = 1 méter. Root mozdulatlan.
+Rovar: kb. 1.8 m testhossz; nagy lény: kb. 3.4 m magas. Eredeti sziluettek megtartva.
+A nagy lény az eredeti négylábas Diabolus Rex maradt; a mellső támasztó végtagjai is lépnek.
+
+FONTOS IMPORTBEÁLLÍTÁS
+A mellékelt .glb.import fájlokat tartsd a GLB mellett.
+Animation FPS = 60; AnimationPlayer optimizer és compression = kikapcsolva.
+A Godot 30 fps-es alapértéke és az optimalizáló eltérítheti a támaszkodó lábakat.
+Új projektben ugyanezeket az Advanced Import beállításokat add meg.
+A Godot a beágyazott térképeket az első importnál automatikusan kibontja.
+A ciklikus klipek GLB-nevének -loop utótagját Godot felismeri és eltávolítja.
+Az Animaciok.txt az AnimationPlayerben látható pontos neveket tartalmazza.
+
+JÁTÉKBELI MOZGÁS ÉS FORDULÁS
+Godot/scripts/mordra_controller.gd: mozgatás és fordulási állapotgép.
+Godot/scripts/foot_plant.gd: világban rögzített támaszlábak, analitikus kétcsontos IK.
+A GLB-ben minden mozgás csontvázas és előre megsütött; a kiegészítő IK a játékbeli
+kis iránykorrekcióknál és részszögű fordulásoknál tartja meg a kontaktpontokat.
+A vezérlő 35 foknál nagyobb irányváltás előtt lelassít, külön lépésekben rendezi a
+támaszokat, majd lejátssza a fordulást. Kis irányváltás közben a járás megmarad.
+A fordulás alatt az actor root nem forog folyamatosan: a klip BodyYaw csontja és az
+egyenként átlépő lábak fordulnak. Végül az actor átveszi a klip végső irányát.
+A kisebb szögeknél a vezérlő a lépések ívét és a testfordulást együtt skálázza.
+Támadás előtt lépésekkel célra fordul; támadás közben a célirány rögzített.
+Az impact jel a metaadatban megadott találati pillanatban aktiválódik.
+
+PÉLDÁK (MordraController példányon)
+setup("infantry") vagy setup("brute")
+move_toward_direction(irány, méter_másodperc)
+request_turn(deg_to_rad(90))
+attack("attack_bite", célirány) – brute
+attack("attack_tentacle_double", célirány) – infantry
+show_clip("taunt") – külön klip előnézete
+A raj tíz önálló infantry példányból szervezhető; a GLB egyetlen rovart tartalmaz.
+A formáció, navigáció, tényleges sebzés és egyenetlen terep a játék saját logikájához kötendő.
+
+ANYAGOK
+A rovar eredeti albedo-, fémesség- és normáltérképe megmaradt.
+A nagy lény UV-ira a rovar valódi bőrmintázatából készült térképek kerültek:
+bordó-fekete színminták, foltok, nedvesség és finom bőrfelület; az eredeti Rex
+normal map izomzati részletei a végleges tangent normal térképbe vannak sütve.
+
+ELŐNÉZETEK ÉS ELLENŐRZÉS
+Previews/infantry és Previews/brute: külön MP4 minden klipről.
+A járó előnézet a kliphez illeszkedő világmozgást mutat, hogy a kontaktpontok ellenőrizhetők legyenek.
+A GLB rootja ettől függetlenül helyben marad.
+Meretosszehasonlitas.png: közös méretarány, 1.8 m magas emberrel.
+Reports: Blender és Godot 4.7 mérési eredmények; GLB szerkezeti és hash adatok.
+Godot tesztverzió: 4.7.stable.official.5b4e0cb0f.
+A talajérintés sík talajra készült; a járás névleges sebességét a *_meta.json gaits.speed adja meg.
+A mozgás és az animáció sebessége a vezérlőben együtt változik.
+
+BLENDER-FORRÁSOK ÉS EREDETI MENTÉSEK
+A külön Mordra_Blender_es_forrasok.zip tartalmazza a két szerkeszthető .blend fájlt,
+a beágyazott térképeket, IK-célokat/pólusokat, Action/NLA-klippeket,
+és az eredeti két ZIP változatlan biztonsági másolatát.
+Az eredeti modellekhez tartozó felhasználási jogok az eredeti licencek szerint maradnak érvényben.

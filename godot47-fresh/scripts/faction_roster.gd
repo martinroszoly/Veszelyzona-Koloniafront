@@ -10,45 +10,27 @@ const FACTIONS := {
 		"accent": Color("2d78c5"),
 		"trim": Color("c3a987"),
 		"doctrine": "Rugalmas, felszerelés-alapú emberi haderő",
-		"units": ["infantry", "carrier", "tank", "helicopter", "fighter"],
+		"units": ["infantry", "carrier"],
 	},
-	"xenon": {
-		"display_name": "XENON",
-		"accent": Color("d31527"),
-		"trim": Color("17171d"),
-		"doctrine": "Gyors, agresszív biomechanikus támadás",
-		"units": ["infantry", "carrier", "tank", "helicopter", "fighter"],
-	},
-	"roantok": {
-		"display_name": "ROANTOK",
-		"accent": Color("b67a30"),
-		"trim": Color("33271e"),
-		"doctrine": "Nehéz, ipari autonóm gépek",
-		"units": ["infantry", "carrier", "tank", "helicopter", "fighter"],
-	},
-	"rovarok": {
-		"display_name": "ROVAROK",
+	"mordra": {
+		"display_name": "MORDRA",
 		"accent": Color("7e6a35"),
 		"trim": Color("241d13"),
-		"doctrine": "Raj-alapú organikus túlerő",
-		"units": ["infantry", "carrier", "tank", "helicopter", "fighter"],
+		"doctrine": "Föld alól kitörő, peterakó kolónia és organikus rajháború",
+		"units": ["infantry", "brute"],
 	},
 }
 
 const UNIT_LABELS := {
 	"infantry": "Gyalogsági raj",
 	"carrier": "Páncélozott szállító",
-	"tank": "Tank / nehéz támogatás",
-	"helicopter": "Légi támogató egység",
-	"fighter": "Csapásmérő vadászegység",
+	"brute": "Mordra ostromlény",
 }
 
 const UNIT_PROFILES := {
 	"infantry": {"cost": 120, "build_time": 8.0, "population": 3, "role": "területfoglalás"},
 	"carrier": {"cost": 260, "build_time": 14.0, "population": 4, "role": "gyalogsági támogatás"},
-	"tank": {"cost": 420, "build_time": 20.0, "population": 6, "role": "nehéz áttörés"},
-	"helicopter": {"cost": 500, "build_time": 24.0, "population": 7, "role": "légi támogatás"},
-	"fighter": {"cost": 650, "build_time": 28.0, "population": 8, "role": "légi fölény"},
+	"brute": {"cost": 360, "build_time": 20.0, "population": 6, "role": "lassú taunt és közelharc"},
 }
 
 static func get_faction(faction_id: String) -> Dictionary:

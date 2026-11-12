@@ -1,0 +1,230 @@
+{
+  "brute": {
+    "bones": 44,
+    "clips": {
+      "attack_bite": {
+        "contact_frame_drift_m": 0.00000228449925998575,
+        "length": 2.40000009536743,
+        "loop": false,
+        "loop_endpoint_position_error_m": 0.0,
+        "root_translation_m": 0.0,
+        "target_error_m": 0.00000283372924059222
+      },
+      "attack_stomp": {
+        "contact_frame_drift_m": 0.00000178117193172511,
+        "length": 3.40000009536743,
+        "loop": false,
+        "loop_endpoint_position_error_m": 0.0,
+        "root_translation_m": 0.0,
+        "target_error_m": 0.00000252898644248489
+      },
+      "death": {
+        "contact_frame_drift_m": 0.000000792988203102141,
+        "length": 3.20000004768372,
+        "loop": false,
+        "loop_endpoint_position_error_m": 0.0,
+        "root_translation_m": 0.0,
+        "target_error_m": 0.00000265558583123493
+      },
+      "hit_heavy": {
+        "contact_frame_drift_m": 0.00000163043489465053,
+        "length": 1.10000002384186,
+        "loop": false,
+        "loop_endpoint_position_error_m": 0.0,
+        "root_translation_m": 0.0,
+        "target_error_m": 0.00000211932024285488
+      },
+      "hit_light": {
+        "contact_frame_drift_m": 0.00000185374278771633,
+        "length": 0.600000023841858,
+        "loop": false,
+        "loop_endpoint_position_error_m": 0.0,
+        "root_translation_m": 0.0,
+        "target_error_m": 0.0000019894027900591
+      },
+      "idle": {
+        "contact_frame_drift_m": 0.00000145146793784079,
+        "length": 4.0,
+        "loop": true,
+        "loop_endpoint_position_error_m": 0.0,
+        "root_translation_m": 0.0,
+        "target_error_m": 0.00000209487211577652
+      },
+      "taunt": {
+        "contact_frame_drift_m": 0.00000107989728803659,
+        "length": 3.59999990463257,
+        "loop": false,
+        "loop_endpoint_position_error_m": 0.0,
+        "root_translation_m": 0.0,
+        "target_error_m": 0.00000246135437009798
+      },
+      "turn_left": {
+        "contact_frame_drift_m": 0.00000228216526920733,
+        "length": 6.40000009536743,
+        "loop": false,
+        "loop_endpoint_position_error_m": 0.0,
+        "root_translation_m": 0.0,
+        "target_error_m": 0.00000300590068036399
+      },
+      "turn_left_45": {
+        "contact_frame_drift_m": 0.00000231922581406252,
+        "length": 3.59999990463257,
+        "loop": false,
+        "loop_endpoint_position_error_m": 0.0,
+        "root_translation_m": 0.0,
+        "target_error_m": 0.00000269937322627811
+      },
+      "turn_left_90": {
+        "contact_frame_drift_m": 0.00000228216526920733,
+        "length": 6.40000009536743,
+        "loop": false,
+        "loop_endpoint_position_error_m": 0.0,
+        "root_translation_m": 0.0,
+        "target_error_m": 0.00000300590068036399
+      },
+      "turn_right": {
+        "contact_frame_drift_m": 0.00000230539785661676,
+        "length": 6.40000009536743,
+        "loop": false,
+        "loop_endpoint_position_error_m": 0.0,
+        "root_translation_m": 0.0,
+        "target_error_m": 0.00000338449945047614
+      },
+      "turn_right_45": {
+        "contact_frame_drift_m": 0.00000243363842855615,
+        "length": 3.59999990463257,
+        "loop": false,
+        "loop_endpoint_position_error_m": 0.0,
+        "root_translation_m": 0.0,
+        "target_error_m": 0.00000270676628133515
+      },
+      "turn_right_90": {
+        "contact_frame_drift_m": 0.00000230539785661676,
+        "length": 6.40000009536743,
+        "loop": false,
+        "loop_endpoint_position_error_m": 0.0,
+        "root_translation_m": 0.0,
+        "target_error_m": 0.00000338449945047614
+      },
+      "walk": {
+        "contact_frame_drift_m": 0.00000137122822252422,
+        "length": 2.0,
+        "loop": true,
+        "loop_endpoint_position_error_m": 0.0,
+        "root_translation_m": 0.0,
+        "target_error_m": 0.00000202502337742771
+      }
+    },
+    "materials": [
+      {
+        "base": true,
+        "metallic": true,
+        "name": "Mordra dermis – transferred insect PBR",
+        "normal": true,
+        "roughness": true
+      }
+    ]
+  },
+  "infantry": {
+    "bones": 36,
+    "clips": {
+      "attack_tentacle_double": {
+        "contact_frame_drift_m": 0.000000299602277209488,
+        "length": 1.0,
+        "loop": false,
+        "loop_endpoint_position_error_m": 0.0,
+        "root_translation_m": 0.0,
+        "target_error_m": 0.000000291431064169956
+      },
+      "attack_tentacle_left": {
+        "contact_frame_drift_m": 0.000000273142802598159,
+        "length": 0.699999988079071,
+        "loop": false,
+        "loop_endpoint_position_error_m": 0.0,
+        "root_translation_m": 0.0,
+        "target_error_m": 0.000000258632809391202
+      },
+      "attack_tentacle_right": {
+        "contact_frame_drift_m": 0.00000031052033477863,
+        "length": 0.800000011920929,
+        "loop": false,
+        "loop_endpoint_position_error_m": 0.0,
+        "root_translation_m": 0.0,
+        "target_error_m": 0.000000338653279641221
+      },
+      "death": {
+        "contact_frame_drift_m": 0.000000153597653707038,
+        "length": 1.79999995231628,
+        "loop": false,
+        "loop_endpoint_position_error_m": 0.0,
+        "root_translation_m": 0.0,
+        "target_error_m": 0.0000261155601037899
+      },
+      "hit_front": {
+        "contact_frame_drift_m": 0.000000431426570912663,
+        "length": 0.449999988079071,
+        "loop": false,
+        "loop_endpoint_position_error_m": 0.0,
+        "root_translation_m": 0.0,
+        "target_error_m": 0.000000302644025396148
+      },
+      "hit_side": {
+        "contact_frame_drift_m": 0.000000395653188434153,
+        "length": 0.550000011920929,
+        "loop": false,
+        "loop_endpoint_position_error_m": 0.0,
+        "root_translation_m": 0.0,
+        "target_error_m": 0.000000430976001553063
+      },
+      "idle": {
+        "contact_frame_drift_m": 0.000000293518837679585,
+        "length": 4.0,
+        "loop": true,
+        "loop_endpoint_position_error_m": 0.00000000000000000097971747379633,
+        "root_translation_m": 0.0,
+        "target_error_m": 0.000000276576145097351
+      },
+      "run": {
+        "contact_frame_drift_m": 0.00000025991076313403,
+        "length": 0.366666674613953,
+        "loop": true,
+        "loop_endpoint_position_error_m": 0.00000000000000000171450552744479,
+        "root_translation_m": 0.0,
+        "target_error_m": 0.00000030190943789421
+      },
+      "turn_left": {
+        "contact_frame_drift_m": 0.000000416166784589223,
+        "length": 1.60000002384186,
+        "loop": false,
+        "loop_endpoint_position_error_m": 0.0,
+        "root_translation_m": 0.0,
+        "target_error_m": 0.0000003379148267868
+      },
+      "turn_right": {
+        "contact_frame_drift_m": 0.00000039198835111165,
+        "length": 1.60000002384186,
+        "loop": false,
+        "loop_endpoint_position_error_m": 0.0,
+        "root_translation_m": 0.0,
+        "target_error_m": 0.000000376457137463149
+      },
+      "walk": {
+        "contact_frame_drift_m": 0.000000240981620436287,
+        "length": 1.0,
+        "loop": true,
+        "loop_endpoint_position_error_m": 0.00000000000000000171450552744479,
+        "root_translation_m": 0.0,
+        "target_error_m": 0.000000285562407498219
+      }
+    },
+    "materials": [
+      {
+        "base": true,
+        "metallic": true,
+        "name": "Texture",
+        "normal": true,
+        "roughness": true
+      }
+    ]
+  }
+}

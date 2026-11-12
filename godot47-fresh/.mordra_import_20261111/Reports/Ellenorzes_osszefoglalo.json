@@ -1,0 +1,11 @@
+{
+  "Godot": "4.7.stable.official.5b4e0cb0f",
+  "units": 2,
+  "clips": 25,
+  "mp4_previews": 25,
+  "min_floor_clearance_m": 0.004997250624001026,
+  "max_authored_contact_frame_drift_m": 2.43363842855615e-06,
+  "max_runtime_contact_frame_drift_m": 4.92415153985348e-07,
+  "root_translation_m": 0,
+  "status": "PASS"
+}

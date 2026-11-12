@@ -53,6 +53,16 @@ var _weapon_pivot: Node3D
 var _model_animation_player: AnimationPlayer
 var _active_model_animation := ""
 var _squad_marker: Node3D
+var _vehicle_wheels: Array[Node3D] = []
+var _vehicle_steering_nodes: Array[Node3D] = []
+var _turret_pivot: Node3D
+var _wheel_roll := 0.0
+var _model_base_scale_y := 1.0
+var _burst_shots_remaining := 0
+var _burst_shot_timer := 0.0
+var _burst_target = null
+var _mordra_attack_side := false
+var _mordra_attack_phase := 0.0
 
 
 func _ready() -> void:
@@ -60,8 +70,8 @@ func _ready() -> void:
 	if squad_id.is_empty():
 		squad_id = name
 	if faction_id.is_empty():
-		faction_id = "ember" if team_id == 0 else "xenon"
-	if unit_type != "infantry":
+		faction_id = "ember" if team_id == 0 else "mordra"
+	if unit_type == "vehicle":
 		is_vehicle = true
 	if unit_type == "vehicle":
 		max_health = 320.0
@@ -71,6 +81,26 @@ func _ready() -> void:
 		attack_damage = 32.0
 		attack_cooldown = 1.55
 		sight_range = 63.0
+	elif unit_type == "brute":
+		is_vehicle = false
+		max_health = 850.0
+		move_speed = 3.2
+		acceleration = 7.0
+		attack_range = 3.4
+		attack_damage = 72.0
+		attack_cooldown = 2.4
+		sight_range = 42.0
+	elif unit_type == "infantry" and faction_id == "mordra":
+		max_health = 72.0
+		move_speed = 7.4
+		attack_range = 2.35
+		attack_damage = 17.0
+		attack_cooldown = 0.82
+		sight_range = 42.0
+	elif unit_type == "infantry" and faction_id == "ember":
+		attack_range = 21.0
+		attack_damage = 3.1
+		attack_cooldown = 1.18
 	elif unit_type == "tank":
 		max_health = 560.0
 		move_speed = 5.8
@@ -97,6 +127,8 @@ func _ready() -> void:
 	if unit_type == "vehicle":
 		if not has_external_model:
 			_convert_visuals_to_vehicle()
+	elif unit_type == "brute" and not has_external_model:
+		_convert_visuals_to_brute_placeholder()
 	elif unit_type != "infantry":
 		_convert_visuals_to_graybox_unit()
 	elif not has_external_model:
@@ -108,12 +140,14 @@ func _ready() -> void:
 
 
 func _apply_external_faction_model() -> bool:
-	if unit_type != "infantry" and unit_type != "vehicle":
+	if unit_type not in ["infantry", "vehicle", "brute"]:
 		return false
 	# Detailed billboard art is kept only as concept reference. Runtime units use
 	# actual 3D meshes so their facing follows their movement, never the camera.
-	var role := "infantry" if unit_type == "infantry" else "vehicle"
+	var role := unit_type
 	var model_path := "res://assets/models/%s_%s.glb" % [faction_id, role]
+	if faction_id == "ember" and unit_type == "vehicle" and ResourceLoader.exists("res://assets/models/ember_vehicle_rigged.glb"):
+		model_path = "res://assets/models/ember_vehicle_rigged.glb"
 	var packed_model = load(model_path)
 	if packed_model == null:
 		return false
@@ -125,13 +159,18 @@ func _apply_external_faction_model() -> bool:
 	if unit_type == "infantry":
 		# The imported character is authored at a human scale. Keep it comparable
 		# to vehicles while preserving the original rig and skinning.
-		_faction_model.scale = Vector3.ONE * 0.95
+		_faction_model.scale = Vector3.ONE * 0.8075
 		# Uploaded soldier and alien assets face +Z; RTSUnit uses -Z as forward.
-		_faction_model.rotation.y = PI
+		_faction_model.rotation.y = PI if faction_id == "ember" else 0.0
 		_cache_animation_nodes()
 	elif unit_type == "vehicle":
-		# Vehicles must dominate the silhouette of infantry on the battlefield.
-		_faction_model.scale = Vector3.ONE * 1.75
+		# Slightly reduced so a 1.8 m soldier reads naturally beside the APC.
+		_faction_model.scale = Vector3.ONE * 1.258
+		_cache_vehicle_nodes(_faction_model)
+	elif unit_type == "brute":
+		_faction_model.scale = Vector3.ONE * 0.85
+		_cache_animation_nodes()
+	_model_base_scale_y = _faction_model.scale.y
 	# The Ember officer asset already contains its rifle. Do not add the old
 	# procedural placeholder on top of it; Xenon keeps the fallback until its
 	# weapon-ready asset is replaced.
@@ -148,6 +187,29 @@ func _apply_external_faction_model() -> bool:
 		_health_background.position.y = 2.35
 		_health_fill.position.y = 2.35
 	return true
+
+
+func _cache_vehicle_nodes(root: Node) -> void:
+	_vehicle_wheels.clear()
+	_vehicle_steering_nodes.clear()
+	_collect_vehicle_nodes(root)
+
+
+func _collect_vehicle_nodes(node: Node) -> void:
+	if node is Node3D:
+		var spatial := node as Node3D
+		var lower := String(node.name).to_lower()
+		# Rotate only leaf wheel meshes. Importers often expose both a wheel
+		# transform and its child mesh; rotating both makes wheels visibly spin in
+		# pairs/double-speed.
+		if (lower.contains("wheel") or lower.contains("tire") or lower.contains("tyre")) and node.get_child_count() == 0:
+			_vehicle_wheels.append(spatial)
+			if lower.contains("front") or lower.contains("fl") or lower.contains("fr"):
+				_vehicle_steering_nodes.append(spatial)
+		if _turret_pivot == null and (lower.contains("turret") or lower.contains("tower")):
+			_turret_pivot = spatial
+	for child in node.get_children():
+		_collect_vehicle_nodes(child)
 
 
 func _apply_faction_material_style(root: Node) -> void:
@@ -291,7 +353,9 @@ func _resolve_external_animation(requested: String) -> String:
 				return candidate
 	for candidate in names:
 		var lower := candidate.to_lower()
-		if requested == "run" and (lower.contains("run") or lower.contains("motion")):
+		if requested in ["run", "walk"] and (lower.contains("run") or lower.contains("walk") or lower.contains("motion")):
+			return candidate
+		if requested.begins_with("attack") and (lower.contains("attack") or lower.contains("bite") or lower.contains("stomp")):
 			return candidate
 	return names[0] if names.size() > 0 else ""
 
@@ -299,23 +363,29 @@ func _resolve_external_animation(requested: String) -> String:
 func _process(delta: float) -> void:
 	_animation_time += delta
 	_fire_pose_time = maxf(0.0, _fire_pose_time - delta)
+	_update_machine_gun_burst(delta)
 	_update_infantry_animation(delta)
 	_update_squad_marker()
 
 
 func _update_infantry_animation(delta: float) -> void:
-	if unit_type != "infantry" or not is_instance_valid(_faction_model):
+	if unit_type not in ["infantry", "brute"] or not is_instance_valid(_faction_model):
 		return
 	var running := _has_destination and velocity.length() > 0.25
 	_crouch_time = maxf(0.0, _crouch_time - delta)
 	_crouch_cooldown = maxf(0.0, _crouch_cooldown - delta)
 	var crouching := _crouch_time > 0.0 and not running
-	var target_scale_y := 0.68 if crouching else 0.95
+	var target_scale_y := _model_base_scale_y * (0.72 if crouching else 1.0)
 	_faction_model.scale.y = move_toward(_faction_model.scale.y, target_scale_y, delta * 2.8)
 	_faction_model.position.y = move_toward(_faction_model.position.y, 0.0, delta * 3.5)
+	if faction_id == "mordra" and _fire_pose_time > 0.0:
+		_animate_mordra_attack(delta)
+		return
 	if is_instance_valid(_model_animation_player):
 		var aiming := is_instance_valid(_target)
-		if aiming and running:
+		if unit_type == "brute" and running:
+			_set_model_animation("walk")
+		elif aiming and running:
 			_set_model_animation("aim_run")
 		elif aiming:
 			_set_model_animation("aim_idle")
@@ -351,6 +421,29 @@ func _update_infantry_animation(delta: float) -> void:
 	if is_instance_valid(_weapon_pivot):
 		var aim_pitch := -0.42 if _fire_pose_time > 0.0 else 0.0
 		_weapon_pivot.rotation.x = move_toward(_weapon_pivot.rotation.x, aim_pitch, delta * 8.0)
+
+
+func _animate_mordra_attack(delta: float) -> void:
+	# Make the two front tentacles read clearly even when the source clip is
+	# authored with a very small amplitude: rear body rises, then both weapons
+	# sweep forward together before returning to neutral.
+	_mordra_attack_phase += delta * 8.5
+	var pulse := sin(_mordra_attack_phase)
+	var lift := maxf(0.0, pulse) * 0.38
+	_faction_model.position.y = move_toward(_faction_model.position.y, lift, delta * 4.0)
+	_faction_model.rotation.x = move_toward(_faction_model.rotation.x, -0.18 * maxf(0.0, pulse), delta * 5.0)
+	_animate_mordra_nodes(_faction_model, pulse)
+
+
+func _animate_mordra_nodes(node: Node, pulse: float) -> void:
+	for child in node.get_children():
+		if child is Node3D:
+			var spatial := child as Node3D
+			var lower := String(child.name).to_lower()
+			if lower.contains("tentacle") or lower.contains("arm") or lower.contains("claw"):
+				spatial.rotation.x = lerp(spatial.rotation.x, -0.55 * maxf(0.0, pulse), 0.22)
+				spatial.rotation.z = lerp(spatial.rotation.z, 0.16 * sin(_mordra_attack_phase + (0.7 if lower.contains("right") else 0.0)), 0.22)
+			_animate_mordra_nodes(spatial, pulse)
 
 
 func _apply_detail_sprite() -> bool:
@@ -403,11 +496,17 @@ func _physics_process(delta: float) -> void:
 	_attack_timer = maxf(0.0, _attack_timer - delta)
 	_avoidance_time = maxf(0.0, _avoidance_time - delta)
 	if _update_combat():
-		velocity.x = move_toward(velocity.x, 0.0, acceleration * delta)
-		velocity.z = move_toward(velocity.z, 0.0, acceleration * delta)
+		var combat_spacing := _get_combat_spacing_vector()
+		var combat_speed := move_speed * 0.28
+		velocity.x = move_toward(velocity.x, combat_spacing.x * combat_speed, acceleration * delta)
+		velocity.z = move_toward(velocity.z, combat_spacing.z * combat_speed, acceleration * delta)
 		move_and_slide()
 		return
 	if not _has_destination:
+		if _final_facing.length_squared() > 0.01 and _update_ordered_turn(delta):
+			move_and_slide()
+			_update_vehicle_running_gear(delta, signf(velocity.dot(-global_basis.z)))
+			return
 		velocity.x = move_toward(velocity.x, 0.0, acceleration * delta)
 		velocity.z = move_toward(velocity.z, 0.0, acceleration * delta)
 		move_and_slide()
@@ -421,30 +520,91 @@ func _physics_process(delta: float) -> void:
 			return
 		_has_destination = false
 		velocity = Vector3.ZERO
-		if _final_facing.length_squared() > 0.01:
-			look_at(global_position + _final_facing, Vector3.UP)
-			_final_facing = Vector3.ZERO
+		# Facing is completed with visible footwork/steering on following frames.
 		_cover_strength = _pending_cover_strength
 		_pending_cover_strength = -1
 		return
 
 	var direction := _apply_obstacle_avoidance(offset.normalized())
+	var squad_center := _get_live_squad_center()
+	var distance_from_squad := global_position.distance_to(squad_center)
+	if distance_from_squad > 2.4:
+		var regroup_direction := squad_center - global_position
+		regroup_direction.y = 0.0
+		if regroup_direction.length_squared() > 0.01:
+			var regroup_weight := clampf((distance_from_squad - 2.4) / 2.8, 0.35, 0.88)
+			direction = direction.lerp(regroup_direction.normalized(), regroup_weight).normalized()
 	var active_speed := move_speed * retreat_speed_multiplier if _retreating else move_speed
+	if distance_from_squad > 3.8:
+		active_speed *= 1.08
 	velocity.x = move_toward(velocity.x, direction.x * active_speed, acceleration * delta)
 	velocity.z = move_toward(velocity.z, direction.z * active_speed, acceleration * delta)
 	var desired_yaw := atan2(-direction.x, -direction.z)
-	rotation.y = lerp_angle(rotation.y, desired_yaw, minf(1.0, delta * 12.0))
+	var yaw_error := wrapf(desired_yaw - rotation.y, -PI, PI)
+	var turn_rate := 1.65 if is_vehicle else (2.1 if unit_type == "brute" else 6.2)
+	rotation.y = rotate_toward(rotation.y, desired_yaw, turn_rate * delta)
+	if is_vehicle:
+		_set_vehicle_steering(clampf(yaw_error * 0.75, -0.48, 0.48))
 	rotation.x = 0.0
 	rotation.z = 0.0
 	var position_before_move := global_position
 	move_and_slide()
+	_update_vehicle_running_gear(delta, 1.0)
 	_update_stuck_recovery(delta, position_before_move, offset.normalized())
+
+
+func _update_ordered_turn(delta: float) -> bool:
+	var desired_yaw := atan2(-_final_facing.x, -_final_facing.z)
+	var angle_error := wrapf(desired_yaw - rotation.y, -PI, PI)
+	if absf(angle_error) < 0.035:
+		rotation.y = desired_yaw
+		_final_facing = Vector3.ZERO
+		velocity = Vector3.ZERO
+		_set_model_animation("idle")
+		return false
+	var turn_sign := signf(angle_error)
+	if is_vehicle:
+		# A wheeled APC creeps through a real steering arc instead of spinning on a pad.
+		var forward := -global_basis.z
+		velocity.x = move_toward(velocity.x, forward.x * 0.75, acceleration * delta)
+		velocity.z = move_toward(velocity.z, forward.z * 0.75, acceleration * delta)
+		rotation.y = rotate_toward(rotation.y, desired_yaw, delta * 0.78)
+		_set_vehicle_steering(turn_sign * 0.48)
+	else:
+		velocity.x = move_toward(velocity.x, 0.0, acceleration * delta)
+		velocity.z = move_toward(velocity.z, 0.0, acceleration * delta)
+		rotation.y = rotate_toward(rotation.y, desired_yaw, delta * (1.15 if unit_type == "brute" else 2.6))
+		_set_model_animation("turn_right" if turn_sign > 0.0 else "turn_left")
+	return true
+
+
+func _set_vehicle_steering(steer_angle: float) -> void:
+	for steering_node in _vehicle_steering_nodes:
+		if is_instance_valid(steering_node):
+			steering_node.rotation.y = move_toward(steering_node.rotation.y, steer_angle, 0.08)
+
+
+func _update_vehicle_running_gear(delta: float, travel_sign: float) -> void:
+	if not is_vehicle:
+		return
+	var planar_speed := Vector2(velocity.x, velocity.z).length()
+	_wheel_roll += planar_speed * delta * (1.0 if travel_sign >= 0.0 else -1.0) * 2.2
+	for wheel in _vehicle_wheels:
+		if is_instance_valid(wheel):
+			wheel.rotation.x = _wheel_roll
+	if _final_facing.length_squared() <= 0.01:
+		_set_vehicle_steering(0.0)
 
 
 func _get_combat_spacing_vector() -> Vector3:
 	# Squads close ranks while travelling via formation destinations, then open
 	# a small firing gap once combat begins so members do not stack together.
 	var separation := Vector3.ZERO
+	var squad_center := _get_live_squad_center()
+	var cohesion := squad_center - global_position
+	cohesion.y = 0.0
+	if cohesion.length_squared() > 0.01:
+		separation += cohesion.normalized() * clampf(cohesion.length() / 5.0, 0.0, 1.0) * 1.35
 	for node in get_tree().get_nodes_in_group("rts_units"):
 		var ally = node as RTSUnit
 		if ally == null or ally == self or ally.team_id != team_id or ally.squad_id != squad_id:
@@ -452,9 +612,21 @@ func _get_combat_spacing_vector() -> Vector3:
 		var delta: Vector3 = global_position - ally.global_position
 		delta.y = 0.0
 		var distance: float = delta.length()
-		if distance > 0.02 and distance < 2.3:
-			separation += delta.normalized() * (1.0 - distance / 2.3)
+		if distance > 0.02 and distance < 1.95:
+			separation += delta.normalized() * (1.0 - distance / 1.95)
 	return separation.limit_length(1.0)
+
+
+func _get_live_squad_center() -> Vector3:
+	var center := Vector3.ZERO
+	var count := 0
+	for node in get_tree().get_nodes_in_group("rts_units"):
+		var ally = node as RTSUnit
+		if ally == null or ally.team_id != team_id or ally.squad_id != squad_id:
+			continue
+		center += ally.global_position
+		count += 1
+	return center / float(count) if count > 0 else global_position
 
 
 func move_to(world_position: Vector3, final_facing: Vector3 = Vector3.ZERO, cover_strength: int = -1) -> void:
@@ -560,19 +732,73 @@ func _update_combat() -> bool:
 	direction.y = 0.0
 	if direction.length_squared() > 0.01:
 		var desired_yaw := atan2(-direction.x, -direction.z)
-		rotation.y = lerp_angle(rotation.y, desired_yaw, 0.22)
+		if is_vehicle and is_instance_valid(_turret_pivot):
+			var local_target_yaw := wrapf(desired_yaw - rotation.y, -PI, PI)
+			_turret_pivot.rotation.y = lerp_angle(_turret_pivot.rotation.y, local_target_yaw, 0.16)
+		elif not is_vehicle:
+			var error := wrapf(desired_yaw - rotation.y, -PI, PI)
+			if absf(error) > 0.08:
+				_set_model_animation("turn_right" if error > 0.0 else "turn_left")
+			rotation.y = rotate_toward(rotation.y, desired_yaw, get_physics_process_delta_time() * (1.1 if unit_type == "brute" else 2.8))
 	if _attack_timer <= 0.0:
-		_fire_projectile(_target)
+		_perform_attack(_target)
 		_attack_timer = attack_cooldown
 	return true
 
 
-func _fire_projectile(projectile_target) -> void:
+func _perform_attack(attack_target) -> void:
+	if not is_instance_valid(attack_target):
+		return
+	if faction_id == "mordra":
+		_fire_pose_time = 1.0 if unit_type == "infantry" else 2.4
+		if unit_type == "brute":
+			_set_model_animation("attack_stomp" if _mordra_attack_side else "attack_bite")
+		else:
+			_set_model_animation("attack_tentacle_right" if _mordra_attack_side else "attack_tentacle_left")
+		_mordra_attack_side = not _mordra_attack_side
+		attack_target.take_damage(attack_damage, global_position)
+		return
+	if unit_type == "infantry":
+		_start_machine_gun_burst(attack_target)
+	else:
+		_fire_projectile(attack_target, attack_damage, 0.12)
+
+
+func _start_machine_gun_burst(attack_target) -> void:
+	_burst_target = attack_target
+	_burst_shots_remaining = 5
+	_burst_shot_timer = 0.0
+	_fire_pose_time = 0.62
+
+
+func _update_machine_gun_burst(delta: float) -> void:
+	if _burst_shots_remaining <= 0:
+		return
+	if not is_instance_valid(_burst_target):
+		_burst_shots_remaining = 0
+		return
+	_burst_shot_timer -= delta
+	if _burst_shot_timer > 0.0:
+		return
+	_fire_projectile(_burst_target, attack_damage, 1.05)
+	_burst_shots_remaining -= 1
+	_burst_shot_timer = 0.085 + randf_range(-0.012, 0.018)
+
+
+func _fire_projectile(projectile_target, projectile_damage: float = -1.0, spread: float = 0.0) -> void:
 	if not is_instance_valid(projectile_target):
 		return
 	_fire_pose_time = 0.22
+	var distance := global_position.distance_to(projectile_target.global_position)
+	var spread_radius := spread * lerpf(0.45, 1.0, clampf(distance / maxf(attack_range, 0.1), 0.0, 1.0))
+	var aim_position: Vector3 = projectile_target.global_position + Vector3.UP * 1.15
+	if spread_radius > 0.0:
+		var angle := randf() * TAU
+		var radius := sqrt(randf()) * spread_radius
+		aim_position += Vector3(cos(angle) * radius, randf_range(-0.22, 0.22) * spread_radius, sin(angle) * radius)
 	var projectile = UNIT_PROJECTILE.new()
-	projectile.initialize(projectile_target, attack_damage, global_position, team_id)
+	var final_damage := attack_damage if projectile_damage < 0.0 else projectile_damage
+	projectile.initialize(projectile_target, final_damage, global_position, team_id, aim_position)
 	projectile.position = global_position + Vector3.UP * 0.92 - global_basis.z * 0.38
 	get_tree().current_scene.add_child(projectile)
 
@@ -724,7 +950,7 @@ func _build_unit_role_marker() -> void:
 		_health_background.visible = false
 		_health_fill.visible = false
 		return
-	# A restrained 3D squad badge: a dark lozenge with the faction's chevrons.
+	# A small Company-of-Heroes-style squad badge; ownership is refreshed every frame.
 	var marker := Node3D.new()
 	marker.name = "UnitRoleMarker"
 	marker.position.y = 2.34 if unit_type == "infantry" else 2.92
@@ -741,7 +967,7 @@ func _build_unit_role_marker() -> void:
 	dark_material.metallic = 0.6
 	var base := MeshInstance3D.new()
 	var base_mesh := BoxMesh.new()
-	base_mesh.size = Vector3(0.48, 0.055, 0.48)
+	base_mesh.size = Vector3(0.26, 0.035, 0.26)
 	base.mesh = base_mesh
 	base.rotation.y = PI * 0.25
 	base.material_override = dark_material
@@ -749,14 +975,27 @@ func _build_unit_role_marker() -> void:
 	var badge := Label3D.new()
 	badge.name = "FactionBadge"
 	badge.text = "◆"
-	badge.font_size = 46
-	badge.outline_size = 10
+	badge.font_size = 28
+	badge.outline_size = 7
 	badge.modulate = icon_color
 	badge.outline_modulate = Color(0.015, 0.02, 0.025, 0.95)
 	badge.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	badge.no_depth_test = false
 	badge.position.y = 0.045
 	marker.add_child(badge)
+	var badge_area := Area3D.new()
+	badge_area.name = "SquadBadgeHitArea"
+	badge_area.collision_layer = 0
+	badge_area.collision_mask = 0
+	badge_area.input_ray_pickable = true
+	var badge_shape := CollisionShape3D.new()
+	var badge_box := BoxShape3D.new()
+	badge_box.size = Vector3(0.72, 0.22, 0.72)
+	badge_shape.shape = badge_box
+	badge_shape.position.y = 0.05
+	badge_area.add_child(badge_shape)
+	badge_area.input_event.connect(_on_squad_badge_input)
+	marker.add_child(badge_area)
 	for rank in range(2):
 		for side in [-1.0, 1.0]:
 			var chevron := MeshInstance3D.new()
@@ -769,6 +1008,17 @@ func _build_unit_role_marker() -> void:
 			marker.add_child(chevron)
 
 
+func _on_squad_badge_input(_camera: Node, event: InputEvent, _event_position: Vector3, _normal: Vector3, _shape_idx: int) -> void:
+	if team_id != 0 or not (event is InputEventMouseButton):
+		return
+	var mouse_event := event as InputEventMouseButton
+	if mouse_event.button_index == MOUSE_BUTTON_LEFT and mouse_event.pressed:
+		for controller in get_tree().get_nodes_in_group("unit_command_controller"):
+			if controller.has_method("select_squad_from_badge"):
+				controller.select_squad_from_badge(squad_id)
+				break
+
+
 func _is_squad_marker_owner() -> bool:
 	for unit in get_tree().get_nodes_in_group("rts_units"):
 		if unit != self and unit.team_id == team_id and unit.squad_id == squad_id and unit.get_instance_id() < get_instance_id():
@@ -777,21 +1027,51 @@ func _is_squad_marker_owner() -> bool:
 
 
 func _update_squad_marker() -> void:
-	if not is_instance_valid(_squad_marker):
+	var owner = _get_squad_marker_owner()
+	var is_owner: bool = owner == self
+	if is_instance_valid(_squad_marker):
+		_squad_marker.visible = is_owner
+	_health_background.visible = is_owner
+	_health_fill.visible = is_owner
+	if not is_owner or not is_instance_valid(_squad_marker):
 		return
 	var center := Vector3.ZERO
 	var member_count := 0
+	var squad_health := 0.0
+	var squad_max_health := 0.0
 	for unit in get_tree().get_nodes_in_group("rts_units"):
 		if unit.team_id == team_id and unit.squad_id == squad_id:
 			center += unit.global_position
 			member_count += 1
+			squad_health += maxf(0.0, unit._health)
+			squad_max_health += maxf(0.001, unit.max_health)
 	if member_count > 0:
 		_squad_marker.global_position = center / float(member_count) + Vector3.UP * 3.0
+		if is_instance_valid(_health_fill):
+			_health_fill.scale.x = clampf(squad_health / maxf(0.001, squad_max_health), 0.001, 1.0)
+
+
+func _get_squad_marker_owner():
+	var owner = null
+	for unit in get_tree().get_nodes_in_group("rts_units"):
+		if unit.team_id != team_id or unit.squad_id != squad_id:
+			continue
+		if owner == null or unit.get_instance_id() < owner.get_instance_id():
+			owner = unit
+	return owner
 
 
 func _update_health_bar() -> void:
 	if is_instance_valid(_health_fill):
-		_health_fill.scale.x = maxf(0.001, get_health_ratio())
+		var owner = _get_squad_marker_owner()
+		if owner == self:
+			var squad_health := 0.0
+			var squad_max_health := 0.0
+			for unit in get_tree().get_nodes_in_group("rts_units"):
+				if unit.team_id == team_id and unit.squad_id == squad_id:
+					squad_health += maxf(0.0, unit._health)
+					squad_max_health += maxf(0.001, unit.max_health)
+			_health_fill.scale.x = clampf(squad_health / maxf(0.001, squad_max_health), 0.001, 1.0) if owner == self else maxf(0.001, get_health_ratio())
 
 
 func _convert_visuals_to_vehicle() -> void:
@@ -814,10 +1094,10 @@ func _convert_visuals_to_vehicle() -> void:
 		ember_hull.size = Vector3(1.72, 0.75, 2.85)
 		hull_mesh = ember_hull
 	else:
-		var xenon_hull := CapsuleMesh.new()
-		xenon_hull.radius = 0.72
-		xenon_hull.height = 2.85
-		hull_mesh = xenon_hull
+		var organic_hull := CapsuleMesh.new()
+		organic_hull.radius = 0.72
+		organic_hull.height = 2.85
+		hull_mesh = organic_hull
 	hull.mesh = hull_mesh
 	hull.position.y = 0.56
 	if team_id == 1:
@@ -941,3 +1221,30 @@ func _convert_visuals_to_graybox_unit() -> void:
 	_selection_ring.scale = Vector3.ONE * 1.8
 	_health_background.position.y = 1.70
 	_health_fill.position.y = 1.70
+
+
+func _convert_visuals_to_brute_placeholder() -> void:
+	# Temporary silhouette only; replaced automatically by mordra_brute.glb.
+	_body_visual.visible = false
+	_facing_visual.visible = false
+	var material := StandardMaterial3D.new()
+	material.albedo_color = Color(0.34, 0.09, 0.07)
+	material.roughness = 0.82
+	var body := MeshInstance3D.new()
+	var body_mesh := CapsuleMesh.new()
+	body_mesh.radius = 0.78
+	body_mesh.height = 2.8
+	body.mesh = body_mesh
+	body.rotation.x = PI * 0.5
+	body.position = Vector3(0.0, 0.82, 0.0)
+	body.material_override = material
+	add_child(body)
+	var shape := CapsuleShape3D.new()
+	shape.radius = 0.8
+	shape.height = 2.8
+	_collision_shape.shape = shape
+	_collision_shape.rotation.x = PI * 0.5
+	_collision_shape.position.y = 0.8
+	_selection_ring.scale = Vector3.ONE * 1.65
+	_health_background.position.y = 2.35
+	_health_fill.position.y = 2.35

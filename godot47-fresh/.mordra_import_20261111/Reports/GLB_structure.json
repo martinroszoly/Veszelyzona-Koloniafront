@@ -1,0 +1,51 @@
+{
+  "infantry": {
+    "clips": [
+      "idle",
+      "walk",
+      "run",
+      "turn_left",
+      "turn_right",
+      "attack_tentacle_left",
+      "attack_tentacle_right",
+      "attack_tentacle_double",
+      "hit_front",
+      "hit_side",
+      "death"
+    ],
+    "count": 11,
+    "skeletons": 1,
+    "bones": 36,
+    "embedded_images": 3,
+    "mesh_vertices": 5552,
+    "sha256": "48b8b7adb2dd477f7656bb6ec674d535099297242d28a779f5f96dbbc0f89df1",
+    "forward": "-Z",
+    "up": "Y"
+  },
+  "brute": {
+    "clips": [
+      "idle",
+      "walk",
+      "turn_left_45",
+      "turn_right_45",
+      "turn_left_90",
+      "turn_right_90",
+      "turn_left",
+      "turn_right",
+      "attack_bite",
+      "attack_stomp",
+      "taunt",
+      "hit_light",
+      "hit_heavy",
+      "death"
+    ],
+    "count": 14,
+    "skeletons": 1,
+    "bones": 44,
+    "embedded_images": 3,
+    "mesh_vertices": 281717,
+    "sha256": "3b6c91b18a924c26f847836f6f4f0099d51cd4e0baebeca04ea079a09abd968b",
+    "forward": "-Z",
+    "up": "Y"
+  }
+}

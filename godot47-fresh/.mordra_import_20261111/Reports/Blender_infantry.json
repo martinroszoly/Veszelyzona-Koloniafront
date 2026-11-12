@@ -1,0 +1,68 @@
+{
+  "idle": {
+    "min_z": 0.004999939352273941,
+    "max_ik_error_m": 2.024036304236371e-07,
+    "max_contact_step_drift_m": 1.50678667546486e-07,
+    "root_translation_m": 0
+  },
+  "walk": {
+    "min_z": 0.004999954253435135,
+    "max_ik_error_m": 2.4268772415671244e-07,
+    "max_contact_step_drift_m": 1.4376072697747647e-07,
+    "root_translation_m": 0
+  },
+  "run": {
+    "min_z": 0.004999954253435135,
+    "max_ik_error_m": 2.4541719394923157e-07,
+    "max_contact_step_drift_m": 1.2269549195547747e-07,
+    "root_translation_m": 0
+  },
+  "turn_left": {
+    "min_z": 0.004999909549951553,
+    "max_ik_error_m": 3.9768237307913657e-07,
+    "max_contact_step_drift_m": 3.8656955275156637e-07,
+    "root_translation_m": 0
+  },
+  "turn_right": {
+    "min_z": 0.004999909549951553,
+    "max_ik_error_m": 3.5864535844921063e-07,
+    "max_contact_step_drift_m": 3.6378370570342845e-07,
+    "root_translation_m": 0
+  },
+  "attack_tentacle_left": {
+    "min_z": 0.004999880213290453,
+    "max_ik_error_m": 2.4867533547101373e-07,
+    "max_contact_step_drift_m": 2.4586915969848633e-07,
+    "root_translation_m": 0
+  },
+  "attack_tentacle_right": {
+    "min_z": 0.004999939817935228,
+    "max_ik_error_m": 2.422298223824629e-07,
+    "max_contact_step_drift_m": 2.1950781140709273e-07,
+    "root_translation_m": 0
+  },
+  "attack_tentacle_double": {
+    "min_z": 0.004999820608645678,
+    "max_ik_error_m": 3.0337680982801814e-07,
+    "max_contact_step_drift_m": 2.9351883535969567e-07,
+    "root_translation_m": 0
+  },
+  "hit_front": {
+    "min_z": 0.004999939817935228,
+    "max_ik_error_m": 3.003425057343598e-07,
+    "max_contact_step_drift_m": 3.0719530773294425e-07,
+    "root_translation_m": 0
+  },
+  "hit_side": {
+    "min_z": 0.004999939352273941,
+    "max_ik_error_m": 2.4856369670647795e-07,
+    "max_contact_step_drift_m": 2.551755873790936e-07,
+    "root_translation_m": 0
+  },
+  "death": {
+    "min_z": 0.004999939352273941,
+    "max_ik_error_m": 2.6215903024442656e-05,
+    "max_contact_step_drift_m": 0,
+    "root_translation_m": 0
+  }
+}
